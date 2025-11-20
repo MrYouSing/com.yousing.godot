@@ -23,16 +23,12 @@ func do_update()->void:
 	var f:float;var s:float=deadzone.x*deadzone.x;
 	for a in n:
 		if !axes[i].is_empty():
-			v=Vector2(Input.get_axis(axes[i],axes[i+1]),Input.get_axis(axes[i+2],axes[i+3]))
-			f=v.length_squared()
-			if f<=s:v=Vector2.ZERO
-			elif f>1.0:v=v.normalized()
-			m_axes[i/4]=v
+			m_axes[i/4]=Input.get_vector(axes[i+0],axes[i+1],axes[i+2],axes[i+3],deadzone.x)
 		i+=4
 	# Buttons
 	m_previous=m_buttons;m_buttons=0;
 	i=-1;for k in buttons:
-		++i;if Input.get_action_strength(k)>deadzone.y:
+		i+=1;if Input.get_action_strength(k)>deadzone.y:
 			m_buttons|=1<<i
 	# Advanced
 
@@ -60,11 +56,23 @@ func up(i:int)->bool:
 	try_update()
 	return (m_previous&(1<<i))!=0 and (m_buttons&(1<<i))==0
 
+func tap(i:int)->bool:
+	try_update()
+	return false
+
+func hold(i:int)->bool:
+	try_update()
+	return false
+
+func trigger(i:int)->bool:
+	try_update()
+	return  false
+
 #
-func _init()->void:
-	var n:int=axes.size()/4
+func _ready()->void:
+	var n:int=axes.size()/4;if n<=0:n=4
 	if m_axes==null:m_axes=[];m_axes.resize(n)
-	elif n<m_axes.size():m_axes.resize(n)
+	elif m_axes.size()<n:m_axes.resize(n)
 
 func _process(delta: float)->void:
 	try_update()

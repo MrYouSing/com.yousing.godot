@@ -4,9 +4,8 @@ class_name TpsCamera extends Node3D
 @export var pivot:Node3D
 @export var camera:Node3D
 @export var head:Node3D
-@export var zoom:float=10.0
-@export var ball:float=0.5
-@export var smooth:Vector2=Vector2(-1.0,60.0)
+@export var arm:Vector3=Vector3(0.0,0.0,10)
+@export_range(0.0,1.0,0.001,"or_greater", "or_less")var side:float=0.5
 @export_group("Input")
 @export var input:PlayerInput
 @export var cursor:bool=true
@@ -15,7 +14,9 @@ class_name TpsCamera extends Node3D
 @export_group("Scene")
 @export var lock:bool=false
 @export var target:Node3D
-@export var exclude:Array[PhysicsBody3D]
+@export var exclude:Array[CollisionObject3D]
+@export var ball:float=0.5
+@export var smooth:Vector2=Vector2(-1.0,60.0)
 
 var ray:=PhysicsRayQueryParameters3D.new()
 var rot:=Vector3.ZERO
@@ -51,7 +52,8 @@ func _physics_process(delta:float)->void:
 	if lock==true and target!=null:
 		pass
 	else:
-		from=to+pivot.global_basis.get_rotation_quaternion()*Vector3(0.0,0.0,-zoom)
+		var v:Vector3=Vector3(arm.x*(side-0.5)*2.0,arm.y,-arm.z)
+		from=to+pivot.global_basis.get_rotation_quaternion()*v
 	# 
 	if head==null:ray.from=to
 	else:ray.from=head.global_position
