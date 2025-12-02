@@ -13,6 +13,8 @@ func is_trigger()->bool:
 			InputTrigger_Action.Tap:return input.tap(button)
 			InputTrigger_Action.Hold:return input.hold(button)
 			InputTrigger_Action.Trigger:return input.trigger(button)
+	elif action==InputTrigger_Action.On:
+		return true
 	return false
 
 enum InputTrigger_Action {

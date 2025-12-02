@@ -4,7 +4,7 @@ class_name CharacterMotor extends Node
 @export var velocity:Vector3
 @export var gravity:float=1.0
 # For Animations
-var anim:String
+var anim:StringName
 var state:int
 
 #func _process(delta:float)->void:

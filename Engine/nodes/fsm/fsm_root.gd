@@ -9,10 +9,10 @@ var time:Vector2
 func _ready()->void:
 	#
 	if input!=null:
-		for it in self.find_child("Triggers").get_children():
+		for it in self.get_node(^"./Triggers").get_children():
 			if it is InputTrigger and it.input==null:it.input=input
 	if states.is_empty():
-		for it in self.find_child("States").get_children():
+		for it in self.get_node(^"./States").get_children():
 			if it is FsmNode:states.append(it)
 	#
 	for it in states:
@@ -21,7 +21,7 @@ func _ready()->void:
 
 func _process(delta:float)->void:
 	time.x+=delta;time.y=delta;
-	if state!=null&&state.on_check:
+	if state!=null&&state.on_check():
 		state.on_tick()
 
 func get_state(k:String)->FsmState:

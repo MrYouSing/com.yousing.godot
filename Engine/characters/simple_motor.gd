@@ -7,7 +7,7 @@ class_name SimpleMotor extends CharacterMotor
 @export var position:Vector2=Vector2(-1,60.0)
 
 func _process(delta:float)->void:
-	if model==null or direction.length_squared()==0.0:return
+	if model==null or direction.is_zero_approx():return
 	#
 	var q=Basis.looking_at(-direction,Vector3.UP)
 	model.quaternion=MathExtension.quat_lerp(model.quaternion,q.get_rotation_quaternion(),rotation,delta)

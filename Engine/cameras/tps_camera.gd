@@ -20,9 +20,12 @@ class_name TpsCamera extends Node3D
 
 var ray:=PhysicsRayQueryParameters3D.new()
 var rot:=Vector3.ZERO
+var cam:Camera3D
 
 func _ready()->void:
-	if camera:camera.rotation=Vector3(0.0,PI,0.0)
+	if camera!=null:
+		camera.rotation=Vector3(0.0,PI,0.0)
+		if camera is Camera3D:cam=camera
 	if cursor:Input.mouse_mode=Input.MOUSE_MODE_CAPTURED
 
 func _unhandled_input(event: InputEvent)->void:
@@ -68,3 +71,14 @@ func _physics_process(delta:float)->void:
 	var res:=world.direct_space_state.intersect_ray(ray)
 	if res:from=res.position+res.normal*ball
 	camera.global_position=from#MathExtension.vec3_lerp(camera.global_position,from,smooth,delta)
+
+func _on_state(c:StateMachine,k:StringName,v:Variant,t:Transition)->void:
+	var w:Vector4=v;var u=Vector3(w.x,w.y,w.z);lock=w.z>0.0
+	if t==null or t.duration==0.0:#Instant
+		arm=u
+		if cam!=null:cam.fov=absf(w.w)
+	else:#Tween
+		var tmp:Tween=c.get_tween();
+		t.to_tween(tmp,self,"arm",u)
+		if cam!=null:t.to_tween(tmp,cam,"fov",absf(w.w),true)
+	
