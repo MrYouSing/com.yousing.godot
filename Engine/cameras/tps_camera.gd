@@ -18,7 +18,6 @@ class_name TpsCamera extends Node3D
 @export var ball:float=0.5
 @export var smooth:Vector2=Vector2(-1.0,60.0)
 
-var ray:=PhysicsRayQueryParameters3D.new()
 var rot:=Vector3.ZERO
 var cam:Camera3D
 
@@ -49,28 +48,27 @@ func _process(delta:float)->void:
 func _physics_process(delta:float)->void:
 	if camera==null or pivot==null:return
 	# 
-	var world:=get_world_3d()
 	var to:Vector3=pivot.global_position
 	var from:Vector3=Vector3.ZERO
 	if lock==true and target!=null:
 		pass
 	else:
-		var v:Vector3=Vector3(arm.x*(side-0.5)*2.0,arm.y,-arm.z)
-		from=to+pivot.global_basis.get_rotation_quaternion()*v
-	# 
-	if head==null:ray.from=to
-	else:ray.from=head.global_position
-	ray.to=from
-	ray.hit_back_faces=true
-	ray.hit_from_inside=true
-	
-	var as_array_rid:Array[RID]
-	for phys_obj in exclude:as_array_rid.append(phys_obj.get_rid())
-	ray.exclude=as_array_rid
+		var q:Quaternion=pivot.global_basis.get_rotation_quaternion()
+		to=to+q*Vector3(arm.x*(side-0.5)*2.0,arm.y,0.0)
+		from=to+q*Vector3(0.0,0.0,-arm.z)
+	#
+	if head!=null:to=head.global_position
+	from=ray_cast(to,from)
+	camera.global_position=MathExtension.vec3_lerp(camera.global_position,from,smooth,delta)
 
-	var res:=world.direct_space_state.intersect_ray(ray)
-	if res:from=res.position+res.normal*ball
-	camera.global_position=from#MathExtension.vec3_lerp(camera.global_position,from,smooth,delta)
+func ray_cast(a:Vector3,b:Vector3)->Vector3:
+	var rids:Array[RID];
+	for it in exclude:rids.append(it.get_rid())
+	var res:Dictionary;
+	if ball>0.0:res=GodotExtension.sphere_cast(get_world_3d().direct_space_state,a,b,ball,-1,rids,-1)
+	else:res=GodotExtension.ray_cast(get_world_3d().direct_space_state,a,b,-1,rids,-1)
+	if res:b=res.position+res.normal*ball
+	return b
 
 func _on_state(c:StateMachine,k:StringName,v:Variant,t:Transition)->void:
 	var w:Vector4=v;var u=Vector3(w.x,w.y,w.z);lock=w.z>0.0
