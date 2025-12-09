@@ -2,6 +2,7 @@ class_name TpsCharacter extends CharacterController
 
 @export_group("Arguments")
 @export var lock:bool
+@export var target:Node3D
 @export var speed:float=5.0
 @export var smooth:Vector2=Vector2(-1,60)
 @export var blend:StringName
@@ -12,6 +13,15 @@ var moving:bool
 func set_enabled(b:bool)->void:
 	super.set_enabled(b)
 	moving=false
+
+func set_model(m:Node3D)->void:
+	var a:Actor=model;if a!=null:
+		var t:Node3D=a.get_component(&"LookAt")
+		if t!=null:t.reparent(model,true);
+	super.set_model(m)
+	a=model;if a!=null and target!=null:
+		var t:Node3D=a.get_component(&"LookAt")
+		if t!=null:t.reparent(target,false);t.transform=Transform3D.IDENTITY
 
 func get_facing(v:Vector3)->Vector3:
 	if motor!=null:motor.direction=Vector3.ZERO# Reset for realtime.

@@ -12,6 +12,18 @@ static func set_expression_node(t:AnimationTree,a:Node,b:bool=false)->void:
 	if !b and !t.advance_expression_base_node.is_empty() and t.advance_expression_base_node!=^".":return
 	t.advance_expression_base_node=t.get_path_to(a)
 
+static func get_bone_global_poses(c:Skeleton3D,i:Array[int],p:Array[Transform3D])->void:
+	if c==null:return
+	p.clear();for it in i:
+		if it>=0:p.append(c.get_bone_global_pose(it))
+		else:p.append(Transform3D.IDENTITY)
+
+static func set_bone_global_rotation(c:Skeleton3D,i:int,q:Quaternion)->void:
+	if c==null or i<0:return
+	var p:Transform3D=c.get_bone_global_pose(i)
+	p.basis=Basis(q)
+	c.set_bone_global_pose(i,p)
+
 # Physics APIs
 
 static var shared_rids:Array[RID]

@@ -1,5 +1,6 @@
 class_name PlayerInput extends Node
 
+# A scale from mouse-space to input-scale.
 static var mouse_to_stick:float=0.005
 
 @export var deadzone:Vector4=Vector4(0.125,0.5,0.5,0.5)
@@ -66,7 +67,7 @@ func hold(i:int)->bool:
 
 func trigger(i:int)->bool:
 	try_update()
-	return  false
+	return false
 
 #
 func _ready()->void:

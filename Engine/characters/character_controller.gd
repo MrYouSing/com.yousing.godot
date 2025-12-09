@@ -23,9 +23,9 @@ func set_model(m:Node3D)->void:
 		model=m
 		# Link to the animation system.
 		if animation==null:
-			animation=model.get_node(^"./AnimationPlayer")
+			animation=model.get_node_or_null(^"./AnimationPlayer")
 		if animator==null:
-			animator=model.get_node(^"./AnimationTree")
+			animator=model.get_node_or_null(^"./AnimationTree")
 		#
 		if animator!=null:
 			GodotExtension.set_anim_player(animator,animation)

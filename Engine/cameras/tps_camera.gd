@@ -5,7 +5,7 @@ class_name TpsCamera extends Node3D
 @export var camera:Node3D
 @export var head:Node3D
 @export var arm:Vector3=Vector3(0.0,0.0,10)
-@export_range(0.0,1.0,0.001,"or_greater", "or_less")var side:float=0.5
+@export_range(0.0,1.0,0.001,"or_greater","or_less")var side:float=0.5
 @export_group("Input")
 @export var input:PlayerInput
 @export var cursor:bool=true
@@ -71,12 +71,12 @@ func ray_cast(a:Vector3,b:Vector3)->Vector3:
 	return b
 
 func _on_state(c:StateMachine,k:StringName,v:Variant,t:Transition)->void:
-	var w:Vector4=v;var u=Vector3(w.x,w.y,w.z);lock=w.z>0.0
-	if t==null or t.duration==0.0:#Instant
-		arm=u
-		if cam!=null:cam.fov=absf(w.w)
+	var l:Lens=v;if l==null:return
+	if l.settings.has(^"lock"):lock=l.settings[^"lock"]
+	if t==null or t.instant():
+		l.direct_to_camera_3d(cam)
+		if l.settings.has(^"arm"):arm=l.settings[^"arm"]
 	else:#Tween
-		var tmp:Tween=c.get_tween();
-		t.to_tween(tmp,self,"arm",u)
-		if cam!=null:t.to_tween(tmp,cam,"fov",absf(w.w),true)
-	
+		var tmp=c.get_tween()
+		l.tween_to_camera_3d(cam,tmp,t);Transition.current=self
+		if l.settings.has(^"arm"):t.to_tween(tmp,self,^"arm",l.settings[^"arm"])
