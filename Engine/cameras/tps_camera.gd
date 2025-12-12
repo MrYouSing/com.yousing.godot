@@ -70,7 +70,7 @@ func ray_cast(a:Vector3,b:Vector3)->Vector3:
 	if res:b=res.position+res.normal*ball
 	return b
 
-func _on_state(c:StateMachine,k:StringName,v:Variant,t:Transition)->void:
+func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 	var l:Lens=v;if l==null:return
 	if l.settings.has(^"lock"):lock=l.settings[^"lock"]
 	if t==null or t.instant():

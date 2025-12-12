@@ -1,6 +1,6 @@
-class_name StateMachine extends Node
+class_name StateMachine extends BaseMachine
 
-@export var target:Node
+@export_group("State")
 @export var state:StringName
 @export var states:Dictionary
 @export var transition:Transition
@@ -9,11 +9,12 @@ class_name StateMachine extends Node
 
 var idle:StringName
 var tween:Tween
+signal on_state(c:Object,k:StringName,v:Variant,t:Transition)
 
 func _ready()->void:
 	if !state.is_empty():
 		idle=state
-		var tmp:String=state;state=&"*";set_state(tmp)
+		var tmp:StringName=state;state=&"*";set_state(tmp)
 
 func get_tween()->Tween:
 	if tween!=null:tween.kill();tween=null#Stop
@@ -34,9 +35,18 @@ func set_state(s:StringName)->void:
 	#
 	_on_state(self,s,v,t)
 
-func _on_state(c:StateMachine,k:StringName,v:Variant,t:Transition)->void:
+func _on_dirty()->void:
+	on_execute=LangExtension.merge_signal(self,on_execute,on_state,targets,&"_on_state")
+	dirty=false
+
+func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 	state=k
-	if target!=null and target.has_method(&"_on_state"):
-		target.call(&"_on_state",self,state,v,t)
-	# Broadcast downward.
+	if dirty:_on_dirty()
+	#
+	on_execute.emit(self,state,v,t)
 	for it in machines:it.set_state(state)
+
+# For other systems.
+
+func _on_event(c:Object,e:StringName)->void:
+	set_state(e)

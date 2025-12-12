@@ -4,8 +4,8 @@ class_name PlayerInput extends Node
 static var mouse_to_stick:float=0.005
 
 @export var deadzone:Vector4=Vector4(0.125,0.5,0.5,0.5)
-@export var axes:Array[String]
-@export var buttons:Array[String]
+@export var axes:Array[StringName]
+@export var buttons:Array[StringName]
 
 var m_axes:Array[Vector2]
 var m_previous:int
