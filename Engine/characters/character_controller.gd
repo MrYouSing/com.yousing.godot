@@ -40,7 +40,7 @@ func get_rotation()->Quaternion:
 	if motor!=null:
 		var v=motor.direction
 		if !v.is_zero_approx():
-			v.y=0.0;return Basis.looking_at(v.normalized(),normal).get_rotation_quaternion()
+			v.y=0.0;return MathExtension.looking_at(v,normal)
 	var t:Node3D=model;if t==null:t=root
 	return MathExtension.get_heading(t.global_basis,normal)
 
@@ -48,14 +48,16 @@ func get_move()->Vector2:
 	if input!=null:return input.stick(0);
 	else:return Input.get_vector("left","right","backward","forward")#,"down","up")
 
+## From [constant Vector3.UP] to [constant Vector3.FORWARD].
 func input_to_world(i:Vector2)->Vector3:
 	var v:Vector3=Vector3(i.x,0.0,-i.y)
 	if viewer!=null:v=MathExtension.get_heading(viewer.global_basis,normal)*v
 	return v
 
+## From [constant Vector3.MODEL_LEFT] to [constant Vector2.LEFT].
 func world_to_animation(i:Vector3)->Vector2:
 	i=get_rotation().inverse()*i
-	return Vector2(i.x,-i.z)
+	return Vector2(-i.x,i.z)
 
 func play_animation(k:StringName)->void:
 	if motor!=null:motor.anim=k

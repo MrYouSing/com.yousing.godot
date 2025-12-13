@@ -32,3 +32,19 @@ func to_skeleton_modifier_3d(t:Tween,o:SkeletonModifier3D,b:bool)->void:
 	o.active=true;to_tween(t,o,^"influence",f)
 	var cb:=func()->void:o.active=o.influence>0.1
 	t.finished.connect(cb)
+
+func to_media_volume(t:Tween,o:Media,v:float)->void:
+	if t==null or o==null:return
+	#
+	to_tween(t,o,^"volume",v)
+	if v>0.0:
+		if !o.playing:o.play()
+	else:
+		var cb:=func()->void:if is_zero_approx(o.volume):o.stop()
+		t.finished.connect(cb)
+
+func fade_media_volume(t:Tween,a:Media,b:Media)->void:
+	if t==null or a==null or b==null:return
+	#
+	current=a;to_media_volume(t,a,0.0)
+	current=b;to_media_volume(t,b,1.0)

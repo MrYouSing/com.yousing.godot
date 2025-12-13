@@ -1,4 +1,4 @@
-# An entity which like UnityEngine.GameObject.
+## An entity which like UnityEngine.GameObject.
 class_name Actor extends Node3D
 
 @export var components:Array[Node]

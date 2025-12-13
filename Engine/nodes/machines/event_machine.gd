@@ -1,4 +1,4 @@
-# An EventDispatcher for machines.
+## An EventDispatcher for machines.
 class_name EventMachine extends BaseMachine
 
 @export_group("Event")

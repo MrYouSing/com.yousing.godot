@@ -6,6 +6,13 @@ static func float_clamp(v:float,a:float,z:float)->float:
 	if a<z:return clamp(v,a,z)
 	else:return v
 
+static func random_level(f:float,a:Array[float])->int:
+	f*=randf()
+	var i:int=-1;for it in a:
+		i+=1;if f<it:return i# [,)
+		f-=it# Next level.
+	return i
+
 static func vec3_lerp(a:Vector3,b:Vector3,t:Vector2,d:float)->Vector3:
 	if t.x>0.0:return a.move_toward(b,t.x*d)
 	elif t.x>=-1.0:return a.lerp(b,-t.x*t.y*d)
@@ -17,8 +24,10 @@ static func quat_lerp(a:Quaternion,b:Quaternion,t:Vector2,d:float)->Quaternion:
 	return b
 
 static func looking_at(v:Vector3,n:Vector3=Vector3.UP)->Basis:
-	v=v.normalized();var f:float=v.dot(n)
-	if is_equal_approx(f,0.0) or is_equal_approx(f*f,1.0):return Basis.IDENTITY
+	var f:float=v.length_squared()
+	if is_equal_approx(f+n.length_squared(),0.0):return Basis.IDENTITY
+	v/=sqrt(f);f=v.dot(n)
+	if is_equal_approx(f*f,1.0):return Basis.IDENTITY
 	else:return Basis.looking_at(-v,n);
 
 static func get_heading(b:Basis,n:Vector3=Vector3.UP)->Basis:

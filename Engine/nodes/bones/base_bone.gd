@@ -1,3 +1,4 @@
+## A base class for procedural animations.
 @tool
 class_name BaseBone extends SkeletonModifier3D
 

@@ -1,4 +1,4 @@
-# An input class for 1st person and 3rd person.
+## An input class for 1st person and 3rd person.
 class_name XpsInput extends PlayerInput
 
 @export var look:int=1

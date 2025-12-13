@@ -1,4 +1,4 @@
-# An input class for keyboard device.
+## An input class for keyboard device.
 class_name KeyboardInput extends Node
 
 @export_group("Keyboard")

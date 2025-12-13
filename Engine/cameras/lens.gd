@@ -1,4 +1,4 @@
-# A preset for cameras and projectors
+## A preset for cameras and projectors
 class_name Lens extends Resource
 
 @export var ortho:bool

@@ -1,4 +1,4 @@
-# A simple implementation for LookAtIK.
+## A simple implementation for LookAtIK.
 @tool
 class_name SpineBone extends ArrowBone
 

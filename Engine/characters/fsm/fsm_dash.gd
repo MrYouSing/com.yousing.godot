@@ -1,7 +1,7 @@
 class_name FsmDash extends FsmAction
 
 @export_group("Dash")
-@export var direction:Vector3=Vector3.FORWARD
+@export var direction:Vector3=Vector3.MODEL_FRONT 
 @export var speed:float=10.0
 @export var curve:Curve
 @export var blend:StringName

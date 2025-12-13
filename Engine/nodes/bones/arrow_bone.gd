@@ -1,4 +1,4 @@
-# A tool class for arrow-style.
+## A tool class for arrow-style.
 @tool
 class_name ArrowBone extends BaseBone
 

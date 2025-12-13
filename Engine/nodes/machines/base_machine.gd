@@ -1,4 +1,4 @@
-# The base class for machine system.
+## The base class for machine system.
 class_name BaseMachine extends Node
 
 @export_group("Machine")

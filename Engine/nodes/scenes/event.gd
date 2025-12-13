@@ -1,4 +1,4 @@
-# A helper class for event.
+## A helper class for event.
 class_name Event extends Node
 
 @export var targets:Array[Node]
