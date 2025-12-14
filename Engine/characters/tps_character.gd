@@ -15,11 +15,11 @@ func set_enabled(b:bool)->void:
 	moving=false
 
 func set_model(m:Node3D)->void:
-	var a:Actor=model;if a!=null:
+	var a:Actor=model as Actor;if a!=null:
 		var t:Node3D=a.get_component(&"LookAt")
 		if t!=null:t.reparent(model,true);
 	super.set_model(m)
-	a=model;if a!=null and target!=null:
+	a=model as Actor;if a!=null and target!=null:
 		var t:Node3D=a.get_component(&"LookAt")
 		if t!=null:t.reparent(target,false);t.transform=Transform3D.IDENTITY
 

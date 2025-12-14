@@ -12,8 +12,12 @@ func on_enter()->void:
 		else:
 			c.set_enabled(true)
 		c.play_animation(name)
+	#
+	GodotExtension.set_enabled(actor,true)
 
 func on_exit()->void:
 	if sleep:
 		var c:CharacterController=get_character()
 		if c!=null:c.set_enabled(true)
+	#
+	GodotExtension.set_enabled(actor,false)

@@ -1,5 +1,6 @@
 class_name FsmRoot extends FsmNode
 
+@export_group("Root")
 @export var context:Node
 @export var input:PlayerInput
 @export var states:Array[FsmState]

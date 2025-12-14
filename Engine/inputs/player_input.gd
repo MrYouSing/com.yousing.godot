@@ -29,8 +29,8 @@ func do_update()->void:
 	# Buttons
 	m_previous=m_buttons;m_buttons=0;
 	i=-1;for k in buttons:
-		i+=1;if Input.get_action_strength(k)>deadzone.y:
-			m_buttons|=1<<i
+		i+=1;if !k.is_empty():
+			if Input.get_action_strength(k)>deadzone.y:m_buttons|=1<<i
 	# Advanced
 
 func axis(i:int)->float:

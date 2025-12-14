@@ -5,6 +5,7 @@ class_name Footstep extends Audio
 @export var material:StringName
 @export var start:Vector2=Vector2(0.5,0.0)
 @export var next:Vector2=Vector2(0.5,0.0)
+@export var scale:Vector2=Vector2.ZERO
 @export var bones:Array[Node]
 
 signal on_footstep(n:Node)
@@ -35,7 +36,7 @@ func get_foot()->Node:
 	return null
 
 func _ready()->void:
-	time=interval(start)
+	set_enabled(false)
 
 func _process(delta:float)->void:
 	if time<0.0:return
@@ -47,6 +48,7 @@ func _material(x:StringName)->void:
 
 func _footstep()->void:
 	open(material);play()
+	if !scale.is_zero_approx():volume=interval(scale)
 	if on_footstep.has_connections():on_footstep.emit(get_foot())
 	# Next
 	time+=interval(next)

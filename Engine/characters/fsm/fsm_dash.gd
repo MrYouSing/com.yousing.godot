@@ -49,6 +49,9 @@ func on_exit()->void:
 	var c:CharacterController=get_character()
 	if c!=null:
 		c.set_enabled(true)
+		if motor!=null:motor.velocity=motor.velocity.project(c.normal)
+	else:
+		if motor!=null:motor.velocity=Vector3.ZERO
 	# Clean up.
 	motor=null
 	velocity=Vector3.ZERO

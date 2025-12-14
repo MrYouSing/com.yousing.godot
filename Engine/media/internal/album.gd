@@ -5,10 +5,23 @@ class_name Album extends Resource
 @export var names:Array[StringName]
 @export var clips:Array[Resource]
 @export var paths:Array[StringName]
-@export var weights:Array[float]
+@export var rates:Array[float]
 
 var is_inited:bool
 var sum:float
+
+static func from_path(p:String)->Album:
+	var d:DirAccess=DirAccess.open(p)
+	if d!=null:
+		var a:Album=Album.new()
+		a.resource_name=LangExtension.file_name(p)
+		for it in d.get_files():
+			if it.ends_with(".import"):continue
+			a.clips.append(load(LangExtension.combine_path(p,it)))
+		for it in d.get_directories():
+			a.clips.append(from_path(LangExtension.combine_path(p,it)))
+		return a
+	return null
 
 func init()->void:
 	if is_inited:return
@@ -19,7 +32,7 @@ func init()->void:
 		for it in paths:
 			if !it.is_empty():clips.append(load(it))
 	#
-	sum=0.0;for it in weights:sum+=it
+	sum=0.0;for it in rates:sum+=it
 	
 
 func load(k:StringName)->Resource:
@@ -43,7 +56,7 @@ func random()->Resource:
 	#
 	var i:int=-1
 	if sum<=0.0:i=randi()%clips.size()
-	else:i=MathExtension.random_level(sum,weights)
+	else:i=MathExtension.random_level(sum,rates)
 	#
 	if i>=0:return clips[i]
 	else:return null

@@ -1,5 +1,61 @@
 class_name GodotExtension
 
+# Engine APIs
+
+static var s_engine_frames:int=-1
+static var s_engine_time:float=-1.0
+static var s_benchmark_names:Array[String]
+static var s_benchmark_times:Array[float]
+
+static func get_frames()->int:
+	if s_engine_frames>=0:return s_engine_frames
+	return Engine.get_process_frames()
+
+static func get_time()->float:
+	if s_engine_time>=0.0:return s_engine_time
+	return Time.get_ticks_msec()*0.001
+
+static func begin_benchmark(c:String)->void:
+	s_benchmark_names.push_back(c)
+	s_benchmark_times.push_back(get_time())
+
+static func end_benchmark()->void:
+	var c:String=s_benchmark_names.pop_back()
+	var t:float=s_benchmark_times.pop_back()
+	var d:float=get_time()
+	print(c.format([t,d-t,d]))
+
+# Scene APIs
+
+static var s_root:Node
+static var s_dimension:int=3
+
+static func destroy(o:Object)->void:
+	if o==null:return
+	if o is Node:o.queue_free()
+	else:o.free()
+
+static func set_enabled(o:Object,b:bool)->void:
+	if o==null:return
+	if o.has_method(&"set_enabled"):o.set_enabled(b);return
+	# Default
+	if o is Node:o.set_process(b);o.set_physics_process(b)
+	if o is Node3D:o.visible=b
+	elif o is Node2D:o.visible=b
+
+static func add_node(n:Node,p:Node=null,b:bool=true)->void:
+	if n==null:return
+	if p==null:p=s_root
+	#
+	if n.get_parent()!=null:
+		n.reparent(p,b);return
+	elif b and (n is Node3D or n is Node2D):
+		var t=n.global_transform
+		p.add_child(n)
+		n.global_transform=t
+	else:
+		p.add_child(n)
+
 # Animation APIs
 
 static func set_anim_player(t:AnimationTree,a:AnimationPlayer,b:bool=false)->void:

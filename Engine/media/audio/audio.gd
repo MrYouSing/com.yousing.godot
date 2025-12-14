@@ -1,6 +1,19 @@
 ## An audio player.
 class_name Audio extends Media
 
+static func create(i:int,n:Node=null)->Audio:
+	var p:Node
+	match i:
+		1:p=AudioStreamPlayer.new()
+		2:p=AudioStreamPlayer2D.new()
+		3:p=AudioStreamPlayer3D.new()
+	if p!=null:
+		var a:Audio=Audio.new()
+		if n!=null:n.add_child(p);
+		p.add_child(a);a.player=p
+		return a
+	return null
+
 func init()->void:
 	if is_inited:return
 	super.init()

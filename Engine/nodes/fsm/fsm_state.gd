@@ -1,5 +1,6 @@
 class_name FsmState extends FsmNode
 
+@export_group("State")
 @export var duration:float=0.0
 @export var transitions:Array[FsmTransition]
 var root:FsmRoot

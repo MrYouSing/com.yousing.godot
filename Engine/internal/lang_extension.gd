@@ -2,11 +2,10 @@ class_name LangExtension
 
 const k_empty_string:String=""
 const k_empty_array:Array=[]
+const k_empty_callable:Callable=Callable()
 const k_empty_signal:Signal=Signal()
 
 static var s_none_string:String="None"
-static var s_benchmark_names:Array[String]
-static var s_benchmark_times:Array[float]
 
 # https://learn.microsoft.com/zh-cn/dotnet/api/system.notimplementedexception
 static var e_not_implemented:Dictionary={
@@ -16,19 +15,26 @@ static var e_not_implemented:Dictionary={
 static func throw_exception(c:Object,e:Dictionary)->void:
 	push_error(e["text"])
 
-static func get_time()->float:
-	return Time.get_ticks_msec()*0.001
+# String APIs
 
-static func begin_benchmark(c:String)->void:
-	s_benchmark_names.push_back(c)
-	s_benchmark_times.push_back(get_time())
+static func file_name(x:String)->String:
+	var i:int=x.rfind("/")
+	if i>=0:x=x.substr(i+1)
+	return x
 
-static func end_benchmark()->void:
-	var c:String=s_benchmark_names.pop_back()
-	var t:float=s_benchmark_times.pop_back()
-	var d:float=get_time()
-	print(c.format([t,d-t,d]))
-	
+static func directory_name(x:String)->String:
+	var i:int=x.rfind("/")
+	if i>=0:x=x.substr(0,i)
+	return x
+
+static func combine_path(a:String,b:String)->String:
+	var x:bool=a.ends_with("/");var y:bool=b.ends_with("/")
+	if x and y:a+b.substr(1)
+	elif x or y:return a+b
+	return a+"/"+b
+
+# Event/Signal APIs
+
 static func clear_signal(s:Signal)->void:
 	if !s.is_null() and s.has_connections():
 		for it in s.get_connections():

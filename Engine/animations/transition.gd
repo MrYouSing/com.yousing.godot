@@ -15,15 +15,23 @@ static var timestamp:int=-1
 
 func instant()->bool:return delay==0.0 and duration==0.0
 
-func to_tween(t:Tween,o:Object,k:NodePath,v:Variant)->void:
-	if t==null or o==null:return
+func on_tween(t:Tween,o:Object)->void:
 	var n:int=Engine.get_process_frames();
 	if n!=timestamp:timestamp=n;current=null
 	#
-	if o==current:t=t.parallel()
+	if o==current:t.parallel()
 	elif delay>0.0:t.tween_interval(delay)
 	current=o
+
+func to_tween(t:Tween,o:Object,k:NodePath,v:Variant)->void:
+	if t==null or o==null:return
+	on_tween(t,o)
 	t.tween_property(o,k,v,duration).set_trans(trans).set_ease(ease)
+
+func do_tween(t:Tween,o:Object,m:StringName,a:Variant,b:Variant)->void:
+	if t==null or o==null:return
+	on_tween(t,o)
+	t.tween_method(Callable(o,m),a,b,duration).set_trans(trans).set_ease(ease)
 
 func to_skeleton_modifier_3d(t:Tween,o:SkeletonModifier3D,b:bool)->void:
 	if t==null or o==null:return
@@ -38,13 +46,14 @@ func to_media_volume(t:Tween,o:Media,v:float)->void:
 	#
 	to_tween(t,o,^"volume",v)
 	if v>0.0:
+		if o.volume==v:o.volume=0.0
 		if !o.playing:o.play()
 	else:
 		var cb:=func()->void:if is_zero_approx(o.volume):o.stop()
 		t.finished.connect(cb)
 
-func fade_media_volume(t:Tween,a:Media,b:Media)->void:
-	if t==null or a==null or b==null:return
+func tr_media_volume(t:Tween,a:Media,b:Media)->void:
+	if t==null:return
 	#
 	current=a;to_media_volume(t,a,0.0)
 	current=b;to_media_volume(t,b,1.0)
