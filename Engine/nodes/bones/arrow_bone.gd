@@ -7,7 +7,7 @@ class_name ArrowBone extends BaseBone
 @export var start:Node3D
 @export var end:Node3D
 
-func _update(c:Skeleton3D,b:int,d:float)->void:
+func _on_update(c:Skeleton3D,b:int,d:float)->void:
 	transform=c.get_bone_global_pose(b);
 	if start!=null:
 		var q:Basis;

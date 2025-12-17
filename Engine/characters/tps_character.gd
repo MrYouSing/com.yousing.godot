@@ -6,7 +6,8 @@ class_name TpsCharacter extends CharacterController
 @export var speed:float=5.0
 @export var smooth:Vector2=Vector2(-1,60)
 @export var blend:StringName
-@export var animations:Array[StringName]
+@export var anims:Array[StringName]
+@export var shots:Array[StringName]
 
 var moving:bool
 
@@ -36,14 +37,18 @@ func sync_animation(v:Vector3)->void:
 	var u:Vector2;
 	if lock:u=world_to_animation(v)
 	else:u=Vector2.DOWN
-	animator.set(blend,u)
+	animator.write(blend,u)
 
 func play_animation(k:StringName)->void:
+	var i:int;var b:bool=true
 	if motor!=null:
-		var i:int=animations.find(k)
-		if i>=0:motor.state=i;return
-	motor.state=-1
-	super.play_animation(k)
+		motor.state=-1
+		i=anims.find(k)
+		if i>=0:motor.state=i;b=false
+	i=shots.find(k)
+	if i>=0:animator.play(k,0)
+	#
+	if b:super.play_animation(k)
 
 func _process(delta:float)->void:
 	if motor==null:return

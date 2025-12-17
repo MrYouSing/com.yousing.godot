@@ -11,16 +11,17 @@ class_name SpineBone extends ArrowBone
 
 var poses:Array[Transform3D]
 
-func _process_modification()->void:
+func _process_modification_with_delta(delta:float)->void:
+	var q:Quaternion=spine
 	if start!=null:
-		if end==null:spine=start.basis
+		if end==null:q=start.basis
 		else:
-			var vec:Vector3=end.global_position-start.global_position
-			spine=MathExtension.looking_at(vec)
-			spine=start.global_basis.inverse().get_rotation_quaternion()*spine
+			var v:Vector3=end.global_position-start.global_position
+			q=MathExtension.looking_at(v)
+			q=start.global_basis.inverse().get_rotation_quaternion()*q
 	if !normal.is_zero_approx():
-		spine=MathExtension.looking_at((spine*Vector3.BACK).slide(normal))
-	if spine.is_equal_approx(Quaternion.IDENTITY):return
+		q=MathExtension.looking_at((q*Vector3.BACK).slide(normal))
+	if q.is_equal_approx(Quaternion.IDENTITY):return
 	#
 	var ctx:Skeleton3D=get_skeleton()
 	if ctx==null:return
@@ -29,11 +30,11 @@ func _process_modification()->void:
 		for it in names:indexes.append(ctx.find_bone(it))
 	GodotExtension.get_bone_global_poses(ctx,indexes,poses)
 	#
-	var q:Quaternion;var t:Quaternion;#print(spine)
-	if offset.is_equal_approx(Quaternion.IDENTITY):t=spine
-	else:t=Basis((offset*spine.get_axis()).normalized(),spine.get_angle())
+	var p:Quaternion;
+	if !offset.is_equal_approx(Quaternion.IDENTITY):
+		q=Basis((offset*q.get_axis()).normalized(),q.get_angle())
 	for i in range(b):
 		b=indexes[i];if b<0:continue
-		q=poses[i].basis
-		q=q*Quaternion.IDENTITY.slerp(t,weights[i])
-		GodotExtension.set_bone_global_rotation(ctx,b,q)
+		p=poses[i].basis
+		p=p*Quaternion.IDENTITY.slerp(q,weights[i])
+		GodotExtension.set_bone_global_rotation(ctx,b,p)

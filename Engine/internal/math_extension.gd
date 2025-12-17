@@ -33,3 +33,6 @@ static func looking_at(v:Vector3,n:Vector3=Vector3.UP)->Basis:
 static func get_heading(b:Basis,n:Vector3=Vector3.UP)->Basis:
 	var v:Vector3=b.get_rotation_quaternion()*Vector3.FORWARD
 	v=v.slide(n);return Basis.looking_at(v.normalized(),n)
+
+static func rotate_between(a:Vector3,b:Vector3,n:Vector3=Vector3.UP)->Basis:
+	return looking_at(a,n).inverse()*looking_at(b,n)

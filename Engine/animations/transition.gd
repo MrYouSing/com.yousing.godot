@@ -33,13 +33,14 @@ func do_tween(t:Tween,o:Object,m:StringName,a:Variant,b:Variant)->void:
 	on_tween(t,o)
 	t.tween_method(Callable(o,m),a,b,duration).set_trans(trans).set_ease(ease)
 
-func to_skeleton_modifier_3d(t:Tween,o:SkeletonModifier3D,b:bool)->void:
+func to_skeleton_modifier_3d(t:Tween,o:SkeletonModifier3D,b:bool,d:float=0.1)->void:
 	if t==null or o==null:return
 	#
 	var f:float=0.0;if b:f=1.0
 	o.active=true;to_tween(t,o,^"influence",f)
-	var cb:=func()->void:o.active=o.influence>0.1
-	t.finished.connect(cb)
+	if d>=0.0:# Has deadzone.
+		var a:=func()->void:o.active=o.influence>d
+		t.finished.connect(a)
 
 func to_media_volume(t:Tween,o:Media,v:float)->void:
 	if t==null or o==null:return

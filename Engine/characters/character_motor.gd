@@ -6,6 +6,7 @@ class_name CharacterMotor extends Node
 # For Animations
 var anim:StringName
 var state:int
+var phase:int## Sub-State
 
 func is_on_floor()->bool:
 	return true

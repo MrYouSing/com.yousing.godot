@@ -21,7 +21,7 @@ func update_animation(c:CharacterController,d:Vector3)->void:
 		if lock:motor.direction=c.input_to_world(Vector2.DOWN)
 		else:motor.direction=d
 	if c.animator!=null and !blend.is_empty():
-		c.animator.set(blend,c.world_to_animation(d))
+		c.animator.write(blend,c.world_to_animation(d))
 
 func on_enter()->void:
 	var c:CharacterController=get_character()
@@ -36,7 +36,7 @@ func on_enter()->void:
 	# Apply the dash.
 	if motor!=null:motor.velocity=Vector3.ZERO
 	velocity=d*speed
-	
+	GodotExtension.set_enabled(actor,true)# One-Shot
 
 func on_tick()->void:
 	if motor==null:return

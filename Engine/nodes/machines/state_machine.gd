@@ -5,10 +5,9 @@ class_name StateMachine extends BaseMachine
 @export var states:Dictionary
 @export var transition:Transition
 @export var transitions:TransitionLibrary
-@export var machines:Array[StateMachine]
+@export var machines:Array[BaseMachine]
 
 var idle:StringName
-var tween:Tween
 signal on_state(c:Object,k:StringName,v:Variant,t:Transition)
 
 func _ready()->void:
@@ -16,13 +15,20 @@ func _ready()->void:
 		idle=state
 		var tmp:StringName=state;state=&"*";set_state(tmp)
 
-func get_tween()->Tween:
-	if tween!=null:tween.kill();tween=null#Stop
-	tween=create_tween();return tween
+func abort()->void:
+	state=LangExtension.s_none_string;stop_tween()
+	for it in machines:if it!=null:it.stop_tween()
+
+func broadcast(s:StringName)->void:
+	if s==state:return
+	for it in machines:if it!=null:it._on_event(self,s)
+	state=s# Flush it.
 
 func set_state(s:StringName)->void:
+	# Prepare a state.
+	if states.is_empty():broadcast(s);return
 	if s==state:return
-	if tween!=null:tween.kill();tween=null#Stop
+	stop_tween()
 	# Find a state.
 	var v:Variant=states.get(s)
 	if v==null:
@@ -40,13 +46,12 @@ func _on_dirty()->void:
 	dirty=false
 
 func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
-	state=k
 	if dirty:_on_dirty()
 	#
 	on_execute.emit(self,state,v,t)
-	for it in machines:it.set_state(state)
+	broadcast(k)
 
 # For other systems.
 
-func _on_event(c:Object,e:StringName)->void:
-	set_state(e)
+func play(k:StringName)->void:set_state(k)
+func _on_event(c:Object,e:StringName)->void:set_state(e)

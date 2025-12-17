@@ -2,6 +2,7 @@ class_name LangExtension
 
 const k_empty_string:String=""
 const k_empty_array:Array=[]
+const k_empty_dictionary:Dictionary={}
 const k_empty_callable:Callable=Callable()
 const k_empty_signal:Signal=Signal()
 

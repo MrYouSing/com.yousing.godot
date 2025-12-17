@@ -7,8 +7,7 @@ class_name CharacterController extends Node
 @export var model:Node3D
 @export var input:PlayerInput
 @export var motor:CharacterMotor
-@export var animation:AnimationPlayer
-@export var animator:AnimationTree
+@export var animator:Animator
 
 func set_model(m:Node3D)->void:
 	if m==null:
@@ -16,21 +15,16 @@ func set_model(m:Node3D)->void:
 			pass
 		# Clean up.
 		model=null
-		animation=null;animator=null
+		animator=null
 	else:
 		if m!=model:
 			m.set_parent(root);m.transform=Transform3D.IDENTITY
 		model=m
-		# Link to the animation system.
-		if animation==null:
-			animation=model.get_node_or_null(^"./AnimationPlayer")
-		if animator==null:
-			animator=model.get_node_or_null(^"./AnimationTree")
 		#
+		animator=model.get_node_or_null(^"./Animator")
 		if animator!=null:
-			GodotExtension.set_anim_player(animator,animation)
 			var n:Node=motor;if n==null:n=self
-			GodotExtension.set_expression_node(animator,n)
+			animator.setup(n)
 
 func set_enabled(b:bool)->void:
 	set_process(b)
@@ -60,6 +54,7 @@ func world_to_animation(i:Vector3)->Vector2:
 	return Vector2(-i.x,i.z)
 
 func play_animation(k:StringName)->void:
+	if animator!=null:animator.play(k,0)
 	if motor!=null:motor.anim=k
 
 func _ready()->void:

@@ -2,7 +2,7 @@ class_name ToggleMachine extends BaseMachine
 
 @export_group("Toggle")
 @export var is_on:bool
-func set_on(b:bool)->void:_on_toggle(self,b)
+func toggle(b:bool)->void:_on_toggle(self,b)
 @export var threshold:float=0.5
 
 signal on_toggle(c:Object,b:bool)
@@ -42,10 +42,10 @@ var weight:float=-1.0:
 		weight=x;if x>=0.0:_on_blend(self,x)
 	get:
 		if weight<0.0:
-			if is_on:weight=1.0
-			else:weight=0.0
+			if is_on:return 1.0
+			else:return 0.0
 		return weight
 
 func _on_blend(c:Object,f:float)->void:
-	var b:bool=f>=abs(threshold)
+	var b:bool=f*f>=threshold*threshold
 	_on_toggle(c,b)
