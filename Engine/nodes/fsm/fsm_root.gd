@@ -13,13 +13,13 @@ func _ready()->void:
 	init_root()
 	#
 	for it in states:
-		if it!=null:it.root=self;it.on_init()
+		if it!=null:it.root=self;it._on_init()
 	set_state(states[0])
 
 func _process(delta:float)->void:
 	time.x+=delta;time.y=delta;
-	if state!=null&&state.on_check():
-		state.on_tick()
+	if state!=null&&state._on_check():
+		state._on_tick()
 
 func init_input()->void:
 	if input!=null:
@@ -41,9 +41,17 @@ func get_state(k:String)->FsmState:
 func set_state(v:FsmState)->void:
 	if v!=null:print(v.name)
 	#
-	if state!=null:state.on_exit()
+	if state!=null:state._on_exit()
 	time.x=0.0;state=v;
-	if state!=null:state.on_enter()
+	if state!=null:state._on_enter()
+
+func check_transition(s:FsmState,t:FsmTransition)->bool:
+	if s!=null and t!=null:
+		t.state=s
+		if t.in_time(time.x) and t.is_trigger():
+			set_state(t.next)
+			return false
+	return true
 
 func check_transitions(s:FsmState,t:Array[FsmTransition])->bool:
 	if s!=null and t!=null:

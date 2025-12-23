@@ -8,7 +8,7 @@ class_name Lens extends Resource
 @export var near:float
 @export var far:float
 # For other systems.
-@export var settings:Dictionary
+@export var settings:Dictionary[StringName,Variant]
 
 func better(a:float,b:float)->float:
 	if a>0.0:return a

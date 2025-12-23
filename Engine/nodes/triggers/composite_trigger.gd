@@ -16,4 +16,7 @@ func is_trigger()->bool:
 			if it==null:continue
 			if it.is_trigger():return true
 	return false
-	
+
+func _on_enter()->void:for it in triggers:if it!=null:it._on_enter()
+func _on_tick(d:float)->void:for it in triggers:if it!=null:it._on_tick(d)
+func _on_exit()->void:for it in triggers:if it!=null:it._on_exit()

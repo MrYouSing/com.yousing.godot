@@ -1,6 +1,8 @@
 class_name FsmAction extends FsmState
 
+@export_group("Action")
 @export var view:NodePath
+@export var trigger:BaseTrigger
 
 var character:CharacterController
 var actor:Node
@@ -10,6 +12,6 @@ func get_character()->CharacterController:
 	if root.context is CharacterController:return root.context
 	return null
 
-func on_init()->void:
+func _on_init()->void:
 	character=get_character()
 	if !view.is_empty():actor=get_node_or_null(view)

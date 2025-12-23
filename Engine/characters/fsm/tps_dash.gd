@@ -6,9 +6,9 @@ class_name TpsDash extends FsmDash
 func update_animation(c:CharacterController,d:Vector3)->void:
 	super.update_animation(c,d)
 
-func on_enter()->void:
+func _on_enter()->void:
 	#
 	var c:TpsCharacter=get_character()
 	lock=c.lock
 	#
-	super.on_enter()
+	super._on_enter()

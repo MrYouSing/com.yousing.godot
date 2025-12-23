@@ -1,5 +1,6 @@
 class_name ToggleTrigger extends BaseTrigger
 
+@export_group("Toggle")
 @export var is_on:bool
 @export var trigger:BaseTrigger
 

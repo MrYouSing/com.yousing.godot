@@ -16,15 +16,15 @@ func reload()->void:
 	old_keys.clear()
 	new_keys.clear()
 
-var timestamp:int=-1
+var _timestamp:int=-1
 func try_update(k:Key)->void:
 	#
 	if k!=KEY_UNKNOWN and !src_keys.has(k):
 		src_keys.append(k);dst_keys.append(k)
 	#
 	var n:int=Engine.get_process_frames()
-	if(n!=timestamp):
-		timestamp=n
+	if(n!=_timestamp):
+		_timestamp=n
 		do_update()
 
 func do_update()->void:

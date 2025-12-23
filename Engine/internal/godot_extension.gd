@@ -1,30 +1,5 @@
 class_name GodotExtension
 
-# Engine APIs
-
-static var s_engine_frames:int=-1
-static var s_engine_time:float=-1.0
-static var s_benchmark_names:Array[String]
-static var s_benchmark_times:Array[float]
-
-static func get_frames()->int:
-	if s_engine_frames>=0:return s_engine_frames
-	return Engine.get_process_frames()
-
-static func get_time()->float:
-	if s_engine_time>=0.0:return s_engine_time
-	return Time.get_ticks_msec()*0.001
-
-static func begin_benchmark(c:String)->void:
-	s_benchmark_names.push_back(c)
-	s_benchmark_times.push_back(get_time())
-
-static func end_benchmark()->void:
-	var c:String=s_benchmark_names.pop_back()
-	var t:float=s_benchmark_times.pop_back()
-	var d:float=get_time()
-	print(c.format([t,d-t,d]))
-
 # Scene APIs
 
 static var s_root:Node
@@ -58,10 +33,18 @@ static func add_node(n:Node,p:Node=null,b:bool=true)->void:
 
 # Animation APIs
 
+static func get_anim_player(t:AnimationTree)->AnimationPlayer:
+	if t==null:return null
+	return t.get_node_or_null(t.anim_player)
+
 static func set_anim_player(t:AnimationTree,a:AnimationPlayer,b:bool=false)->void:
 	if t==null or a==null:return
 	if !b and !t.anim_player.is_empty():return
 	t.anim_player=t.get_path_to(a)
+
+static func get_expression_node(t:AnimationTree)->Node:
+	if t==null:return null
+	return t.get_node_or_null(t.advance_expression_base_node)
 
 static func set_expression_node(t:AnimationTree,a:Node,b:bool=false)->void:
 	if t==null or a==null:return

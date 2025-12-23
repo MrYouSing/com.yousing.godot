@@ -11,11 +11,11 @@ var m_axes:Array[Vector2]
 var m_previous:int
 var m_buttons:int
 
-var timestamp:int=-1
+var _timestamp:int=-1
 func try_update()->void:
-	var n:int=Engine.get_process_frames()
-	if(n!=timestamp):
-		timestamp=n
+	var n:int=Application.get_frames()
+	if n!=_timestamp:
+		_timestamp=n
 		do_update()
 
 func do_update()->void:

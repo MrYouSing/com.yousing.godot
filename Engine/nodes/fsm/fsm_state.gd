@@ -7,19 +7,19 @@ var root:FsmRoot
 
 # engine methods.
 
-func on_init()->void:
+func _on_init()->void:
 	pass
 
-func on_check()->bool:
+func _on_check()->bool:
 	return root.check_transitions(self,transitions)
 
 # fsm methods.
 
-func on_enter()->void:
+func _on_enter()->void:
 	pass
 
-func on_tick()->void:
+func _on_tick()->void:
 	pass
 
-func on_exit()->void:
+func _on_exit()->void:
 	pass

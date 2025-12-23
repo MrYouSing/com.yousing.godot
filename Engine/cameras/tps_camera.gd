@@ -72,11 +72,11 @@ func ray_cast(a:Vector3,b:Vector3)->Vector3:
 
 func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 	var l:Lens=v;if l==null:return
-	if l.settings.has(^"lock"):lock=l.settings[^"lock"]
+	if l.settings.has(&"lock"):lock=l.settings.lock
 	if t==null or t.instant():
 		l.direct_to_camera_3d(cam)
-		if l.settings.has(^"arm"):arm=l.settings[^"arm"]
+		if l.settings.has(&"arm"):arm=l.settings.arm
 	else:#Tween
 		var tmp=c.get_tween()
 		l.tween_to_camera_3d(cam,tmp,t);Transition.current=self
-		if l.settings.has(^"arm"):t.to_tween(tmp,self,^"arm",l.settings[^"arm"])
+		if l.settings.has(&"arm"):t.to_tween(tmp,self,^"arm",l.settings.arm)

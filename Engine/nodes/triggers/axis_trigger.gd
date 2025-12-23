@@ -7,12 +7,12 @@ class_name AxisTrigger extends InputTrigger
 
 var value:bool
 var previous:bool
-var timestamp:int=-1
+var _timestamp:int=-1
 
 func try_update()->void:
-	var n:int=GodotExtension.get_frames()
-	if n!=timestamp:
-		timestamp=n
+	var n:int=Application.get_frames()
+	if n!=_timestamp:
+		_timestamp=n
 		do_update()
 
 func vector()->Vector2:

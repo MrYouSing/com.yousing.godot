@@ -1,0 +1,35 @@
+## A base class for scene queries.
+class_name BaseDetector extends Node
+
+@export_group("Detection")
+@export var root:Node
+@export var forward:Vector3=Vector3.MODEL_FRONT
+@export_flags_3d_physics var mask:int=1
+@export var flags:int=-1
+@export var exclusion:Array[Node]
+
+var target:Object
+var targets:Array[Object]
+var dirty:bool=true
+var exclude:Array[RID]
+
+func _on_dirty()->void:
+	dirty=false
+	#
+	exclude.clear();
+	for it in exclusion:
+		if it !=null and it.has_method(&"get_rid"):exclude.append(it.get_rid())
+
+func _on_find(d:Dictionary)->void:
+	if !d.is_empty():targets.append(d.collider)
+
+func _on_miss(d:Dictionary)->void:
+	if !d.is_empty():targets.erase(d.collider)
+
+func clear()->void:
+	target=null;targets.clear()
+
+func detect()->bool:
+	if dirty:_on_dirty()
+	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
+	return false

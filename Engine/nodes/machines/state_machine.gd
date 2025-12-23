@@ -2,7 +2,7 @@ class_name StateMachine extends BaseMachine
 
 @export_group("State")
 @export var state:StringName
-@export var states:Dictionary
+@export var states:Dictionary[StringName,Variant]
 @export var transition:Transition
 @export var transitions:TransitionLibrary
 @export var machines:Array[BaseMachine]

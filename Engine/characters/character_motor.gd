@@ -8,6 +8,11 @@ var anim:StringName
 var state:int
 var phase:int## Sub-State
 
+var exit_time:Callable
+var exit_func:Callable
+func _get(k:StringName)->Variant:
+	return AnimatorController.call_parse(k,0,exit_time,exit_func)
+
 func is_on_floor()->bool:
 	return true
 
