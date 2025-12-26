@@ -14,12 +14,11 @@ class_name CompositeBone extends Node
 @export_range(0.0,1.0,0.001)var influence:float=1.0:
 	set(x):
 		influence=x;
-		var s:float=scale;var f:float
+		var f:float=scale*x
 		var i:int=-1;for it in bones:
 			i+=1;if (mask&(1<<i))==0:continue
 			if it==null:continue
 			#
-			f=s*x
 			if it is BaseBone:it._on_blend(self,f)
 			else:it.influence=f;active=!is_zero_approx(f)
 @export_group("Composite")

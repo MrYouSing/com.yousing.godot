@@ -3,6 +3,7 @@ class_name GodotExtension
 # Scene APIs
 
 static var s_root:Node
+static var s_hide:Node
 static var s_dimension:int=3
 
 static func destroy(o:Object)->void:
@@ -30,6 +31,11 @@ static func add_node(n:Node,p:Node=null,b:bool=true)->void:
 		n.global_transform=t
 	else:
 		p.add_child(n)
+
+static func remove_node(n:Node)->void:
+	if n==null:return
+	#
+	n.reparent(null,false);n.queue_free()
 
 # Animation APIs
 
@@ -62,40 +68,3 @@ static func set_bone_global_rotation(c:Skeleton3D,i:int,q:Quaternion)->void:
 	var p:Transform3D=c.get_bone_global_pose(i)
 	p.basis=Basis(q)
 	c.set_bone_global_pose(i,p)
-
-# Physics APIs
-
-static var shared_rids:Array[RID]
-static var shared_ray:=PhysicsRayQueryParameters3D.new()
-static var shared_shape:=PhysicsShapeQueryParameters3D.new()
-static var shared_sphere:=SphereShape3D.new()
-
-static func ray_cast(c:PhysicsDirectSpaceState3D,a:Vector3,b:Vector3,m:int,e:Array[RID],f:int=-1)->Dictionary:
-	shared_ray.from=a;shared_ray.to=b
-	shared_ray.collision_mask=m;shared_ray.exclude=e
-	# Flags
-	shared_ray.collide_with_areas  =(f&0x01)!=0
-	shared_ray.collide_with_bodies =(f&0x02)!=0
-	shared_ray.hit_back_faces      =(f&0x04)!=0
-	shared_ray.hit_from_inside     =(f&0x08)!=0
-	return c.intersect_ray(shared_ray)
-
-static func shape_cast(c:PhysicsDirectSpaceState3D,a:Vector3,b:Vector3,s:Shape3D,m:int,e:Array[RID],f:int=-1)->Dictionary:
-	shared_shape.transform=Transform3D(Basis.IDENTITY,a)
-	shared_shape.motion=b-a
-	shared_shape.collision_mask=m;shared_shape.exclude=e
-	# Flags
-	shared_shape.collide_with_areas  =(f&0x01)!=0
-	shared_shape.collide_with_bodies =(f&0x02)!=0
-	#
-	shared_shape.shape=s;shared_shape.margin=0.0
-	var tmp:PackedFloat32Array=c.cast_motion(shared_shape)
-	var map:Dictionary={}
-	if tmp[0]!=1.0 and tmp[1]!=0.0:
-		map.position=a.lerp(b,tmp[0])
-		map.normal=(a-b).normalized()
-	return map;
-
-static func sphere_cast(c:PhysicsDirectSpaceState3D,a:Vector3,b:Vector3,r:float,m:int,e:Array[RID],f:int=-1)->Dictionary:
-	shared_sphere.radius=r
-	return shape_cast(c,a,b,shared_sphere,m,e,f)

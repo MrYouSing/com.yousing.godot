@@ -25,7 +25,7 @@ func _process_modification_with_delta(delta:float)->void:
 	#
 	var ctx:Skeleton3D=get_skeleton()
 	if ctx==null:return
-	var b:int=indexes.size();if names.size()!=b:
+	var b:int=names.size();if indexes.size()!=b:
 		indexes.clear()
 		for it in names:indexes.append(ctx.find_bone(it))
 	GodotExtension.get_bone_global_poses(ctx,indexes,poses)
@@ -33,7 +33,7 @@ func _process_modification_with_delta(delta:float)->void:
 	var p:Quaternion;
 	if !offset.is_equal_approx(Quaternion.IDENTITY):
 		q=Basis((offset*q.get_axis()).normalized(),q.get_angle())
-	for i in range(b):
+	for i in indexes.size():
 		b=indexes[i];if b<0:continue
 		p=poses[i].basis
 		p=p*Quaternion.IDENTITY.slerp(q,weights[i])

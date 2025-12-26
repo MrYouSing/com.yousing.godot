@@ -16,6 +16,13 @@ var info:Dictionary[StringName,Variant]={}
 
 # State Machine
 
+func has_layer(l:int)->bool:
+	return l>=0 and l<machines.size()
+
+func get_layer(l:int)->AnimatorLayer:
+	if controller==null:return null
+	return controller.get_layer(l)
+
 func get_machine(l:int)->Object:
 	if l>=0 and l<machines.size():return machines[l]
 	else:return null
@@ -135,7 +142,8 @@ func setup(n:Node)->void:
 		GodotExtension.set_expression_node(tree,n)
 		if controller!=null:
 			machines.clear()
-			for it in controller.layers:if it!=null:machines.append(tree.get(it.name))
+			for it in controller.layers:
+				if it!=null:machines.append(read(it.name))
 	#
 	if controller!=null:controller.setup(self)
 
@@ -145,24 +153,31 @@ func teardown()->void:
 	player=null;tree=null;machines.clear()
 
 func play(k:StringName,l:int=-1,f:float=0.25)->void:
-	#
-	if (features&0x01)!=0 and controller!=null:
-		if l<0:controller.exit_sync(self,-1,false)
-		else:controller.exit_sync(self,1<<l,false)
+	if(features&0x01)!=0:stop(l)
 	#
 	var b:bool=true
 	if f<=0.0:
-		if l>=0:
-			var it=get_machine(l)
-			if it!=null:it.start(k,b)
+		if has_layer(l):
+			var m:Object=machines[l]
+			if m!=null:m.start(k,b)
 		else:
-			for it in machines:
+			var i:int=-1;for it in machines:
+				i+=1;if l&(1<<i)==0:continue
+				#
 				if it!=null:it.start(k,b)
 	else:
-		if l>=0:
-			try_travel(get_machine(l),k,b)
+		if has_layer(l):
+			try_travel(machines[l],k,b)
 		else:
-			for it in machines:try_travel(it,k,b)
+			var i:int=-1;for it in machines:
+				i+=1;if l&(1<<i)==0:continue
+				#
+				try_travel(it,k,b)
+
+func stop(l:int=-1)->void:
+	if controller!=null:
+		if has_layer(l):controller.exit_sync(self,1<<l,false)
+		else:controller.exit_sync(self,l,false)
 
 func dispatch(e:StringName)->void:
 	if machine!=null:machine._on_event(self,e)

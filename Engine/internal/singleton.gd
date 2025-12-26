@@ -26,7 +26,7 @@ static func try_instance(k:StringName,c:Callable)->Object:
 		else:i=c.call()
 		# Ensure an instance.
 		if i!=null and get_instance(k)==null:
-			print("Register a {0} by {1} without init()",[k,i])
+			print("Register a {0} by {1} without init()".format([k,i]))
 			set_instance(k,i)
 	return i
 
@@ -43,3 +43,21 @@ static func exit_instance(k:StringName,v:Object)->bool:
 	var i:Object=get_instance(k)
 	if i==v:set_instance(k,null);return true
 	else:return false
+
+#const k_keyword:StringName=&"YouSing_@"
+#static var s_create:Callable=func()->Object:
+#	var i:@=@.new();i.name=k_keyword
+#	GodotExtension.add_node(i,null,false)
+#	i._ready();return i
+#
+#static var instance:@:
+#	get:return Singleton.try_instance(k_keyword,s_create)
+#	set(x):Singleton.set_instance(k_keyword,x)
+#
+#func _ready()->void:
+#	if Singleton.init_instance(k_keyword,self):
+#		pass
+#
+#func _exit_tree()->void:
+#	if Singleton.exit_instance(k_keyword,self):
+#		pass

@@ -18,8 +18,8 @@ func _on_event(c:Object,e:StringName)->void:
 	if keywords.has(e):f=1.0
 	if transitions!=null:t=transitions.eval(c.state,e)
 	#
-	if t!=null:curve=t.curve;t.do_tween(get_tween(),self,&"blend",weight,f)
-	else:get_tween().tween_method(blend,weight,f,fade)
+	if t!=null:curve=t.curve;t.do_tween(play_tween(),self,blend,weight,f)
+	else:play_tween().tween_method(blend,weight,f,fade)
 
 func _on_blend(c:Object,f:float)->void:
 	weight=f

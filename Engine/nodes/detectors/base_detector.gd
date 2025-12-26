@@ -19,6 +19,12 @@ func _on_dirty()->void:
 	exclude.clear();
 	for it in exclusion:
 		if it !=null and it.has_method(&"get_rid"):exclude.append(it.get_rid())
+	#
+	var i:int=0;var m:int=targets.size();
+	var it:Object;while i<m:
+		it=targets[i];if it!=null and exclude.has(it.get_rid()):
+			targets.remove_at(i);--i;--m
+		++i
 
 func _on_find(d:Dictionary)->void:
 	if !d.is_empty():targets.append(d.collider)

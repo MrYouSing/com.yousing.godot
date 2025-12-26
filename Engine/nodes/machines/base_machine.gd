@@ -19,12 +19,10 @@ func remove_target(t:Node)->void:
 func stop_tween()->void:
 	if tween!=null:tween.kill();tween=null#Stop
 
-func get_tween()->Tween:
+func play_tween()->Tween:
 	if tween!=null:tween.kill();tween=null#Stop
 	#
-	tween=create_tween();
-	tween.finished.connect(stop_tween,CONNECT_ONE_SHOT)
-	return tween
+	tween=create_tween();return tween
 
 # IPlayable
 

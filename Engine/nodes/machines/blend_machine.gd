@@ -32,8 +32,8 @@ func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 	if t==null or t.instant():
 		_on_blend(c,v)
 	elif c!=null:
-		thiz=c;var tmp:Tween=c.get_tween()
-		t.do_tween(tmp,self,&"blend",weight,v)
+		thiz=c;
+		t.do_tween(Tweenable.cast_tween(c),self,blend,weight,v)
 
 func _on_toggle(c:Object,b:bool)->void:
 	var f:float=0.0;if b:f=1.0

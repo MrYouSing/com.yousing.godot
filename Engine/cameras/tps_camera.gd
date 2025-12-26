@@ -65,8 +65,8 @@ func ray_cast(a:Vector3,b:Vector3)->Vector3:
 	var rids:Array[RID];
 	for it in exclude:rids.append(it.get_rid())
 	var res:Dictionary;
-	if ball>0.0:res=GodotExtension.sphere_cast(get_world_3d().direct_space_state,a,b,ball,-1,rids,-1)
-	else:res=GodotExtension.ray_cast(get_world_3d().direct_space_state,a,b,-1,rids,-1)
+	if ball>0.0:res=Physics.sphere_cast(get_world_3d().direct_space_state,a,b,ball,-1,rids,-1)
+	else:res=Physics.ray_cast(get_world_3d().direct_space_state,a,b,-1,rids,-1)
 	if res:b=res.position+res.normal*ball
 	return b
 
@@ -77,6 +77,6 @@ func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 		l.direct_to_camera_3d(cam)
 		if l.settings.has(&"arm"):arm=l.settings.arm
 	else:#Tween
-		var tmp=c.get_tween()
+		var tmp=Tweenable.cast_tween(c)
 		l.tween_to_camera_3d(cam,tmp,t);Transition.current=self
 		if l.settings.has(&"arm"):t.to_tween(tmp,self,^"arm",l.settings.arm)

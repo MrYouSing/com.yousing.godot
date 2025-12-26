@@ -8,7 +8,7 @@ func update_animation(c:CharacterController,d:Vector3)->void:
 
 func _on_enter()->void:
 	#
-	var c:TpsCharacter=get_character()
+	var c:TpsController=get_character()
 	lock=c.lock
 	#
 	super._on_enter()

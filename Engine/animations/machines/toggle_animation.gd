@@ -18,6 +18,6 @@ func _on_event(c:Object,e:StringName)->void:
 	if keywords.has(e):f=1.0
 	if transitions!=null:t=transitions.eval(c.state,e)
 	#
-	if t!=null:curve=t.curve;t.to_tween(get_tween(),self,^"weight",f)
-	elif fade>0.0:get_tween().tween_property(self,^"weight",f,fade)
+	if t!=null:curve=t.curve;t.to_tween(play_tween(),self,^"weight",f)
+	elif fade>0.0:play_tween().tween_property(self,^"weight",f,fade)
 	else:_on_toggle(c,f>0.5)

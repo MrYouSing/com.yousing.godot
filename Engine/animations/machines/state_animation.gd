@@ -4,7 +4,7 @@ class_name StateAnimation extends StateMachine
 @export_group("Animation")
 @export var exits:Array[StringName]
 
-func exit()->void:set_state(idle)
+func exit()->void:stop_tween();set_state(idle)
 
 func _on_animation(a:Tween,t:Transition,o:Object,d:Dictionary)->void:
 	if o==null or d==null:return
@@ -15,6 +15,7 @@ func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 	#
 	if typeof(v)==TYPE_DICTIONARY:
 		var d:Dictionary=v as Dictionary;
-		if tween==null:tween=get_tween()
+		if tween==null:tween=play_tween()
 		for s in d:_on_animation(tween,t,get_node_or_null(s),d.get(s))
 		if exits.has(k):tween.finished.connect(exit)
+		else:tween.finished.connect(stop_tween)

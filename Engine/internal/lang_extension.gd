@@ -34,12 +34,18 @@ static func combine_path(a:String,b:String)->String:
 	elif x or y:return a+b
 	return a+"/"+b
 
+# Collection APIs
+
+static func set_item(a:Array,i:int,v:Variant)->void:
+	if i>=a.size():a.append(v)
+	else:a[i]=v
+
 # Event/Signal APIs
 
 static func clear_signal(s:Signal)->void:
 	if !s.is_null() and s.has_connections():
 		for it in s.get_connections():
-			it.disconnet(it.callable)
+			s.disconnect(it.callable)
 
 static func bake_signal(c:Object,k:StringName,t:Array,m:Array[StringName])->Signal:
 	if !c.has_user_signal(k):c.add_user_signal(k)

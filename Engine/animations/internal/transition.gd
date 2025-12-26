@@ -28,10 +28,10 @@ func to_tween(t:Tween,o:Object,k:NodePath,v:Variant)->void:
 	on_tween(t,o)
 	t.tween_property(o,k,v,duration).set_trans(trans).set_ease(ease)
 
-func do_tween(t:Tween,o:Object,m:StringName,a:Variant,b:Variant)->void:
+func do_tween(t:Tween,o:Object,c:Callable,a:Variant,b:Variant)->void:
 	if t==null or o==null:return
 	on_tween(t,o)
-	t.tween_method(Callable(o,m),a,b,duration).set_trans(trans).set_ease(ease)
+	t.tween_method(c,a,b,duration).set_trans(trans).set_ease(ease)
 
 func to_skeleton_modifier_3d(t:Tween,o:SkeletonModifier3D,b:bool,d:float=0.1)->void:
 	if t==null or o==null:return

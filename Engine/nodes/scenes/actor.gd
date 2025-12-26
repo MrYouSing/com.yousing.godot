@@ -30,7 +30,7 @@ func stop_tween(b:bool=false)->void:
 		if b and tween.is_valid():tween.finished.emit()
 		tween.kill();tween=null#Stop
 
-func get_tween(b:bool=false)->Tween:
+func play_tween(b:bool=false)->Tween:
 	if tween!=null:
 		if b and tween.is_valid():tween.finished.emit()
 		tween.kill();tween=null#Stop

@@ -34,8 +34,7 @@ func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 		match typeof(v):
 			TYPE_BOOL:_on_toggle(c,v)
 			TYPE_FLOAT:
-				var tmp:Tween=c.get_tween()
-				t.to_tween(tmp,self,^"weight",v)
+				t.to_tween(Tweenable.cast_tween(c),self,^"weight",v)
 
 var weight:float=-1.0:
 	set(x):

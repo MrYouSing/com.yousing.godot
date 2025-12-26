@@ -1,4 +1,4 @@
-class_name TpsCharacter extends CharacterController
+class_name TpsController extends CharacterController
 
 @export_group("Arguments")
 @export var lock:bool

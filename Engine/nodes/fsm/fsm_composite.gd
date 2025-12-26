@@ -7,12 +7,12 @@ class_name FsmComposite extends FsmState
 @export var blacklist:Array[StringName]
 
 func do_check(l:Array[FsmState])->bool:
-	for i in l:
-		if i==null:continue
-		i.root=root
-		for t in i.transitions:
+	for it in l:
+		if it==null:continue
+		it.root=root
+		for t in it.transitions:
 			if t==null or t.next==null or blacklist.has(t.next.name):continue
-			if root.check_transition(i,t):return false
+			if root.check_transition(it,t):return false
 	return true
 
 func _on_check()->bool:

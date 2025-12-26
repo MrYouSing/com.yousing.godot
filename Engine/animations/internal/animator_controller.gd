@@ -62,7 +62,7 @@ func exit_info(c:Animator,o:Dictionary[StringName,Variant],k:StringName,d:Dictio
 func exit_time(c:Animator,k:StringName,l:int=0)->bool:
 	if c==null:return false
 	#
-	var a:AnimatorLayer=get_layer(l)
+	var a:AnimatorLayer=layers[l]
 	if a!=null and exit_info(c,a.exit_times,k,c.info,l):
 		return c.info.time>=c.info.argument
 	return false
@@ -70,7 +70,7 @@ func exit_time(c:Animator,k:StringName,l:int=0)->bool:
 func exit_func(c:Animator,k:StringName,l:int=0)->bool:
 	if c==null:return false
 	#
-	var a:AnimatorLayer=get_layer(l)
+	var a:AnimatorLayer=layers[l]
 	if a!=null and exit_info(c,a.exit_funcs,k,c.info,l):
 		return c.context.call(c.info.argument,c.info)
 	return false
@@ -78,7 +78,7 @@ func exit_func(c:Animator,k:StringName,l:int=0)->bool:
 func exit_eval(c:Animator,l:int=0)->bool:
 	if c==null:return false
 	#
-	var a:AnimatorLayer=get_layer(l)
+	var a:AnimatorLayer=layers[l]
 	if a!=null:
 		var m:Object=c.get_machine(l)
 		if m is AnimationNodeStateMachinePlayback:
@@ -92,16 +92,16 @@ func exit_eval(c:Animator,l:int=0)->bool:
 func exit_sync(c:Animator,m:int,b:bool)->void:
 	if c==null:return
 	#
-	var a:AnimatorLayer;for i in range(c.machines.size()):
+	var a:AnimatorLayer;for i in c.machines.size():
 		if m&(1<<i)==0:continue
-		a=get_layer(i);if a==null:continue
+		a=layers[i];if a==null:continue
 		#
 		c.write(a.exit,b)
 
 func exit_tick(c:Animator,m:int)->void:
 	if c==null:return
 	#
-	var a:AnimatorLayer;for i in range(c.machines.size()):
+	var a:AnimatorLayer;for i in c.machines.size():
 		if m&(1<<i)==0:continue
 		#
-		if exit_eval(c,i):c.write(get_layer(i).exit,true)
+		if exit_eval(c,i):c.write(layers[i].exit,true)

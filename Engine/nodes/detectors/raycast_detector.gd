@@ -13,7 +13,7 @@ func detect()->bool:
 	var n:Node3D=root;var m:Transform3D=n.global_transform
 	var c:PhysicsDirectSpaceState3D=n.get_world_3d().direct_space_state
 	_origin=m.origin;_direction=m.basis.get_rotation_quaternion()*forward
-	var r:Dictionary=GodotExtension.ray_cast(c,_origin,_origin+_direction*distance.y,mask,exclude,flags)
+	var r:Dictionary=Physics.ray_cast(c,_origin,_origin+_direction*distance.y,mask,exclude,flags)
 	if !r.is_empty():
 		clear()
 		if (r.position-_origin).length_squared()>=distance.x*distance.x:

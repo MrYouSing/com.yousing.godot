@@ -23,14 +23,13 @@ func to_text()->String:
 	if input==null:return LangExtension.s_none_string
 	#
 	var tab="    "
-	var tmp=name+"\n";var i:int
+	var tmp=name+"\n";
 	tmp+="Axes:\n"
-	i=-1;for it in range(input.axes.size()/2):
-		i+=1;
+	for i in input.axes.size()/2:
 		tmp+=tab+"{0}/{1}:{2}\n".format([get_axis(2*i),get_axis(2*i+1),"%0.2f"%input.axis(i)])
 	tmp+="Buttons:\n"
-	i=-1;for it in input.buttons:
-		i+=1;tmp+=tab+get_button(i)+":"
+	for i in input.buttons.size():
+		tmp+=tab+get_button(i)+":"
 		tmp+=to_button(i)
 		tmp+="\n"
 	return tmp
