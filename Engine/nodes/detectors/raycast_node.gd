@@ -11,12 +11,13 @@ var _done:bool
 var _position:Vector3
 var _rotation:Basis
 
-func _on_find(d:Dictionary)->void:
+func _on_find_hit(d:Dictionary)->void:
+	super._on_find_hit(d)
 	if !d.is_empty():
 		_done=true;_position=d.position
 		_on_plane(d.normal)
 
-func _on_miss(d:Dictionary)->void:
+func _on_miss_hit(d:Dictionary)->void:
 	if !d.is_empty():
 		_done=true;_position=_origin+_direction*distance.x
 

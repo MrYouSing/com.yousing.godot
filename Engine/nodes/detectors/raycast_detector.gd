@@ -17,8 +17,8 @@ func detect()->bool:
 	if !r.is_empty():
 		clear()
 		if (r.position-_origin).length_squared()>=distance.x*distance.x:
-			target=r.collider;_on_find(r)
+			target=r.collider;_on_find_hit(r)
 			return true
 		else:
-			_on_miss(r)
+			_on_miss_hit(r)
 	return false

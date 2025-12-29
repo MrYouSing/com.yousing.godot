@@ -36,9 +36,20 @@ static func combine_path(a:String,b:String)->String:
 
 # Collection APIs
 
+static func get_item(a:Array,i:int,v:Variant)->Variant:
+	if i>=0 and i<a.size():return a[i]
+	return v
+
 static func set_item(a:Array,i:int,v:Variant)->void:
 	if i>=a.size():a.append(v)
 	else:a[i]=v
+
+static func remove_range(a:Array,o:int,c:int=-1)->void:
+	var e:int=a.size()-o;if c<0 or c>e:c=e
+	e=e-c;if e>0:# Move next slice.
+		for i in e:a[o]=a[o+c];o+=1
+	o=o+c-1
+	for i in c:a.remove_at(o-i)
 
 # Event/Signal APIs
 

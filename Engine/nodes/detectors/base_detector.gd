@@ -10,6 +10,7 @@ class_name BaseDetector extends Node
 
 var target:Object
 var targets:Array[Object]
+var infos:Dictionary[RID,Physics.HitInfo]
 var dirty:bool=true
 var exclude:Array[RID]
 
@@ -26,14 +27,37 @@ func _on_dirty()->void:
 			targets.remove_at(i);--i;--m
 		++i
 
-func _on_find(d:Dictionary)->void:
-	if !d.is_empty():targets.append(d.collider)
+func _on_find_hit(d:Dictionary)->void:
+	if !d.is_empty():
+		apply(Physics.HitInfo.from_dict(d))
+		_on_find(d.collider)
 
-func _on_miss(d:Dictionary)->void:
-	if !d.is_empty():targets.erase(d.collider)
+func _on_miss_hit(d:Dictionary)->void:
+	if !d.is_empty():
+		_on_miss(d.collider)
+		if !infos.is_empty():erase(d.collider)
+
+func _on_find(o:Object)->void:
+	targets.append(o)
+
+func _on_miss(o:Object)->void:
+	targets.erase(o)
 
 func clear()->void:
 	target=null;targets.clear()
+	infos.clear()
+
+func apply(h:Physics.HitInfo)->void:
+	if h==null||!h.rid.is_valid():return
+	infos[h.rid]=h
+
+func erase(o:Object)->void:
+	if o==null and !o.has_method("get_rid"):return
+	infos.erase(o.get_rid())
+
+func fetch(o:Object)->Physics.HitInfo:
+	if o==null and !o.has_method("get_rid"):return null
+	return infos.get(o.get_rid(),null)
 
 func detect()->bool:
 	if dirty:_on_dirty()

@@ -7,6 +7,8 @@ class_name FsmRoot extends FsmNode
 var state:FsmState
 var time:Vector2
 
+signal on_change(a:FsmState,b:FsmState)
+
 func _ready()->void:
 	#
 	init_input()
@@ -38,8 +40,12 @@ func get_state(k:String)->FsmState:
 		if it!=null and it.name==k:return it
 	return null
 
-func set_state(v:FsmState)->void:
-	if v!=null:print(v.name)
+func set_state(v:FsmState,e:bool=true)->void:
+	#
+	if e and on_change.has_connections():
+		var o:FsmState=state
+		on_change.emit(o,v)
+		if state!=o:return
 	#
 	if state!=null:state._on_exit()
 	time.x=0.0;state=v;

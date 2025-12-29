@@ -25,6 +25,7 @@ func _ready()->void:
 	if camera!=null:
 		camera.rotation=Vector3(0.0,PI,0.0)
 		if camera is Camera3D:cam=camera
+		else:cam=camera.get_node_or_null(^"./Camera")
 	if cursor:Input.mouse_mode=Input.MOUSE_MODE_CAPTURED
 
 func _unhandled_input(event: InputEvent)->void:

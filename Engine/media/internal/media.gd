@@ -77,6 +77,15 @@ func open(p:StringName)->void:
 		if album!=null:player.stream=album.load(p)
 		else:player.stream=load("res://"+p)
 
+func emit(o:Variant)->void:
+	if !is_inited:init()
+	if player==null:return
+	#
+	match typeof(o):
+		TYPE_STRING_NAME:open(o);play()
+		TYPE_INT:player.stream=album.clips[o];play()
+		_:if o is Album:player.stream=o.random();play()
+
 func play()->void:
 	if !is_inited:init()
 	#

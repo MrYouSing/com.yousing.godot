@@ -40,10 +40,10 @@ func asset(k:StringName)->Resource:
 func pool(k:StringName,v:Node=null)->Collections.Pool:
 	var p:Collections.Pool=pools.get(k,null)
 	if p==null and v!=null:
-		p=Collections.Pool.new();
+		p=Collections.Pool.new(v)
 		GodotExtension.add_node(v,hidden,false)
 		#
-		v.name=k;p.source=v;pools[k]=p
+		v.name=k;pools[k]=p
 	return p
 
 func prefab(k:StringName)->Node:

@@ -26,17 +26,19 @@ func detect()->bool:
 
 func _on_enter(o:Object)->void:
 	if dirty:_on_dirty()
-	if exclude.has(o.get_rid()):return
-	#
+	var r:RID=o.get_rid();if exclude.has(r):return
 	var i:int=targets.find(o);if i>=0:return
-	targets.append(o)
+	#
+	apply(Physics.HitInfo.from_points(o,GodotExtension.get_global_position(o),GodotExtension.get_global_position(self)))
+	_on_find(o)
 
 func _on_exit(o:Object)->void:
 	if dirty:_on_dirty()
-	if exclude.has(o.get_rid()):return
-	#
+	var r:RID=o.get_rid();if exclude.has(r):return
 	var i:int=targets.find(o);if i<0:return
-	targets.remove_at(i)
+	#
+	_on_miss(o)
+	infos.erase(r)
 
 func _ready()->void:
 	setup(root)

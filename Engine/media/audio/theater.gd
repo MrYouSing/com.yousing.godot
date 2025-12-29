@@ -14,19 +14,38 @@ static var instance:Theater:
 @export_group("Theater")
 @export var bgm:Audio
 @export var sfx:Audio
+@export var voice:Audio
 @export var fade:Transition
+@export var capacity:int
+
+signal on_speak(o:Node,k:StringName)
 
 var old:Audio
+var sfx_ring:Collections.Ring
+var voice_ring:Collections.Ring
 
 func _ready()->void:
 	if Singleton.init_instance(k_keyword,self):
 		if bgm==null:bgm=Audio.create(1,self);bgm.loop=true
 		if sfx==null:sfx=Audio.create(GodotExtension.s_dimension,self)
+		if voice==null:voice=Audio.create(1,self);
 		if fade==null:fade=Transition.new()
+		if capacity>0:
+			sfx_ring=Collections.Ring.new(capacity)
+			voice_ring=Collections.Ring.new(capacity)
 
 func _exit_tree()->void:
 	if Singleton.exit_instance(k_keyword,self):
 		pass
+
+func get_audio(a:Audio,p:Vector3,r:Collections.Ring=null)->Audio:
+	if a!=null and a.player!=null:
+		var c:Audio
+		if r==null:c=a.clone(self,false)
+		else:c=r.pop();if c==null:c=a.clone(self,false);r.place(c)
+		#
+		GodotExtension.set_global_position(a.player,p);return c
+	return null
 
 func play_bgm(k:StringName,f:float=0.0)->void:
 	Tweenable.kill_tween(self)
@@ -41,10 +60,18 @@ func play_bgm(k:StringName,f:float=0.0)->void:
 		fade.duration=f
 		fade.tr_media_volume(Tweenable.make_tween(self),old,bgm)
 
-func one_shot(k:String,p:Vector3,v:float=1.0)->void:
-	if sfx.player==null:return
+func one_shot(k:StringName,p:Vector3,v:float=1.0)->void:
+	var a:Audio=get_audio(sfx,p,sfx_ring);if a==null:return
 	#
-	var a:Audio=sfx.clone(self);var n:Node=a.player
-	if n is Node3D:n.global_position=p
-	elif n is Node2D:n.global_position=Vector2(p.x,p.y)
 	a.open(k);a.volume=v;a.play()
+
+func one_emit(o:Variant,p:Vector3,v:float=1.0)->void:
+	var a:Audio=get_audio(sfx,p,sfx_ring);if a==null:return
+	#
+	a.volume=v;a.emit(o)
+
+func speak(o:Node,k:StringName)->void:
+	var a:Audio=get_audio(voice,GodotExtension.get_global_position(o),voice_ring);if a==null:return
+	#
+	a.open(k);a.play()
+	if on_speak.has_connections():on_speak.emit(o,k)

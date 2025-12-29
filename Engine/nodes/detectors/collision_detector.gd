@@ -13,6 +13,8 @@ func detect()->bool:
 		var n:int=Physics.shared_max;Physics.shared_max=capacity;
 		var m:Transform3D=root.global_transform;var r:Array=Physics.shape_overlap(c,m.origin,m.basis,shape,mask,exclude,flags)
 		Physics.shared_max=n;if !r.is_empty():
-			for it in r:_on_find(it)
+			for it in r:
+				_on_find(it)
+				apply(Physics.HitInfo.from_points(it,GodotExtension.get_global_position(it),m.origin))
 			target=targets[0];return true
 	return false

@@ -7,11 +7,17 @@ class_name FsmGesture extends FsmAction
 @export_group("Gesture","gest_")
 @export var gest_layer:int=1
 @export var gest_anim:StringName=&"Hello"
+@export var gest_fade:Vector2=Vector2(0.25,0.25)
 
 func _on_motor(c:Node,m:Node,b:bool)->void:
 	if c==null or m==null:return
 	#
 	m.velocity=Vector3.ZERO
+
+func _on_layer(a:Animator,l:AnimatorLayer,w:float,d:float)->void:
+	if a==null or l==null:return
+	if d<0.0:d=absf(w-l.get_weight(a))/-d
+	l.tween_weight(a,w,Tweenable.make_tween(a),d,null)
 
 func _on_enter()->void:
 	var c:CharacterController=get_character()
@@ -24,6 +30,7 @@ func _on_enter()->void:
 				c.play_animation(main_anim)
 			if c.animator.has_layer(gest_layer):
 				c.animator.play(gest_anim,gest_layer)
+				_on_layer(c.animator,c.animator.get_layer(gest_layer),1.0,gest_fade.x)
 	#
 	GodotExtension.set_enabled(actor,true)
 
@@ -33,5 +40,7 @@ func _on_exit()->void:
 		_on_motor(c,c.motor,false)
 		if c.animator!=null:
 			c.animator.stop(0xF000|(1<<main_layer)|(1<<gest_layer))
+			if c.animator.has_layer(gest_layer):
+				_on_layer(c.animator,c.animator.get_layer(gest_layer),0.0,gest_fade.y)
 	#
 	GodotExtension.set_enabled(actor,false)

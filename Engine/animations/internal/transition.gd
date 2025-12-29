@@ -42,6 +42,17 @@ func to_skeleton_modifier_3d(t:Tween,o:SkeletonModifier3D,b:bool,d:float=0.1)->v
 		var a:=func()->void:o.active=o.influence>d
 		t.finished.connect(a)
 
+func tr_skeleton_modifier_3d(t:Tween,a:SkeletonModifier3D,b:SkeletonModifier3D,c:Callable,d:float=0.1)->void:
+	if t==null:return
+	#
+	current=a;to_skeleton_modifier_3d(t,a,false,d)
+	if c.is_null():
+		current=b
+	else:
+		t.chain().tween_callback(c)
+		current=null
+	to_skeleton_modifier_3d(t,b,true,d)
+
 func to_media_volume(t:Tween,o:Media,v:float)->void:
 	if t==null or o==null:return
 	#

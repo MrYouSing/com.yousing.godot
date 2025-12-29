@@ -1,8 +1,12 @@
 ## An EventDispatcher for machines.
 class_name EventMachine extends BaseMachine
 
+static var current:EventMachine
+
 @export_group("Event")
-@export var events:Dictionary
+@export var events:Dictionary[StringName,Signal]
+
+var context:Object
 
 func _ready()->void:
 	for it in get_children():
@@ -38,9 +42,10 @@ func _on_dirty()->void:
 func _on_event(c:Object,e:StringName)->void:
 	if dirty:_on_dirty()
 	#
-	var s:Signal=find_event(e,false)
-	if !s.is_null():s.emit()
-	on_execute.emit(c,e)
+	var tmp:EventMachine=current;current=self;context=c
+	on_execute.emit(c,e)# Engine
+	var s:Signal=find_event(e,false);if !s.is_null():s.emit()# User
+	current=tmp;context=null
 
 # For other systems.
 

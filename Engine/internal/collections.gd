@@ -16,19 +16,35 @@ class Pool:
 	var source:Object
 	var creator:Callable
 	var pool:Array[Object]
-	
+
+	func _init(s:Variant=null)->void:
+		if s==null:return
+		match typeof(s):
+			TYPE_OBJECT:source=s
+			TYPE_CALLABLE:creator=s
+			TYPE_ARRAY:creator=s[0];source=s[1]
+
+	func create_from_obj()->Object:
+		if source is Node:
+			var tmp:Node=source.duplicate()
+			tmp.name=source.name
+			return tmp
+		if source is Resource:
+			var tmp:Resource=source.duplicate()
+			tmp.resource_name=source.resource_name
+			return tmp
+		return null
+
+	func create_from_func()->Object:
+		match creator.get_argument_count():
+			0:return creator.call()
+			1:return creator.call(source)
+			2:return creator.call(self,source)
+			_:return null
+		
 	func create()->Object:
-		if !creator.is_null():
-			return creator.call(self,source)
-		if source!=null:
-			if source is Node:
-				var tmp:Node=source.duplicate()
-				tmp.name=source.name
-				return tmp
-			if source is Resource:
-				var tmp:Resource=source.duplicate()
-				tmp.resource_name=source.resource_name
-				return tmp
+		if !creator.is_null():return create_from_func()
+		if source!=null:return create_from_obj()
 		return null
 
 	func obtain()->Object:
@@ -39,3 +55,25 @@ class Pool:
 		if o==null:return
 		if pool.has(o):printerr("Recycle {0} again!"%o);return
 		pool.push_back(o)
+
+class Ring:
+	var array:Array
+	var capacity:int
+	var index:int
+	
+	func _init(c:int)->void:
+		index=-1;capacity=c;array.resize(capacity)
+
+	func peek()->Variant:
+		return array[index%capacity]
+
+	func place(v:Variant)->void:
+		array[index%capacity]=v
+
+	func pop()->Variant:
+		index+=1
+		return array[index%capacity]
+
+	func push(v:Variant)->void:
+		index+=1
+		array[index%capacity]=v

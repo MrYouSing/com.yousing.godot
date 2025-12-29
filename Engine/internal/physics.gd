@@ -1,5 +1,25 @@
 class_name Physics
 
+class HitInfo:
+	var collider:Object
+	var rid:RID
+	var point:Vector3
+	var normal:Vector3
+
+	static func from_dict(d:Dictionary)->HitInfo:
+		var tmp:HitInfo=HitInfo.new()
+		tmp.collider=d.collider
+		tmp.rid=d.rid
+		tmp.point=d.position
+		tmp.normal=d.normal
+		return tmp
+
+	static func from_points(c:Object,a:Vector3,b:Vector3)->HitInfo:
+		var tmp:HitInfo=HitInfo.new()
+		tmp.collider=c;if c.has_method("get_rid"):tmp.rid=tmp.get_rid()
+		tmp.point=a;tmp.normal=(b-a).normalized()
+		return tmp
+
 # Physics APIs
 
 static var shared_max:int=32

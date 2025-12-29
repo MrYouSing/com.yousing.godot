@@ -8,6 +8,7 @@ var event:Signal:
 	get:
 		if event.is_null():
 			event=LangExtension.bake_signal(self,self.name,targets,methods)
+			for it in get_children():if it is Func:event.connect(it.invoke_with)
 		return event
 
 func invoke(...args:Array)->void:

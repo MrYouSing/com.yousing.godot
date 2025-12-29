@@ -2,12 +2,12 @@
 class_name Loader extends Node
 
 const k_recycle:String="$(Recycle)"
-static var s_pool:Collections.Pool=Collections.Pool.new()
+static var s_pool:Collections.Pool=Collections.Pool.new(
+	func()->Loader:return Loader.new()
+)
 
 static func obtain(k:StringName,p:Node,c:Callable)->Loader:
 	var l:Loader=s_pool.obtain()
-	if l==null:l=Loader.new()
-	#
 	l.name=k;GodotExtension.add_node(l,p,false)
 	if !c.is_null():l.on_done.connect(c,CONNECT_ONE_SHOT)
 	return l
@@ -63,8 +63,8 @@ func recycle()->void:
 	s_pool.recycle(self);
 
 func _ready()->void:
-	if state==-1 and !path.is_empty():load("res://"+path)
-	else:set_process(false)
+	if path.is_empty():set_process(false)
+	elif state==-1:load("res://"+path)
 
 func _process(delta:float)->void:
 	if state==ResourceLoader.THREAD_LOAD_IN_PROGRESS:

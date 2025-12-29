@@ -11,7 +11,7 @@ class_name SpineBone extends ArrowBone
 
 var poses:Array[Transform3D]
 
-func _process_modification_with_delta(delta:float)->void:
+func _on_update(c:Skeleton3D,b:int,d:float)->void:
 	var q:Quaternion=spine
 	if start!=null:
 		if end==null:q=start.basis
@@ -23,12 +23,10 @@ func _process_modification_with_delta(delta:float)->void:
 		q=MathExtension.looking_at((q*Vector3.BACK).slide(normal))
 	if q.is_equal_approx(Quaternion.IDENTITY):return
 	#
-	var ctx:Skeleton3D=get_skeleton()
-	if ctx==null:return
-	var b:int=names.size();if indexes.size()!=b:
+	b=names.size();if indexes.size()!=b:
 		indexes.clear()
-		for it in names:indexes.append(ctx.find_bone(it))
-	GodotExtension.get_bone_global_poses(ctx,indexes,poses)
+		for it in names:indexes.append(c.find_bone(it))
+	GodotExtension.get_bone_global_poses(c,indexes,poses)
 	#
 	var p:Quaternion;
 	if !offset.is_equal_approx(Quaternion.IDENTITY):
@@ -37,4 +35,4 @@ func _process_modification_with_delta(delta:float)->void:
 		b=indexes[i];if b<0:continue
 		p=poses[i].basis
 		p=p*Quaternion.IDENTITY.slerp(q,weights[i])
-		GodotExtension.set_bone_global_rotation(ctx,b,p)
+		GodotExtension.set_bone_global_rotation(c,b,p)

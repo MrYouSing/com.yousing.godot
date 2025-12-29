@@ -37,6 +37,17 @@ static func remove_node(n:Node)->void:
 	#
 	n.reparent(null,false);n.queue_free()
 
+static func get_global_position(n:Node)->Vector3:
+	if n!=null:
+		if n is Node3D:return n.global_position
+		elif n is Node2D:var v:Vector2=n.global_position;return Vector3(v.x,v.y,0.0)
+	return Vector3.ZERO
+
+static func set_global_position(n:Node,p:Vector3)->void:
+	if n!=null:
+		if n is Node3D:n.global_position=p
+		elif n is Node2D:n.global_position=Vector2(p.x,p.y)
+
 # Animation APIs
 
 static func get_anim_player(t:AnimationTree)->AnimationPlayer:
