@@ -3,6 +3,7 @@ class_name Footstep extends Audio
 
 @export_group("Footstep")
 @export var material:StringName
+@export var speed:float=1.0
 @export var start:Vector2=Vector2(0.5,0.0)
 @export var next:Vector2=Vector2(0.5,0.0)
 @export var scale:Vector2=Vector2.ZERO
@@ -11,6 +12,7 @@ class_name Footstep extends Audio
 signal on_footstep(n:Node)
 
 var time:float=-1.0
+var timestamp:int=-1
 
 func interval(d:Vector2)->float:
 	if d.x!=0.0:
@@ -20,8 +22,14 @@ func interval(d:Vector2)->float:
 
 func set_enabled(b:bool)->void:
 	if is_processing()==b:return
+	set_process(b)
 	#
-	set_process(b);if b:time=interval(start)
+	var n:int=Application.get_frames()
+	if b:
+		if n!=timestamp:time=interval(start)
+		else:pass#print("Re-active at the same frame.")#
+	else:
+		timestamp=n
 
 func get_foot()->Node:
 	match bones.size():
@@ -40,7 +48,7 @@ func _ready()->void:
 
 func _process(delta:float)->void:
 	if time<0.0:return
-	time-=delta
+	time-=delta*speed
 	if time<=0.0:_footstep()
 
 func _material(x:StringName)->void:

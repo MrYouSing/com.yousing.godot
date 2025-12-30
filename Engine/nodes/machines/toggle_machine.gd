@@ -20,7 +20,7 @@ func _on_toggle(c:Object,b:bool)->void:
 	#
 	on_execute.emit(c,b)
 
-# From other systems.
+# For other systems.
 
 func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 	if c==null:return

@@ -4,7 +4,8 @@ class_name AnimatorController extends Resource
 @export_group("Animation")
 @export var asset:AnimationRootNode
 @export var layers:Array[AnimatorLayer]
-@export var parameters:Array[String]
+@export var parameters:Array[StringName]
+@export var sync_parameters:Dictionary[StringName,Array]
 
 static func call_parse(k:StringName,l:int,t:Callable,f:Callable)->Variant:
 	if k.ends_with("_exit_time"):if t!=null:return t.call(k.substr(0,k.length()-10),l)
@@ -42,8 +43,18 @@ func teardown(c:Animator)->void:
 		n.set(&"exit_func",null)
 
 func get_layer(l:int)->AnimatorLayer:
-	if l>=0 and l<layers.size():return layers[l]
-	else:return null
+	var a:AnimatorLayer
+	if l>=0 and l<layers.size():
+		a=layers[l];if a!=null:a.index=l
+	return a
+
+func sync_write(c:Animator,k:StringName,v:Variant)->bool:
+	if c!=null and sync_parameters.has(k):
+		var tmp:AnimatorController=c.controller;c.controller=null
+		for it in sync_parameters[k]:c.write(it,v)
+		c.controller=tmp
+		return true
+	return false
 
 func exit_info(c:Animator,o:Dictionary[StringName,Variant],k:StringName,d:Dictionary[StringName,Variant],l:int=0)->bool:
 	if c==null:return false

@@ -48,6 +48,13 @@ static func set_global_position(n:Node,p:Vector3)->void:
 		if n is Node3D:n.global_position=p
 		elif n is Node2D:n.global_position=Vector2(p.x,p.y)
 
+# Rendering APIs
+
+static func get_blend_shape_names(r:MeshInstance3D,a:Array[StringName])->void:
+	if r==null:return
+	var m:ArrayMesh=r.mesh;if m==null:return
+	for i in m.get_blend_shape_count():a.append(m.get_blend_shape_name(i))
+
 # Animation APIs
 
 static func get_anim_player(t:AnimationTree)->AnimationPlayer:

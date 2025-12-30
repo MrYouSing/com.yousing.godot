@@ -65,10 +65,18 @@ func is_paused()->bool:
 
 func clone(p:Node,b:bool=false)->Media:
 	if !is_inited:init()
+	if player==null:return null
 	#
-	var t:Node=player;if t==null:return null
-	t=t.duplicate();GodotExtension.add_node(t,p,b)
-	return t.get_child(self.get_index())
+	var n:Node;var m:Media
+	if self.is_ancestor_of(player):
+		m=self.duplicate();m.name=self.name
+		n=m
+	else:
+		n=player.duplicate();n.name=player.name
+		m=n.get_node(player.get_path_to(self))
+	#
+	if p!=null:p.add_child(n,b)
+	return m
 
 func open(p:StringName)->void:
 	if !is_inited:init()

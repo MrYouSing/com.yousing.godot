@@ -9,6 +9,8 @@ class_name AnimatorLayer extends Resource
 @export var exit_times:Dictionary[StringName,Variant]
 @export var exit_funcs:Dictionary[StringName,Variant]
 
+var index:int=-1
+
 func get_float(c:Animator,k:StringName)->float:
 	if c==null or k.is_empty():return 0.0
 	return c.read(k)

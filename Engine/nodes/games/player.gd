@@ -20,6 +20,12 @@ func teardown(u:Unit)->void:
 	u.player=null;units.remove_at(i)
 	if units.is_empty():game.teardown(self)
 
+func add(u:Unit)->void:
+	if u==null:return
+	var i:int=units.find(u);if i>=0:return
+	#
+	units.append(u);setup(u)
+
 func _ready()->void:
 	for it in units:if it!=null and it!=unit:setup(it)
 	setup(unit);if unit==null:unit=units[0]

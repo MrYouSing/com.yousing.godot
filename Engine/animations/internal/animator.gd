@@ -117,6 +117,8 @@ func read(k:StringName)->Variant:
 	else:return super.get(k)
 
 func write(k:StringName,v:Variant)->void:
+	if controller!=null and controller.sync_write(self,k,v):return
+	#
 	if tree!=null:tree.set(k,v)
 	else:super.set(k,v)
 

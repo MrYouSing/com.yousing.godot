@@ -38,6 +38,23 @@ func get_friendship(a:Player,b:Player)->int:
 	if a==b:return 0
 	return -1
 
+func create_unit(p:Player,k:StringName,c:Node,m:Variant)->Unit:
+	if p!=null and !k.is_empty():
+		var s:Stage=Stage.instance
+		var n:Node=s.prefab(k);if n==null:return null
+		#
+		var u:Unit
+		if n is Actor:u=n.get_component(&"Unit")
+		elif n is Unit:u=n
+		else:u=n.get_node_or_null(^"Unit")
+		#
+		if u!=null:
+			var b:NodePath=n.get_path_to(u)
+			n=s.spawn(n,c,m,true)
+			u=n.get_node(b)
+			p.add(u);return u
+	return null
+
 func _on_attack(a:Attack,b:Hitbox)->void:
 	if a==null or b==null:return
 	# TODO: Override for attack bonuses.

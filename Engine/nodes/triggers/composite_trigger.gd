@@ -1,5 +1,6 @@
 class_name CompositeTrigger extends BaseTrigger
 
+@export_group("Composite")
 @export var all:bool
 @export var triggers:Array[BaseTrigger]
 

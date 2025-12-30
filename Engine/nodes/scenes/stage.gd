@@ -30,7 +30,8 @@ func asset(k:StringName)->Resource:
 	var v:Resource=assets.get(k,null)
 	if v!=null:return v
 	#
-	var p:String=path(k);if !p.is_empty():
+	var p:String=k if k.begins_with("res://") else path(k)
+	if !p.is_empty():
 		v=ResourceLoader.load(p);
 		assets[k]=v;return v
 	return null

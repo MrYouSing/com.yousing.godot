@@ -20,7 +20,7 @@ func _on_blend(c:Object,f:float)->void:
 		f=remap(f,remap.x,remap.y,remap.z,remap.w)
 	on_execute.emit(c,f)
 
-# From other systems.
+# For other systems.
 
 func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 	thiz=self# Revert context.

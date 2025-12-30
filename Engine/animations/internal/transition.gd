@@ -14,6 +14,7 @@ static var timestamp:int=-1
 @export var curve:Curve
 
 func instant()->bool:return delay==0.0 and duration==0.0
+func time(a:float,b:float)->float:return duration if duration>=0.0 else (absf(b-a)/-duration)
 
 func on_tween(t:Tween,o:Object)->void:
 	var n:int=Engine.get_process_frames();
@@ -36,11 +37,13 @@ func do_tween(t:Tween,o:Object,c:Callable,a:Variant,b:Variant)->void:
 func to_skeleton_modifier_3d(t:Tween,o:SkeletonModifier3D,b:bool,d:float=0.1)->void:
 	if t==null or o==null:return
 	#
-	var f:float=0.0;if b:f=1.0
+	var f:float=1.0 if b else 0.0
+	var tmp:float=duration;duration=time(o.influence,f)
 	o.active=true;to_tween(t,o,^"influence",f)
 	if d>=0.0:# Has deadzone.
 		var a:=func()->void:o.active=o.influence>d
 		t.finished.connect(a)
+	duration=tmp
 
 func tr_skeleton_modifier_3d(t:Tween,a:SkeletonModifier3D,b:SkeletonModifier3D,c:Callable,d:float=0.1)->void:
 	if t==null:return
@@ -56,6 +59,7 @@ func tr_skeleton_modifier_3d(t:Tween,a:SkeletonModifier3D,b:SkeletonModifier3D,c
 func to_media_volume(t:Tween,o:Media,v:float)->void:
 	if t==null or o==null:return
 	#
+	var tmp:float=duration;duration=time(o.volume,v)
 	to_tween(t,o,^"volume",v)
 	if v>0.0:
 		if o.volume==v:o.volume=0.0
@@ -63,9 +67,28 @@ func to_media_volume(t:Tween,o:Media,v:float)->void:
 	else:
 		var cb:=func()->void:if is_zero_approx(o.volume):o.stop()
 		t.finished.connect(cb)
+	duration=tmp
 
 func tr_media_volume(t:Tween,a:Media,b:Media)->void:
 	if t==null:return
 	#
 	current=a;to_media_volume(t,a,0.0)
 	current=b;to_media_volume(t,b,1.0)
+
+func to_mixer(t:Tween,o:BaseMixer,w:float)->void:
+	if t==null or o==null:return
+	#
+	var tmp:float=duration;duration=time(o.weight,w)
+	to_tween(t,o,^"weight",w)
+	duration=tmp
+
+func tr_mixer(t:Tween,a:BaseMixer,b:BaseMixer,c:Callable)->void:
+	if t==null:return
+	#
+	current=a;to_mixer(t,a,0.0)
+	if c.is_null():
+		current=b
+	else:
+		t.chain().tween_callback(c)
+		current=null
+	to_mixer(t,b,1.0)

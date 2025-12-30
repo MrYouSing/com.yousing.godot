@@ -4,9 +4,9 @@ class_name Audio extends Media
 static func create(i:int,n:Node=null)->Audio:
 	var p:Node
 	match i:
-		1:p=AudioStreamPlayer.new()
-		2:p=AudioStreamPlayer2D.new()
-		3:p=AudioStreamPlayer3D.new()
+		1:p=AudioStreamPlayer.new();p.name=&"AudioPlayer"
+		2:p=AudioStreamPlayer2D.new();p.name=&"AudioPlayer2D"
+		3:p=AudioStreamPlayer3D.new();p.name=&"AudioPlayer3D"
 	if p!=null:
 		var a:Audio=Audio.new()
 		if n!=null:n.add_child(p);

@@ -16,7 +16,7 @@ static var instance:Theater:
 @export var sfx:Audio
 @export var voice:Audio
 @export var fade:Transition
-@export var capacity:int
+@export var capacity:int=16
 
 signal on_speak(o:Node,k:StringName)
 
@@ -26,9 +26,9 @@ var voice_ring:Collections.Ring
 
 func _ready()->void:
 	if Singleton.init_instance(k_keyword,self):
-		if bgm==null:bgm=Audio.create(1,self);bgm.loop=true
-		if sfx==null:sfx=Audio.create(GodotExtension.s_dimension,self)
-		if voice==null:voice=Audio.create(1,self);
+		if bgm==null:bgm=Audio.create(1,self);bgm.name=&"Bgm";bgm.loop=true
+		if sfx==null:sfx=Audio.create(GodotExtension.s_dimension,self);sfx.name=&"Sfx"
+		if voice==null:voice=Audio.create(1,self);voice.name=&"Voice"
 		if fade==null:fade=Transition.new()
 		if capacity>0:
 			sfx_ring=Collections.Ring.new(capacity)

@@ -18,24 +18,27 @@ static var current:Call=null
 var workers:Array[Worker]
 var id:int=-1
 
+func clear()->void:
+	for it in workers:it.clear()
+
 func kill_call(i:int)->void:
 	workers[(i>>30)&0x3].stop(i&0x3FFFFFFF)
 
 func delay_call(c:Callable,a:Array,d:float=0.0,w:int=0)->int:
-	var tmp:DelayedCall=DelayedCall.s_pool.obtain();
+	var tmp:DelayedCall=DelayedCall.s_pool.obtain()
 	tmp.delay=d;tmp.call=c;tmp.args.append_array(a)
 	workers[w].start(tmp);return id|(w<<30)
 
-func update_call(c:Callable,a:Array,d:float=0.0,l:float=-1.0,w:int=0)->int:
-	var tmp:UpdatedCall=UpdatedCall.s_pool.obtain();
+func update_call(c:Callable,a:Array,d:float=0.0,t:float=-1.0,w:int=0)->int:
+	var tmp:UpdatedCall=UpdatedCall.s_pool.obtain()
 	tmp.delay=d;tmp.call=c;tmp.args.append_array(a)
-	tmp.duration=l
+	tmp.duration=t
 	workers[w].start(tmp);return id|(w<<30)
 
 func repeat_call(c:Callable,a:Array,d:float=0.0,t:float=1.0,n:int=-1,w:int=0)->int:
-	var tmp:RepeatedCall=RepeatedCall.s_pool.obtain();
+	var tmp:RepeatedCall=RepeatedCall.s_pool.obtain()
 	tmp.delay=d;tmp.call=c;tmp.args.append_array(a)
-	tmp.step=t;tmp.count=n
+	tmp.interval=t;tmp.count=n
 	workers[w].start(tmp);return id|(w<<30)
 
 func _ready()->void:
@@ -44,7 +47,7 @@ func _ready()->void:
 
 func _exit_tree()->void:
 	if Singleton.exit_instance(k_keyword,self):
-		pass
+		clear();workers.clear()
 
 func _process(delta:float)->void:
 	if workers.is_empty():return
@@ -65,6 +68,12 @@ class Worker:
 	func _init(c:Juggler)->void:
 		context=c
 
+	func clear()->void:
+		var i:int=-1;for it in calls:
+			i+=1;if it!=null and it.id>=0:
+				calls[i]=null;it.recycle()
+		if delta<=0.0:calls.clear()
+
 	func start(c:Call)->void:
 		context.id+=1;if c.id>=0:
 			printerr("Start Call@%04d again!"%c.id)
@@ -84,7 +93,9 @@ class Worker:
 		var m:int=calls.size();if m==0:return
 		var j:int=0;for it in calls:
 			if it.update():calls[j]=it;j+=1
+		# Cleanup.
 		LangExtension.remove_range(calls,j,m-j)
+		delta=0.0
 
 class Call:
 	var worker:Worker
@@ -173,15 +184,15 @@ class RepeatedCall extends Call:
 		func()->RepeatedCall:return RepeatedCall.new()
 	)
 
-	var step:float
+	var interval:float
 	var count:int
 	var wait:float
 	var tick:int=-1
 
 	func recycle()->void:
 		if reset():
-			step=-1.0;count=-1
-			wait=0.0;tick=-1
+			interval=-1.0;count=-1
+			wait=-1.0;tick=-1
 			s_pool.recycle(self)
 
 	func progress()->float:
@@ -193,11 +204,11 @@ class RepeatedCall extends Call:
 		var b:bool=false
 		if worker.time>=time+delay:
 			if tick<0:# Start
-				wait=step;tick=1;b=true
+				wait=interval;tick=1;b=true
 			else:
 				wait-=worker.delta
 				if wait<=0.0:
-					wait+=step;tick+=1;b=true
+					wait+=interval;tick+=1;b=true
 		if b:
 			var i:int=id
 			invoke()

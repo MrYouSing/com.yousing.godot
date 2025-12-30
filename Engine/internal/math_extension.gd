@@ -10,6 +10,10 @@ static func float_clamp(v:float,a:float,z:float)->float:
 	if a<z:return clamp(v,a,z)
 	else:return v
 
+## A safer version for [method @GlobalScope.remap]
+static func float_remap(v:float,r:Vector4)->float:
+	return lerpf(r.z,r.w,clampf((v-r.x)/(r.y-r.x),0.0,1.0))
+
 static func time_alive(t:float,d:float)->bool:
 	return d>=0.0 and t<=d
 
