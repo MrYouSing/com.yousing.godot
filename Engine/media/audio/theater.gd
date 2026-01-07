@@ -1,6 +1,6 @@
 ## A helper singleton for audio management.
 class_name Theater extends Node
-
+# <!-- Macro.Patch Singleton
 const k_keyword:StringName=&"YouSing_Theater"
 static var s_create:Callable=func()->Object:
 	var i:Theater=Theater.new();i.name=k_keyword
@@ -10,7 +10,7 @@ static var s_create:Callable=func()->Object:
 static var instance:Theater:
 	get:return Singleton.try_instance(k_keyword,s_create)
 	set(x):Singleton.set_instance(k_keyword,x)
-
+# Macro.Patch -->
 @export_group("Theater")
 @export var bgm:Audio
 @export var sfx:Audio

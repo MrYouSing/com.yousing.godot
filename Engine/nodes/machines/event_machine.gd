@@ -6,13 +6,14 @@ static var current:EventMachine
 @export_group("Event")
 @export var events:Dictionary[StringName,Signal]
 
+signal on_event(c:Object,e:StringName)
+
 var context:Object
+var arguments:Array
 
 func _ready()->void:
 	for it in get_children():
 		if it is Event:events[it.name]=it.event
-
-signal on_event(c:Object,e:StringName)
 
 func find_event(e:StringName,b:bool)->Signal:
 	var s:Signal=events.get(e,LangExtension.k_empty_signal)
@@ -32,8 +33,16 @@ func remove_listener(e:StringName,l:Callable)->void:
 		if l.is_null():LangExtension.clear_signal(s)
 		elif s.is_connected(l):s.disconnect(l)
 
-func invoke_event(e:StringName):
+func invoke_event(e:StringName)->void:
 	_on_event(self,e)
+
+func emit_event(e:StringName,...args:Array)->void:
+	if args.is_empty():
+		_on_event(self,e)
+	else:
+		arguments.append_array(args)
+		_on_event(self,e)
+		arguments.clear()
 
 func _on_dirty()->void:
 	on_execute=LangExtension.merge_signal(self,on_execute,on_event,targets,&"_on_event")
@@ -43,8 +52,8 @@ func _on_event(c:Object,e:StringName)->void:
 	if dirty:_on_dirty()
 	#
 	var tmp:EventMachine=current;current=self;context=c
-	on_execute.emit(c,e)# Engine
-	var s:Signal=find_event(e,false);if !s.is_null():s.emit()# User
+	on_execute.emit(c,e)# From Engine
+	var s:Signal=find_event(e,false);if !s.is_null():s.emit(arguments)# From User
 	current=tmp;context=null
 
 # For other systems.

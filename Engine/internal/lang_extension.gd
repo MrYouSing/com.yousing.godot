@@ -7,6 +7,7 @@ const k_empty_callable:Callable=Callable()
 const k_empty_signal:Signal=Signal()
 
 static var s_none_string:String="None"
+static var s_lock_busy:Array[Object]
 
 # https://learn.microsoft.com/zh-cn/dotnet/api/system.notimplementedexception
 static var e_not_implemented:Dictionary={
@@ -15,6 +16,7 @@ static var e_not_implemented:Dictionary={
 
 static func throw_exception(c:Object,e:Dictionary)->void:
 	push_error(e["text"])
+	print_stack()
 
 # String APIs
 
@@ -53,10 +55,40 @@ static func remove_range(a:Array,o:int,c:int=-1)->void:
 
 # Event/Signal APIs
 
+static func is_busy(o:Object)->bool:
+	if o==null:return !s_lock_busy.is_empty()
+	return s_lock_busy.has(o)
+
+static func not_busy(o:Object)->bool:
+	if o==null:return s_lock_busy.is_empty()
+	return !s_lock_busy.has(o)
+
+static func begin_busy(o:Object)->void:
+	if o==null:return
+	s_lock_busy.append(o)
+
+static func end_busy(o:Object)->void:
+	if o==null:return
+	var i:int=s_lock_busy.rfind(o)
+	if i>=0:s_lock_busy.remove_at(i)
+
 static func clear_signal(s:Signal)->void:
 	if !s.is_null() and s.has_connections():
 		for it in s.get_connections():
 			s.disconnect(it.callable)
+
+static func exist_signal(c:Object,k:StringName)->bool:
+	if c==null:return false
+	return c.has_signal(k) or c.has_user_signal(k)
+
+static func add_signal(c:Object,k:StringName,v:Callable,f:int=0)->void:
+	if c==null or v.is_null() or c.is_connected(k,v):return
+	if !c.has_signal(k) and !c.has_user_signal(k):c.add_user_signal(k)
+	c.connect(k,v,f)
+
+static func remove_signal(c:Object,k:StringName,v:Callable)->void:
+	if c==null or v.is_null() or !c.is_connected(k,v):return
+	c.disconnect(k,v)
 
 static func bake_signal(c:Object,k:StringName,t:Array,m:Array[StringName])->Signal:
 	if !c.has_user_signal(k):c.add_user_signal(k)

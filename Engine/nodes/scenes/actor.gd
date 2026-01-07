@@ -1,15 +1,17 @@
 ## An entity which like UnityEngine.GameObject.
-class_name Actor extends Node3D
+class_name Actor extends Node
 
 @export var components:Array[Node]
 var tween:Tween
 
 func set_enabled(b:bool)->void:
-	set_process(b)
-	set_physics_process(b)
-	visible=b
-	# Broadcast
-	for it in components:GodotExtension.set_enabled(it,b)
+	if get_meta(&"self_enabled",true):
+		var n:Node=self;set_process(b);
+		set_physics_process(b)
+		if n is Node3D:n.visible=b
+		elif n is Node2D:n.visible=b
+	if get_meta(&"component_enabled",true):
+		for it in components:GodotExtension.set_enabled(it,b)
 
 func show()->void:set_enabled(true)
 func hide()->void:set_enabled(false)

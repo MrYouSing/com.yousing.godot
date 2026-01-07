@@ -2,7 +2,7 @@ class_name GodotExtension
 
 # Scene APIs
 
-static var s_root:Node
+static var s_root:Node=Engine.get_main_loop().root
 static var s_hide:Node
 static var s_dimension:int=3
 
@@ -36,6 +36,21 @@ static func remove_node(n:Node)->void:
 	if n==null:return
 	#
 	n.reparent(null,false);n.queue_free()
+
+static func move_node(n:Node,i:int)->void:
+	if n==null:return
+	var p:Node=n.get_parent();if p==null:return
+	#
+	var c:int=p.get_child_count();i=(i+c)%c
+	if n.get_index()!=i:p.move_child(n,i)
+
+static func assign_node(n:Node,s:String)->Node:
+	if n!=null:
+		if n.is_class(s):return n
+		var c:Node=n.get_node_or_null(s)
+		if c!=null:return c
+		return n.get_parent()
+	return null
 
 static func get_global_position(n:Node)->Vector3:
 	if n!=null:

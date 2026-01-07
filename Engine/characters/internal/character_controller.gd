@@ -4,7 +4,7 @@ class_name CharacterController extends Node
 @export var root:Node3D
 @export var normal:Vector3=Vector3.UP
 @export var viewer:Node3D
-@export var model:Node3D
+@export var model:Node
 @export var input:PlayerInput
 @export var motor:CharacterMotor
 @export var animator:Animator

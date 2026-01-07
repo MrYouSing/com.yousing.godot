@@ -47,7 +47,9 @@ func init()->void:
 	is_inited=true
 	#
 	type=-1
-	if player==null:player=get_parent()
+	if player==null:
+		player=get_node_or_null(^"./Player")
+		if player==null:player=get_parent()
 	if player!=null:player.finished.connect(_done)
 	_audio()
 
@@ -68,14 +70,16 @@ func clone(p:Node,b:bool=false)->Media:
 	if player==null:return null
 	#
 	var n:Node;var m:Media
-	if self.is_ancestor_of(player):
+	if player==self or self.is_ancestor_of(player):
 		m=self.duplicate();m.name=self.name
 		n=m
+		m.player=m.get_node(self.get_path_to(player))
 	else:
 		n=player.duplicate();n.name=player.name
 		m=n.get_node(player.get_path_to(self))
+		m.player=n
 	#
-	if p!=null:p.add_child(n,b)
+	if p!=null:GodotExtension.add_node(n,p,b)
 	return m
 
 func open(p:StringName)->void:
@@ -92,7 +96,10 @@ func emit(o:Variant)->void:
 	match typeof(o):
 		TYPE_STRING_NAME:open(o);play()
 		TYPE_INT:player.stream=album.clips[o];play()
-		_:if o is Album:player.stream=o.random();play()
+		TYPE_ARRAY:volume=o[1];emit(o[0])
+		TYPE_OBJECT:
+			if o is Album:player.stream=o.random();play()
+			else:player.stream=o;play()
 
 func play()->void:
 	if !is_inited:init()

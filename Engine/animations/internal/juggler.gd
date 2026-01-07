@@ -1,6 +1,6 @@
 ## A godot [url=https://doc.starling-framework.org/current/starling/animation/Juggler.html]Juggler[/url] implementation.
 class_name Juggler extends Node
-
+# <!-- Macro.Patch Singleton
 const k_keyword:StringName=&"YouSing_Juggler"
 static var s_create:Callable=func()->Object:
 	var i:Juggler=Juggler.new();i.name=k_keyword
@@ -10,7 +10,7 @@ static var s_create:Callable=func()->Object:
 static var instance:Juggler:
 	get:return Singleton.try_instance(k_keyword,s_create)
 	set(x):Singleton.set_instance(k_keyword,x)
-
+# Macro.Patch -->
 static var current:Call=null
 
 @export_group("Juggler")

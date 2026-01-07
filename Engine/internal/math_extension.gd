@@ -26,6 +26,10 @@ static func time_inside(t:float,a:float,z:float)->bool:
 static func time_outside(t:float,a:float,z:float)->bool:
 	return a!=z and (t<a or t>z)
 
+static func time_fade(o:float,n:float,t:float)->float:
+	if t>=0.0:return t
+	else:return absf(n-o)/-t
+
 static func random_level(f:float,a:Array[float])->int:
 	f*=randf()
 	var i:int=-1;for it in a:

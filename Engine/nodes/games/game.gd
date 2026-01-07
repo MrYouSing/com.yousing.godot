@@ -1,6 +1,6 @@
 ## A helper singleton for game management.
 class_name Game extends Node
-
+# <!-- Macro.Patch Singleton
 const k_keyword:StringName=&"YouSing_Game"
 static var s_create:Callable=func()->Object:
 	var i:Game=Game.new();i.name=k_keyword
@@ -10,7 +10,7 @@ static var s_create:Callable=func()->Object:
 static var instance:Game:
 	get:return Singleton.try_instance(k_keyword,s_create)
 	set(x):Singleton.set_instance(k_keyword,x)
-
+# Macro.Patch -->
 @export_group("Game")
 @export var player:Player
 @export var players:Array[Player]

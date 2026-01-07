@@ -1,6 +1,6 @@
 ## A helper singleton for scene management.
 class_name Stage extends Node
-
+# <!-- Macro.Patch Singleton
 const k_keyword:StringName=&"YouSing_Stage"
 static var s_create:Callable=func()->Object:
 	var i:Stage=Stage.new();i.name=k_keyword
@@ -10,8 +10,9 @@ static var s_create:Callable=func()->Object:
 static var instance:Stage:
 	get:return Singleton.try_instance(k_keyword,s_create)
 	set(x):Singleton.set_instance(k_keyword,x)
-
+# Macro.Patch -->
 @export_group("Stage")
+@export var root:Node
 @export var hidden:Node
 @export var paths:Dictionary[StringName,StringName]
 
@@ -158,8 +159,12 @@ func load_async(k:StringName,c:Callable,a:bool=false)->void:
 
 func _ready()->void:
 	if Singleton.init_instance(k_keyword,self):
-		if GodotExtension.s_root==null:
-			GodotExtension.s_root=get_tree().root
+		#
+		if root==null:
+			if GodotExtension.s_root==null:root=get_tree().root
+			else:root=GodotExtension.s_root
+		GodotExtension.s_root=root
+		#
 		if hidden==null:
 			if GodotExtension.s_hide==null:
 				match GodotExtension.s_dimension:
@@ -168,9 +173,8 @@ func _ready()->void:
 				hidden.name=&"Hidden";hidden.visible=false
 				GodotExtension.add_node(hidden,self,false)
 			else:
-				hidden=GodotExtension.s_hide;return
-		if GodotExtension.s_hide==null:
-			GodotExtension.s_hide=hidden
+				hidden=GodotExtension.s_hide
+		GodotExtension.s_hide=hidden
 
 func _exit_tree()->void:
 	if Singleton.exit_instance(k_keyword,self):
