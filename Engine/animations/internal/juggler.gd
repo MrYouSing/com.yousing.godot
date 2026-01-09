@@ -2,42 +2,42 @@
 class_name Juggler extends Node
 # <!-- Macro.Patch Singleton
 const k_keyword:StringName=&"YouSing_Juggler"
-static var s_create:Callable=func()->Object:
-	var i:Juggler=Juggler.new();i.name=k_keyword
-	GodotExtension.add_node(i,null,false)
-	i._ready();return i
-
+const k_class:Variant=Juggler
+static var exists:bool:
+	get:return Engine.has_singleton(k_keyword)
 static var instance:Juggler:
-	get:return Singleton.try_instance(k_keyword,s_create)
+	get:return Singleton.try_instance(k_keyword,k_class)
 	set(x):Singleton.set_instance(k_keyword,x)
 # Macro.Patch -->
+const k_invalid_id:int=-1
 static var current:Call=null
 
 @export_group("Juggler")
 
 var workers:Array[Worker]
-var id:int=-1
+var id:int=k_invalid_id
 
 func clear()->void:
 	for it in workers:it.clear()
 
 func kill_call(i:int)->void:
+	if i==k_invalid_id:return
 	workers[(i>>30)&0x3].stop(i&0x3FFFFFFF)
 
 func delay_call(c:Callable,a:Array,d:float=0.0,w:int=0)->int:
 	var tmp:DelayedCall=DelayedCall.s_pool.obtain()
-	tmp.delay=d;tmp.call=c;tmp.args.append_array(a)
+	tmp.delay=d;tmp.call=c;tmp.args.assign(a)
 	workers[w].start(tmp);return id|(w<<30)
 
 func update_call(c:Callable,a:Array,d:float=0.0,t:float=-1.0,w:int=0)->int:
 	var tmp:UpdatedCall=UpdatedCall.s_pool.obtain()
-	tmp.delay=d;tmp.call=c;tmp.args.append_array(a)
+	tmp.delay=d;tmp.call=c;tmp.args.assign(a)
 	tmp.duration=t
 	workers[w].start(tmp);return id|(w<<30)
 
 func repeat_call(c:Callable,a:Array,d:float=0.0,t:float=1.0,n:int=-1,w:int=0)->int:
 	var tmp:RepeatedCall=RepeatedCall.s_pool.obtain()
-	tmp.delay=d;tmp.call=c;tmp.args.append_array(a)
+	tmp.delay=d;tmp.call=c;tmp.args.assign(a)
 	tmp.interval=t;tmp.count=n
 	workers[w].start(tmp);return id|(w<<30)
 
@@ -92,7 +92,7 @@ class Worker:
 		#
 		var m:int=calls.size();if m==0:return
 		var j:int=0;for it in calls:
-			if it.update():calls[j]=it;j+=1
+			if it!=null and it.update():calls[j]=it;j+=1
 		# Cleanup.
 		LangExtension.remove_range(calls,j,m-j)
 		delta=0.0
@@ -132,9 +132,7 @@ class Call:
 		LangExtension.throw_exception(self,LangExtension.e_not_implemented)
 
 class DelayedCall extends Call:
-	static var s_pool:Collections.Pool=Collections.Pool.new(
-		func()->DelayedCall:return DelayedCall.new()
-	)
+	static var s_pool:Collections.Pool=Collections.Pool.new(DelayedCall)
 
 	func recycle()->void:
 		if reset():
@@ -153,9 +151,7 @@ class DelayedCall extends Call:
 		return true
 
 class UpdatedCall extends Call:
-	static var s_pool:Collections.Pool=Collections.Pool.new(
-		func()->UpdatedCall:return UpdatedCall.new()
-	)
+	static var s_pool:Collections.Pool=Collections.Pool.new(UpdatedCall)
 
 	var duration:float
 
@@ -180,9 +176,7 @@ class UpdatedCall extends Call:
 		return true
 
 class RepeatedCall extends Call:
-	static var s_pool:Collections.Pool=Collections.Pool.new(
-		func()->RepeatedCall:return RepeatedCall.new()
-	)
+	static var s_pool:Collections.Pool=Collections.Pool.new(RepeatedCall)
 
 	var interval:float
 	var count:int

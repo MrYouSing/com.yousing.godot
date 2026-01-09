@@ -6,10 +6,9 @@ var tween:Tween
 
 func set_enabled(b:bool)->void:
 	if get_meta(&"self_enabled",true):
-		var n:Node=self;set_process(b);
+		set_process(b);
 		set_physics_process(b)
-		if n is Node3D:n.visible=b
-		elif n is Node2D:n.visible=b
+		set(&"visible",b)
 	if get_meta(&"component_enabled",true):
 		for it in components:GodotExtension.set_enabled(it,b)
 

@@ -2,15 +2,55 @@
 class_name Loader extends Node
 
 const k_recycle:String="$(Recycle)"
-static var s_pool:Collections.Pool=Collections.Pool.new(
-	func()->Loader:return Loader.new()
-)
+static var s_pool:Collections.Pool=Collections.Pool.new(Loader)
 
 static func obtain(k:StringName,p:Node,c:Callable)->Loader:
 	var l:Loader=s_pool.obtain()
 	l.name=k;GodotExtension.add_node(l,p,false)
 	if !c.is_null():l.on_done.connect(c,CONNECT_ONE_SHOT)
 	return l
+
+static var s_is_inited:bool
+static var s_file_api:Dictionary[StringName,Callable]
+
+static func init()->void:
+	if s_is_inited:return
+	s_is_inited=true
+	#
+	s_file_api=Application.get_plugin(&"FilePlugin",true)
+	if s_file_api.is_empty():
+		s_file_api.exists=FileAccess.file_exists
+		s_file_api.open=FileAccess.open
+		s_file_api.text=LangExtension.k_empty_callable
+		s_file_api.table=LangExtension.k_empty_callable
+
+static func load_text(f:String)->String:
+	if !s_is_inited:init()
+	var m:Callable=s_file_api.text
+	if !m.is_null():
+		var s:String=m.call(f)
+		if !s.is_empty():return s
+	if s_file_api.exists.call(f):
+		var a:FileAccess=s_file_api.open.call(f,FileAccess.READ)
+		if a!=null:return a.get_as_text()
+	return LangExtension.k_empty_string
+
+static func load_table(f:String,d:String=",")->Array[PackedStringArray]:
+	if !s_is_inited:init()
+	var m:Callable=s_file_api.table
+	if !m.is_null():
+		var t:Array[PackedStringArray]=m.call(f)
+		if !t.is_empty():return t
+	if s_file_api.exists.call(f):
+		var a:FileAccess=s_file_api.open.call(f,FileAccess.READ)
+		if a!=null:
+			var it=a.get_csv_line(d);var n:int=it.size()
+			var t:Array[PackedStringArray];t.append(it)
+			while !a.eof_reached():
+				it=a.get_csv_line(d)
+				if it.size()==n:t.append(it)
+			return t
+	return LangExtension.k_empty_table
 
 @export_group("Loader")
 @export var root:Node

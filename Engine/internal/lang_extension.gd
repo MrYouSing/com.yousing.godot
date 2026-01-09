@@ -3,10 +3,12 @@ class_name LangExtension
 const k_empty_string:String=""
 const k_empty_array:Array=[]
 const k_empty_dictionary:Dictionary={}
+const k_empty_table:Array[PackedStringArray]=[]
 const k_empty_callable:Callable=Callable()
 const k_empty_signal:Signal=Signal()
 
 static var s_none_string:String="None"
+static var s_temp_array:Array=[]
 static var s_lock_busy:Array[Object]
 
 # https://learn.microsoft.com/zh-cn/dotnet/api/system.notimplementedexception
@@ -25,6 +27,11 @@ static func file_name(x:String)->String:
 	if i>=0:x=x.substr(i+1)
 	return x
 
+static func file_extension(x:String)->String:
+	var i:int=x.rfind(".")
+	if i>=0:return x.substr(i).to_lower()
+	return k_empty_string
+
 static func directory_name(x:String)->String:
 	var i:int=x.rfind("/")
 	if i>=0:x=x.substr(0,i)
@@ -37,6 +44,16 @@ static func combine_path(a:String,b:String)->String:
 	return a+"/"+b
 
 # Collection APIs
+
+static func new_array(c:Script,n:int)->Array:
+	if c==null:
+		var a:Array=Array()
+		if n>0:a.resize(n)
+		return a
+	else:
+		var a:Array=Array(k_empty_array,TYPE_OBJECT,c.get_instance_base_type(),c)
+		if n>0:a.resize(n);for i in n:a[i]=c.new()
+		return a
 
 static func get_item(a:Array,i:int,v:Variant)->Variant:
 	if i>=0 and i<a.size():return a[i]
@@ -53,7 +70,26 @@ static func remove_range(a:Array,o:int,c:int=-1)->void:
 	o=o+c-1
 	for i in c:a.remove_at(o-i)
 
+static func maps_to_array(m:Array,c:Script)->Array:
+	var n:int=m.size();if n<=0:return k_empty_array
+	if c==null:return m
+	#
+	var a:Array=new_array(c,n);var s:Dictionary;var d:Object
+	for i in n:s=m[i];d=a[i];for k in s:d.set(k,s[k])
+	return a
+
+static func table_to_array(t:Array[PackedStringArray],c:Script)->Array:
+	var n:int=t.size();if n<=1:return k_empty_array
+	if c==null:return t
+	#
+	n-1;var h:PackedStringArray=t[0];var j:int
+	var a:Array=new_array(c,n);var s:PackedStringArray;var d:Object
+	for i in n:s=t[1+i];d=a[i];j=-1;for k in h:j+=1;d.set(k,s[j])
+	return a
+
 # Event/Signal APIs
+
+	# Busy Lock
 
 static func is_busy(o:Object)->bool:
 	if o==null:return !s_lock_busy.is_empty()
@@ -72,23 +108,54 @@ static func end_busy(o:Object)->void:
 	var i:int=s_lock_busy.rfind(o)
 	if i>=0:s_lock_busy.remove_at(i)
 
+	# Signal APIs
+
 static func clear_signal(s:Signal)->void:
 	if !s.is_null() and s.has_connections():
 		for it in s.get_connections():
 			s.disconnect(it.callable)
+
+static func call_signal(s:Signal,a:Array)->void:
+	if !s.is_null():match a.size():
+		0:s.emit()
+		1:s.emit(a[0])
+		2:s.emit(a[0],a[1])
+		3:s.emit(a[0],a[1],a[2])
+		4:s.emit(a[0],a[1],a[2],a[3])
+		5:s.emit(a[0],a[1],a[2],a[3],a[4])
+		6:s.emit(a[0],a[1],a[2],a[3],a[4],a[5])
+		7:s.emit(a[0],a[1],a[2],a[3],a[4],a[5],a[6])
+		8:s.emit(a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7])
+
+	# Object APIs
 
 static func exist_signal(c:Object,k:StringName)->bool:
 	if c==null:return false
 	return c.has_signal(k) or c.has_user_signal(k)
 
 static func add_signal(c:Object,k:StringName,v:Callable,f:int=0)->void:
-	if c==null or v.is_null() or c.is_connected(k,v):return
+	if c==null or v.is_null():return
 	if !c.has_signal(k) and !c.has_user_signal(k):c.add_user_signal(k)
-	c.connect(k,v,f)
+	if !c.is_connected(k,v):c.connect(k,v,f)
 
 static func remove_signal(c:Object,k:StringName,v:Callable)->void:
-	if c==null or v.is_null() or !c.is_connected(k,v):return
-	c.disconnect(k,v)
+	if c==null or v.is_null():return
+	if !c.has_signal(k) and !c.has_user_signal(k):return
+	if c.is_connected(k,v):c.disconnect(k,v)
+
+static func send_signal(c:Object,k:StringName,a:Array)->void:
+	if c!=null and !k.is_empty():match a.size():
+		0:c.emit_signal(k)
+		1:c.emit_signal(k,a[0])
+		2:c.emit_signal(k,a[0],a[1])
+		3:c.emit_signal(k,a[0],a[1],a[2])
+		4:c.emit_signal(k,a[0],a[1],a[2],a[3])
+		5:c.emit_signal(k,a[0],a[1],a[2],a[3],a[4])
+		6:c.emit_signal(k,a[0],a[1],a[2],a[3],a[4],a[5])
+		7:c.emit_signal(k,a[0],a[1],a[2],a[3],a[4],a[5],a[6])
+		8:c.emit_signal(k,a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7])
+
+	# Advanced APIs
 
 static func bake_signal(c:Object,k:StringName,t:Array,m:Array[StringName])->Signal:
 	if !c.has_user_signal(k):c.add_user_signal(k)

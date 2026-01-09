@@ -2,13 +2,11 @@
 class_name UIManager extends Node
 # <!-- Macro.Patch Singleton
 const k_keyword:StringName=&"YouSing_UIManager"
-static var s_create:Callable=func()->Object:
-	var i:UIManager=UIManager.new();i.name=k_keyword
-	GodotExtension.add_node(i,null,false)
-	i._ready();return i
-
+const k_class:Variant=UIManager
+static var exists:bool:
+	get:return Engine.has_singleton(k_keyword)
 static var instance:UIManager:
-	get:return Singleton.try_instance(k_keyword,s_create)
+	get:return Singleton.try_instance(k_keyword,k_class)
 	set(x):Singleton.set_instance(k_keyword,x)
 # Macro.Patch -->
 static func register(k:StringName,v:Object)->void:
@@ -19,6 +17,7 @@ static func register(k:StringName,v:Object)->void:
 
 @export_group("UI")
 @export var root:Node
+@export var camera:Node
 @export var sound:Media
 @export var database:UIDatabase
 @export var events:BaseMachine
@@ -44,7 +43,9 @@ func _ready()->void:
 		_sounds=Collections.Ring.new(get_meta(&"num_sounds",8))
 		if database==null:
 			if UIDatabase.instance!=null:database=UIDatabase.instance
-			else:database=ResourceLoader.load("res://assets/databases/"+name+".tres")
+			else:
+				var s:String="res://assets/databases/"+name+".tres"
+				if ResourceLoader.exists(s):database=ResourceLoader.load(s)
 		if events==null:
 			events=EventMachine.new();events.name=&"Events"
 			GodotExtension.add_node(events,self,false)
@@ -166,5 +167,5 @@ func play_sound(s:Variant)->void:
 	m.emit(s)
 
 func invoke_event(k:StringName,...args:Array)->void:
-	if LangExtension.exist_signal(self,k):self.emit_signal(k,args)# From Engine
+	if LangExtension.exist_signal(self,k):LangExtension.send_signal(self,k,args)# From Engine
 	if events is EventMachine:events.emit_event(k,args)# From User

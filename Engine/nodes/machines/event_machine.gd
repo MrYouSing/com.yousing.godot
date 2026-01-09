@@ -9,7 +9,6 @@ static var current:EventMachine
 signal on_event(c:Object,e:StringName)
 
 var context:Object
-var arguments:Array
 
 func _ready()->void:
 	for it in get_children():
@@ -40,9 +39,9 @@ func emit_event(e:StringName,...args:Array)->void:
 	if args.is_empty():
 		_on_event(self,e)
 	else:
-		arguments.append_array(args)
+		LangExtension.s_temp_array.assign(args)
 		_on_event(self,e)
-		arguments.clear()
+		LangExtension.s_temp_array.clear()
 
 func _on_dirty()->void:
 	on_execute=LangExtension.merge_signal(self,on_execute,on_event,targets,&"_on_event")
@@ -53,7 +52,7 @@ func _on_event(c:Object,e:StringName)->void:
 	#
 	var tmp:EventMachine=current;current=self;context=c
 	on_execute.emit(c,e)# From Engine
-	var s:Signal=find_event(e,false);if !s.is_null():s.emit(arguments)# From User
+	var s:Signal=find_event(e,false);LangExtension.call_signal(s,LangExtension.s_temp_array)# From User
 	current=tmp;context=null
 
 # For other systems.

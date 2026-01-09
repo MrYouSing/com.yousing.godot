@@ -11,13 +11,20 @@ static func destroy(o:Object)->void:
 	if o is Node:o.queue_free()
 	else:o.free()
 
+static func create(c:Object,b:Variant,s:Script=null)->Object:
+	var o:Object=b.new()
+	if s!=null:o.set_script(s)
+	if c!=null and c.has_method(&"add_child"):
+		c.add_child(o);o.set(&"owner",c)
+	return o
+
 static func set_enabled(o:Object,b:bool)->void:
 	if o==null:return
 	if o.has_method(&"set_enabled"):o.set_enabled(b);return
 	# Default
-	if o is Node:o.set_process(b);o.set_physics_process(b)
-	if o is Node3D:o.visible=b
-	elif o is Node2D:o.visible=b
+	if o is Node:
+		o.set_process(b);o.set_physics_process(b)
+		o.set(&"visible",b)
 
 static func add_node(n:Node,p:Node=null,b:bool=true)->void:
 	if n==null:return

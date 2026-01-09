@@ -13,6 +13,7 @@ static func benchmark_for(n:int,c:int=1000)->void:
 	Application.end_benchmark()
 
 class Pool:
+	var type:int
 	var source:Object
 	var creator:Callable
 	var pool:Array[Object]
@@ -20,9 +21,18 @@ class Pool:
 	func _init(s:Variant=null)->void:
 		if s==null:return
 		match typeof(s):
-			TYPE_OBJECT:source=s
-			TYPE_CALLABLE:creator=s
-			TYPE_ARRAY:creator=s[0];source=s[1]
+			TYPE_OBJECT:
+				type=1;source=s
+				if source is Script:type=0
+			TYPE_CALLABLE:
+				type=2;creator=s
+			TYPE_ARRAY:
+				type=2;creator=s[0];source=s[1]
+
+	func create_from_class()->Object:
+		if source is Script:
+			return source.new()
+		return null
 
 	func create_from_obj()->Object:
 		if source is Node:
@@ -41,10 +51,12 @@ class Pool:
 			1:return creator.call(source)
 			2:return creator.call(self,source)
 			_:return null
-		
+
 	func create()->Object:
-		if !creator.is_null():return create_from_func()
-		if source!=null:return create_from_obj()
+		match type:
+			0:return create_from_class()
+			1:return create_from_obj()
+			2:return create_from_func()
 		return null
 
 	func obtain()->Object:

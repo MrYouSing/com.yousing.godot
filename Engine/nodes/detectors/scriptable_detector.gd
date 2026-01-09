@@ -1,7 +1,7 @@
 ## A custom detector driven by scripts.
 class_name ScriptableDetector extends BaseDetector
 
-static var s_layers:Array[Layer]=Layer.array(32)
+static var s_layers:Array[Layer]=LangExtension.new_array(Layer,32)
 
 static func register_at(a:Node,l:int=0)->void:
 	s_layers[l].register(a)
@@ -35,10 +35,6 @@ func eval(a:Node)->bool:
 	return false
 
 class Layer:
-	static func array(n:int)->Array[Layer]:
-		var a:Array[Layer]=Array()
-		a.resize(n);for i in n:a[i]=Layer.new()
-		return a
 
 	var agents:Array[Node]
 

@@ -9,21 +9,24 @@ static func set_instance(k:StringName,v:Object)->void:
 	if v==null:Engine.unregister_singleton(k)
 	else:Engine.register_singleton(k,v)
 
-static func new_instance(k:StringName)->Object:
-	if ClassDB.class_exists(k) and ClassDB.can_instantiate(k):
-		var v:Object=ClassDB.instantiate(k)
-		if v is Node:
-			GodotExtension.add_node(v);
-			if v.has_method(&"_ready"):v._ready()
-		return v
-	return
+static func new_instance(k:StringName,v:Variant)->Object:
+	var i:Object=null
+	if v is Callable:i=v.call()
+	elif v is Script:i=v.new()
+	elif ClassDB.class_exists(k) and ClassDB.can_instantiate(k):
+		i=ClassDB.instantiate(k)
+	if i is Node:
+		i.name=k
+		if Application.get_frames()>0:GodotExtension.add_node(i,null,false)
+		else:GodotExtension.add_node.call_deferred(i,null,false)
+		if i.has_method(&"_ready"):i._ready()
+	return i
 
-static func try_instance(k:StringName,c:Callable)->Object:
+static func try_instance(k:StringName,v:Variant)->Object:
 	var i:Object=get_instance(k)
 	if i==null:
 		# Create an instance.
-		if c.is_null():i=new_instance(k)
-		else:i=c.call()
+		i=new_instance(k,v)
 		# Ensure an instance.
 		if i!=null and get_instance(k)==null:
 			print("Register a {0} by {1} without init()".format([k,i]))
@@ -43,21 +46,3 @@ static func exit_instance(k:StringName,v:Object)->bool:
 	var i:Object=get_instance(k)
 	if i==v:set_instance(k,null);return true
 	else:return false
-
-#const k_keyword:StringName=&"YouSing_@"
-#static var s_create:Callable=func()->Object:
-#	var i:@=@.new();i.name=k_keyword
-#	GodotExtension.add_node(i,null,false)
-#	i._ready();return i
-#
-#static var instance:@:
-#	get:return Singleton.try_instance(k_keyword,s_create)
-#	set(x):Singleton.set_instance(k_keyword,x)
-#
-#func _ready()->void:
-#	if Singleton.init_instance(k_keyword,self):
-#		pass
-#
-#func _exit_tree()->void:
-#	if Singleton.exit_instance(k_keyword,self):
-#		pass

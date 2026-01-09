@@ -3,6 +3,9 @@ class_name MathExtension
 const k_epsilon:float=1E-5
 const k_deg_to_rad:float=PI/180.0
 const k_rad_to_deg:float=180.0/PI
+const k_vec2_half:Vector2=Vector2.ONE*0.5
+const k_vec3_half:Vector3=Vector3.ONE*0.5
+const k_vec4_half:Vector4=Vector4.ONE*0.5
 
 # Math APIs
 
@@ -39,6 +42,27 @@ static func random_level(f:float,a:Array[float])->int:
 
 # Geometry APIs
 
+static func str_to_vec2(s:String,d:String=",",e:bool=true)->Vector2:
+	var a:PackedFloat64Array=s.split_floats(d,e)
+	return Vector2(a[0],a[1])
+
+static func str_to_vec3(s:String,d:String=",",e:bool=true)->Vector3:
+	var a:PackedFloat64Array=s.split_floats(d,e)
+	return Vector3(a[0],a[1],a[2])
+
+static func str_to_vec4(s:String,d:String=",",e:bool=true)->Vector4:
+	var a:PackedFloat64Array=s.split_floats(d,e)
+	return Vector4(a[0],a[1],a[2],a[3])
+
+static func str_to_quat(s:String,d:String=",",e:bool=true)->Quaternion:
+	var a:PackedFloat64Array=s.split_floats(d,e)
+	if a.size()==3:return Basis.from_euler(Vector3(a[0],a[1],a[2]))
+	return Quaternion(a[0],a[1],a[2],a[3])
+
+static func str_to_rect(s:String,d:String=",",e:bool=true)->Rect2:
+	var a:PackedFloat64Array=s.split_floats(d,e)
+	return Rect2(a[0],a[1],a[2],a[3])
+
 static func vec3_lerp(a:Vector3,b:Vector3,t:Vector2,d:float)->Vector3:
 	if t.x>0.0:return a.move_toward(b,t.x*d)
 	elif t.x>=-1.0:return a.lerp(b,-t.x*t.y*d)
@@ -55,6 +79,11 @@ static func vec3_parallel(a:Vector3,b:Vector3)->int:
 		if f>0.0:return 1
 		else:return -1
 	return 0
+
+## 2D-Version [method Basis.looking_at].
+static func clocking_at(v:Vector2)->float:
+	if v.is_zero_approx():return 0.0
+	else:return atan2(v.x,-v.y)
 
 static func looking_at(v:Vector3,n:Vector3=Vector3.UP)->Basis:
 	var f:float=v.length_squared()

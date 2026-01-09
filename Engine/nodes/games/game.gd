@@ -2,13 +2,11 @@
 class_name Game extends Node
 # <!-- Macro.Patch Singleton
 const k_keyword:StringName=&"YouSing_Game"
-static var s_create:Callable=func()->Object:
-	var i:Game=Game.new();i.name=k_keyword
-	GodotExtension.add_node(i,null,false);
-	i._ready();return i
-
+const k_class:Variant=Game
+static var exists:bool:
+	get:return Engine.has_singleton(k_keyword)
 static var instance:Game:
-	get:return Singleton.try_instance(k_keyword,s_create)
+	get:return Singleton.try_instance(k_keyword,k_class)
 	set(x):Singleton.set_instance(k_keyword,x)
 # Macro.Patch -->
 @export_group("Game")
