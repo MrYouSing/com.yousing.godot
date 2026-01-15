@@ -4,7 +4,7 @@ extends EditorPlugin
 var root:String="res://addons/yousing/"
 
 func get_display(x:String)->String:
-	return x.to_pascal_case()
+	return x
 
 func get_icon(x:String)->Texture2D:
 	return null

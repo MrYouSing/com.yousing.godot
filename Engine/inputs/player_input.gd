@@ -1,7 +1,11 @@
 class_name PlayerInput extends Node
 
+static var current:PlayerInput
 # A scale from mouse-space to input-scale.
 static var mouse_to_stick:float=0.005
+
+static func get_mouse_position()->Vector2:
+	return DisplayServer.mouse_get_position()-DisplayServer.screen_get_position(DisplayServer.SCREEN_PRIMARY)
 
 @export var deadzone:Vector4=Vector4(0.125,0.5,0.5,0.5)
 @export var axes:Array[StringName]
@@ -74,6 +78,11 @@ func _ready()->void:
 	var n:int=axes.size()/4;if n<=0:n=4
 	if m_axes==null:m_axes=[];m_axes.resize(n)
 	elif m_axes.size()<n:m_axes.resize(n)
+	#
+	if current==null:current=self
+
+func _exit_tree()->void:
+	if self==current:current=null
 
 func _process(delta: float)->void:
 	try_update()

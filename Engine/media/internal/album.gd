@@ -9,6 +9,7 @@ class_name Album extends Resource
 
 var is_inited:bool
 var sum:float
+var library:Dictionary[StringName,Resource]
 
 static func from_path(p:String)->Album:
 	var d:DirAccess=DirAccess.open(p)
@@ -17,8 +18,10 @@ static func from_path(p:String)->Album:
 		a.resource_name=LangExtension.file_name(p)
 		for it in d.get_files():
 			if it.ends_with(".import"):continue
+			a.names.append(LangExtension.file_name_only(it))
 			a.clips.append(load(LangExtension.combine_path(p,it)))
 		for it in d.get_directories():
+			a.names.append(LangExtension.file_name_only(it))
 			a.clips.append(from_path(LangExtension.combine_path(p,it)))
 		return a
 	return null
@@ -28,9 +31,15 @@ func init()->void:
 	is_inited=true
 	#
 	if !paths.is_empty():
-		clips.clear()
-		for it in paths:
-			if !it.is_empty():clips.append(load(it))
+		clips.clear();names.clear()
+		var c:Resource;for it in paths:
+			if !it.is_empty():
+				c=load(it);if c==null:continue
+				clips.append(c);names.append(LangExtension.file_name_only(it))
+	if names.size()>0:
+		library.clear();
+		var i:int=-1;for it in clips:
+			i+=1;library[names[i]]=it
 	#
 	sum=0.0;for it in rates:sum+=it
 	
@@ -38,18 +47,10 @@ func init()->void:
 func load(k:StringName)->Resource:
 	if !is_inited:init()
 	#
-	var tmp:Resource=null
-	if !names.is_empty():
-		var i:int=names.find(k)
-		if i>=0:tmp=clips[i]
-	else: 
-		for it in clips:
-			if it!=null and it.resource_name==k:tmp=it;break
-	#
+	var tmp:Resource=library.get(k,null)
 	if tmp!=null and tmp is Album:
 		tmp=tmp.random()
 	return tmp
-
 
 func random()->Resource:
 	if !is_inited:init()

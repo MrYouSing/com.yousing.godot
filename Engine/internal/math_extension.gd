@@ -1,6 +1,8 @@
 class_name MathExtension
 
 const k_epsilon:float=1E-5
+const k_half_pi:float=PI*0.5
+const k_two_pi:float=PI*2.0
 const k_deg_to_rad:float=PI/180.0
 const k_rad_to_deg:float=180.0/PI
 const k_vec2_half:Vector2=Vector2.ONE*0.5
@@ -10,12 +12,24 @@ const k_vec4_half:Vector4=Vector4.ONE*0.5
 # Math APIs
 
 static func float_clamp(v:float,a:float,z:float)->float:
-	if a<z:return clamp(v,a,z)
+	if a<z:return clampf(v,a,z)
 	else:return v
 
 ## A safer version for [method @GlobalScope.remap]
 static func float_remap(v:float,r:Vector4)->float:
 	return lerpf(r.z,r.w,clampf((v-r.x)/(r.y-r.x),0.0,1.0))
+
+static func degree_inside(r:float,a:float,z:float)->bool:
+	r=wrapf(r-a,0.0,360.0)
+	if is_zero_approx(r):return true
+	z=wrapf(z-a,0.0,360.0)
+	return r>0.0 and r<z# [a,z):range of wrapf()
+
+static func radian_inside(r:float,a:float,z:float)->bool:
+	r=wrapf(r-a,0.0,k_two_pi)
+	if is_zero_approx(r):return true
+	z=wrapf(z-a,0.0,k_two_pi)
+	return r>0.0 and r<z# [a,z):range of wrapf()
 
 static func time_alive(t:float,d:float)->bool:
 	return d>=0.0 and t<=d
@@ -80,6 +94,10 @@ static func vec3_parallel(a:Vector3,b:Vector3)->int:
 		else:return -1
 	return 0
 
+static func rect_position(r:Rect2,p:Vector2)->Vector2:
+	var a:Vector2=r.position;var z:Vector2=a+r.size
+	return Vector2(lerpf(a.x,z.x,p.x),lerpf(a.y,z.y,p.y))
+
 ## 2D-Version [method Basis.looking_at].
 static func clocking_at(v:Vector2)->float:
 	if v.is_zero_approx():return 0.0
@@ -94,10 +112,11 @@ static func looking_at(v:Vector3,n:Vector3=Vector3.UP)->Basis:
 
 static func get_heading(b:Basis,n:Vector3=Vector3.UP)->Basis:
 	var v:Vector3=b.get_rotation_quaternion()*Vector3.FORWARD
-	v=v.slide(n);return Basis.looking_at(v.normalized(),n)
+	v=v.slide(n);if is_zero_approx(v.length_squared()):return Basis.IDENTITY
+	return Basis.looking_at(v,n)
 
 static func rotate_between(a:Vector3,b:Vector3,n:Vector3=Vector3.UP)->Basis:
-	return looking_at(b,n)*looking_at(a,n).inverse()
+	return Quaternion(a,b)
 
 ## Another [method Basis.looking_at] for ray-casting.
 static func reflecting_to(a:Vector3,b:Vector3,n:Vector3=Vector3.UP,q:Basis=Basis.IDENTITY)->Basis:

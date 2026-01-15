@@ -3,7 +3,7 @@ class_name AxisTrigger extends InputTrigger
 @export_group("Axes")
 @export var axis:int
 @export var axes:Array[StringName]
-@export_range(0.0,1.0,0.001) var deadzone:float=0.0
+@export var deadzone:Vector4
 
 var value:bool
 var previous:bool
@@ -26,7 +26,16 @@ func vector()->Vector2:
 
 func do_update()->void:
 	previous=value
-	value=vector().length_squared()>deadzone*deadzone
+	#
+	var v:Vector2=vector();var s:float=v.length_squared();var d:float=deadzone.z
+	var r:Vector2=Vector2(MathExtension.k_deg_to_rad*deadzone.x,MathExtension.k_deg_to_rad*deadzone.y)
+	var b:bool=s>d*d
+	d=deadzone.w;if b and !is_zero_approx(d):
+		b=s<=d*d
+	if b and !is_zero_approx(r.x*r.y):
+		d=MathExtension.clocking_at(v)
+		b=MathExtension.radian_inside(d,r.x,r.y)
+	value=b
 
 func is_trigger()->bool:
 	try_update()
@@ -37,5 +46,5 @@ func is_trigger()->bool:
 		InputTrigger.Action.Up:return previous and !value
 	return false
 
-func _process(delta: float)->void:
+func _process(delta:float)->void:
 	try_update()

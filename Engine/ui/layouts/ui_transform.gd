@@ -6,17 +6,20 @@ const k_hidden_pos:Vector2=Vector2.ONE*-1024.0
 static var s_float_helper:Array[float]=[0.0,0.5,1.0,-1.0,NAN]
 
 static func enum_to_vec2(e:int,f:float,u:bool=false)->Vector2:
-	s_float_helper[3]=f;s_float_helper[4]=0.0;
+	s_float_helper[3]=f;var m:int=0
 	var v:Vector2=Vector2.ZERO;var i:int
 	#
 	i=e%4;v.x=s_float_helper[i];
-	if i==3:s_float_helper[4]+=1.0
+	if i==3:m+=1
 	#
 	i=e/4;v.y=s_float_helper[i];
-	if i==3:s_float_helper[4]+=2.0
+	if i==3:m+=2
 	elif u:v.y=1.0-v.y
 	#
-	return v
+	s_float_helper[4]=m;return v
+
+static func preset_to_vec2(p:int)->Vector2:
+	return enum_to_vec2(k_layout_presets[p],0.0,false)
 
 static func get_position(c:Control,u:Vector2)->Vector2:
 	if c!=null:

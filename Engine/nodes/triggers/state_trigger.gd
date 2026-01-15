@@ -21,11 +21,12 @@ func _on_tick(d:float)->void:
 	_time+=d;if is_on:return
 	if MathExtension.time_outside(_time,time.x,time.y):return
 	#
-	if trigger!=null and trigger.is_trigger():
+	if trigger.is_trigger():
 		is_on=true;_done=_time
 
 func _on_exit()->void:
 	if trigger==null:return
-	if MathExtension.time_outside(_time,time.x,time.y):is_on=false
-	if MathExtension.time_dead(_time-_done,time.z):is_on=false
+	if is_on:
+		if MathExtension.time_outside(_time,time.x,time.y):is_on=false
+		if MathExtension.time_dead(_time-_done,time.z):is_on=false
 	_time=-1.0;_done=-1.0

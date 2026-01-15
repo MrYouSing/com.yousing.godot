@@ -27,8 +27,10 @@ static func register(k:StringName,v:Object)->void:
 	&"ui_end",&"ui_home"
 ]
 @export var prefabs:Dictionary[StringName,Resource]
-@export_flags("Up Tap","Auto Back","Auto Select","Auto Start")
-var features:int=-1
+@export_flags(
+	"Up Tap","Auto Back","Auto Select","Auto Start",
+	"Auto Pause"
+)var features:int=-1
 
 var _views:Dictionary[StringName,Object]
 var _stack:Array[Object]
@@ -39,7 +41,7 @@ func _ready()->void:
 		if root==null:
 			root=self
 		if sound==null:
-			sound=Audio.create(1,self);sound.name=&"Sound"
+			sound=Audio.create(&"UI",1,self);sound.name=&"Sound"
 		_sounds=Collections.Ring.new(get_meta(&"num_sounds",8))
 		if database==null:
 			if UIDatabase.instance!=null:database=UIDatabase.instance
@@ -53,7 +55,7 @@ func _ready()->void:
 
 func _exit_tree()->void:
 	if Singleton.exit_instance(k_keyword,self):
-		pass
+		Application.exit()
 
 func _process(delta:float)->void:
 	if features&0x02!=0 and _stack.size()>1:
@@ -66,8 +68,18 @@ func _process(delta:float)->void:
 		if is_tap(9):
 			show_view(&"App.Start",true)
 
+func _notification(what:int)->void:
+	match what:
+		MainLoop.NOTIFICATION_APPLICATION_FOCUS_IN,MainLoop.NOTIFICATION_APPLICATION_RESUMED:
+			Application.focus(true)
+		MainLoop.NOTIFICATION_APPLICATION_FOCUS_OUT:
+			Application.focus(false)
+		MainLoop.NOTIFICATION_APPLICATION_PAUSED:
+			if features&0x10!=0:_on_pause(true)
+			Application.focus(false)
+
 func _on_pause(b:bool)->void:
-	Engine.time_scale=0.0 if b else 1.0
+	Application.pause(b)
 	var v:Object=find_view(&"App.Pause",true)
 	if v!=null:active_view(v,b)
 
@@ -76,7 +88,7 @@ func _on_quit(b:bool)->void:
 		var v:Object=find_view(&"App.Quit",true)
 		if v==null:b=true
 		else:active_view(v,true)
-	if b:get_tree().quit()
+	if b:Application.quit()
 
 func init_ui()->void:
 	var a:Resource;var n:Node;for it in prefabs:

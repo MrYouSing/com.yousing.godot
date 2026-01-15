@@ -1,6 +1,8 @@
 class_name LangExtension
 
 const k_empty_string:String=""
+const k_empty_name:StringName=&""
+const k_empty_rid:RID=RID()
 const k_empty_array:Array=[]
 const k_empty_dictionary:Dictionary={}
 const k_empty_table:Array[PackedStringArray]=[]
@@ -17,14 +19,50 @@ static var e_not_implemented:Dictionary={
 }
 
 static func throw_exception(c:Object,e:Dictionary)->void:
-	push_error(e["text"])
+	var t:String=e["text"]
+	push_error(t)
+	printerr(t)
 	print_stack()
 
 # String APIs
 
+static func str_to_enum(s:String,c:Variant)->int:
+	if !s.is_empty() and !c.is_empty():match typeof(c):
+		TYPE_DICTIONARY:
+			return c.get(s,-1)
+		TYPE_ARRAY,TYPE_PACKED_STRING_ARRAY:
+			return c.find(s)
+	return -1
+
+static func str_to_mask(s:String,c:Variant,d:String="|")->int:
+	var m:int=0;if !s.is_empty() and !c.is_empty():match typeof(c):
+		TYPE_DICTIONARY:
+			var t:Dictionary=c
+			var i:int;for it in s.split(d,false):i=t.get(it,-1);if i>=0:m|=i
+		TYPE_ARRAY,TYPE_PACKED_STRING_ARRAY:
+			var i:int;for it in s.split(d,false):i=c.find(it);if i>=0:m|=(1<<i)
+	return m
+
+static func str_to_args(s:String,d:String=",")->Array:
+	if !s.is_empty():
+		var p:PackedStringArray=s.split(d);var i:int=p.size()
+		if i>0:
+			var a:Array;a.resize(i)
+			i=-1;for it in p:i+=1;a[i]=str_to_var(it)
+			return a
+	return k_empty_array
+
 static func file_name(x:String)->String:
 	var i:int=x.rfind("/")
 	if i>=0:x=x.substr(i+1)
+	return x
+
+static func file_name_only(x:String)->String:
+	var i:int=x.rfind("/")
+	var j:int=x.rfind(".")
+	if i>=0:
+		if j>=0 and i<j:x=x.substr(i+1,j-i-1)
+		else:x=x.substr(i+1)
 	return x
 
 static func file_extension(x:String)->String:
@@ -70,22 +108,43 @@ static func remove_range(a:Array,o:int,c:int=-1)->void:
 	o=o+c-1
 	for i in c:a.remove_at(o-i)
 
+static func map_to_object(m:Dictionary,o:Object)->void:
+	if m.is_empty() or o==null:return
+	for k in m:o.set(k,m[k])
+
+static func row_to_object(h:PackedStringArray,r:PackedStringArray,o:Object)->void:
+	if r.is_empty() or o==null:return
+	var i:int=-1;for it in h:i+=1;o.set(it,r[i])
+
 static func maps_to_array(m:Array,c:Script)->Array:
 	var n:int=m.size();if n<=0:return k_empty_array
 	if c==null:return m
 	#
-	var a:Array=new_array(c,n);var s:Dictionary;var d:Object
-	for i in n:s=m[i];d=a[i];for k in s:d.set(k,s[k])
+	var a:Array=new_array(c,n)
+	for i in n:map_to_object(m[i],a[i])
 	return a
 
 static func table_to_array(t:Array[PackedStringArray],c:Script)->Array:
 	var n:int=t.size();if n<=1:return k_empty_array
 	if c==null:return t
 	#
-	n-1;var h:PackedStringArray=t[0];var j:int
-	var a:Array=new_array(c,n);var s:PackedStringArray;var d:Object
-	for i in n:s=t[1+i];d=a[i];j=-1;for k in h:j+=1;d.set(k,s[j])
+	n-=1;var h:PackedStringArray=t[0]
+	var a:Array=new_array(c,n)
+	for i in n:row_to_object(h,t[1+i],a[i])
 	return a
+
+static func array_add_maps(a:Array,m:Array,c:Script)->void:
+	var n:int=m.size();if n<=0:return
+	#
+	var o:Object;var s:int=a.size();a.resize(s+n)
+	for i in n:o=c.new();map_to_object(m[i],o);a[s+i]=o
+
+static func array_add_table(a:Array,t:Array[PackedStringArray],c:Script)->void:
+	var n:int=t.size();if n<=1:return
+	#
+	n-=1;var h:PackedStringArray=t[0]
+	var o:Object;var s:int=a.size();a.resize(s+n)
+	for i in n:o=c.new();row_to_object(h,t[1+i],o);a[s+i]=o
 
 # Event/Signal APIs
 
@@ -127,7 +186,19 @@ static func call_signal(s:Signal,a:Array)->void:
 		7:s.emit(a[0],a[1],a[2],a[3],a[4],a[5],a[6])
 		8:s.emit(a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7])
 
+static func shoot_signal(s:Signal,o:Object,a:Array)->void:
+	if !s.is_null() and o!=null:
+		var t:Array[Callable];var c:Callable
+		for it in s.get_connections():
+			c=it.callable;if c.get_object()==o:t.append(c)
+		for it in t:it.callv(a);s.disconnect(it)
+
 	# Object APIs
+
+static func new_signal(c:Object,k:StringName)->Signal:
+	if c==null or k.is_empty():return k_empty_signal
+	if !c.has_signal(k) and !c.has_user_signal(k):c.add_user_signal(k)
+	return Signal(c,k)
 
 static func exist_signal(c:Object,k:StringName)->bool:
 	if c==null:return false

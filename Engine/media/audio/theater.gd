@@ -15,6 +15,9 @@ static var instance:Theater:
 @export var voice:Audio
 @export var fade:Transition
 @export var capacity:int=16
+@export var mixers:Array[StringName]=[
+	&"Master",&"Bgm",&"Sfx",&"Voice",&"UI"
+]
 
 signal on_speak(o:Node,k:StringName)
 
@@ -24,17 +27,47 @@ var voice_ring:Collections.Ring
 
 func _ready()->void:
 	if Singleton.init_instance(k_keyword,self):
-		if bgm==null:bgm=Audio.create(1,self);bgm.name=&"Bgm";bgm.loop=true
-		if sfx==null:sfx=Audio.create(GodotExtension.s_dimension,self);sfx.name=&"Sfx"
-		if voice==null:voice=Audio.create(1,self);voice.name=&"Voice"
-		if fade==null:fade=Transition.new()
-		if capacity>0:
-			sfx_ring=Collections.Ring.new(capacity)
-			voice_ring=Collections.Ring.new(capacity)
+		init_audio()
 
 func _exit_tree()->void:
 	if Singleton.exit_instance(k_keyword,self):
-		pass
+		exit_audio()
+
+func init_audio()->void:
+	if bgm==null:bgm=Audio.create(mixers[1],1,self);bgm.loop=true
+	if sfx==null:sfx=Audio.create(mixers[2],GodotExtension.s_dimension,self);
+	if voice==null:voice=Audio.create(mixers[3],1,self)
+	if fade==null:fade=Transition.new()
+	if capacity>0:
+		sfx_ring=Collections.Ring.new(capacity)
+		voice_ring=Collections.Ring.new(capacity)
+	load_audio()
+
+func exit_audio()->void:
+	save_audio()
+
+func load_audio()->void:
+	var c:ConfigFile=Application.s_app_config
+	if c!=null:
+		var i:int;var b:bool;var f:float;
+		for it in mixers:
+			i=AudioServer.get_bus_index(it);if i<0:continue
+			b=AudioServer.is_bus_mute(i)
+			AudioServer.set_bus_mute(i,c.get_value("Audio",it+".Mute",b))
+			f=AudioServer.get_bus_volume_linear(i)
+			AudioServer.set_bus_volume_linear(i,c.get_value("Audio",it+".Volume",f))
+
+func save_audio()->void:
+	var c:ConfigFile=Application.s_app_config
+	if c!=null:
+		var i:int;var b:bool;var f:float;
+		for it in mixers:
+			i=AudioServer.get_bus_index(it);if i<0:continue
+			b=AudioServer.is_bus_mute(i)
+			c.set_value("Audio",it+".Mute",b)
+			f=AudioServer.get_bus_volume_linear(i)
+			c.set_value("Audio",it+".Volume",f)
+		Application.flush()
 
 func get_audio(a:Audio,p:Vector3,r:Collections.Ring=null)->Audio:
 	if a!=null and a.player!=null:
@@ -68,7 +101,7 @@ func one_emit(o:Variant,p:Vector3,v:float=1.0)->void:
 	#
 	a.volume=v;a.emit(o)
 
-func speak(o:Node,k:StringName)->void:
+func play_speak(o:Node,k:StringName)->void:
 	var a:Audio=get_audio(voice,GodotExtension.get_global_position(o),voice_ring);if a==null:return
 	#
 	a.open(k);a.play()

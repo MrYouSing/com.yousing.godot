@@ -48,7 +48,7 @@ static func load_table(f:String,d:String=",")->Array[PackedStringArray]:
 			var t:Array[PackedStringArray];t.append(it)
 			while !a.eof_reached():
 				it=a.get_csv_line(d)
-				if it.size()==n:t.append(it)
+				if it.size()>=n:t.append(it)
 			return t
 	return LangExtension.k_empty_table
 

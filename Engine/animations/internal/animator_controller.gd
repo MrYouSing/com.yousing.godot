@@ -6,6 +6,7 @@ class_name AnimatorController extends Resource
 @export var layers:Array[AnimatorLayer]
 @export var parameters:Array[StringName]
 @export var sync_parameters:Dictionary[StringName,Array]
+@export var events:ClipLibrary
 
 static func call_parse(k:StringName,l:int,t:Callable,f:Callable)->Variant:
 	if k.ends_with("_exit_time"):if t!=null:return t.call(k.substr(0,k.length()-10),l)
@@ -21,6 +22,8 @@ func setup(c:Animator)->void:
 	if c==null:return
 	if c.tree!=null and c.tree.tree_root==null and asset!=null:
 		c.tree.tree_root=asset
+	#
+	register(c.player,c)
 	#
 	var n:Node=GodotExtension.get_expression_node(c.tree)
 	if n!=null and c!=n:
@@ -41,6 +44,25 @@ func teardown(c:Animator)->void:
 		if (c.features&0x01)!=0:return
 		n.set(&"exit_time",null)
 		n.set(&"exit_func",null)
+
+func register(c:AnimationPlayer,n:Node)->void:
+	if c==null or n==null:return
+	#
+	var p:NodePath=c.get_parent().get_path_to(n)
+	for it in events.get_clips():
+		inject(c.get_animation(it.name),p,it)
+
+func inject(c:Animation,p:NodePath,e:Clip)->void:
+	if c==null or e==null:return
+	var t:int=c.find_track(p,Animation.TYPE_METHOD);if t>=0:return
+	#
+	t=c.add_track(Animation.TYPE_METHOD)
+	c.track_set_path(t,p)
+	c.track_set_enabled(t,true)
+	var k:StringName
+	var i:int=-1;for it in e.frames:
+		i+=1;k=it.variant if it.key.is_empty() else it.key
+		c.track_insert_key(t,e.get_time(i),{"method":"dispatch","args":[k]})
 
 func get_layer(l:int)->AnimatorLayer:
 	var a:AnimatorLayer
