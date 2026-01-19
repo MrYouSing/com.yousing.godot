@@ -21,12 +21,20 @@ static func enum_to_vec2(e:int,f:float,u:bool=false)->Vector2:
 static func preset_to_vec2(p:int)->Vector2:
 	return enum_to_vec2(k_layout_presets[p],0.0,false)
 
-static func get_position(c:Control,u:Vector2)->Vector2:
+static func get_position(c:Control,u:Vector2,w:bool=true)->Vector2:
 	if c!=null:
-		var p:Vector2=c.size*c.pivot_offset_ratio+c.pivot_offset
-		var x:float=c.rotation;var y:float=sin(x);x=cos(x)
+		var t:Transform2D=c.get_global_transform_with_canvas() if w else c.get_transform()
+		var p:Vector2=c.size*c.pivot_offset_ratio+c.pivot_offset;p*=t.get_scale()
+		var x:float=t.get_rotation();var y:float=sin(x);x=cos(x)
 		u.x-=p.x*x-p.y*y;u.y-=p.x*y+p.y*x
 	return u
+
+static func set_anchor_and_offset(c:Control,a:Vector2,z:Vector2,p:Vector2,q:Vector2)->void:
+	if c==null:return
+	c.set_anchor_and_offset(SIDE_LEFT  ,a.x,p.x,true)
+	c.set_anchor_and_offset(SIDE_RIGHT ,z.x,q.x,true)
+	c.set_anchor_and_offset(SIDE_TOP   ,a.y,p.y,true)
+	c.set_anchor_and_offset(SIDE_BOTTOM,z.y,q.y,true)
 
 # <!-- Macro.Patch AutoGen
 const k_layout_presets:Dictionary[Control.LayoutPreset,int]={
@@ -78,23 +86,18 @@ func end()->void:refresh()
 func refresh()->void:
 	if !dirty:return
 	if control==null:return
-	dirty=false#;print("Refresh")
+	dirty=false
 	#
 	var a:Vector2=anchored_position
 	var o:Vector2=size_delta;var p:Vector2=pivot;
-	var q:Vector2=(Vector2.ONE-p)*o+a;o=p*o-a
+	var q:Vector2=a+(Vector2.ONE-p)*o;o=a-p*o
 	a=anchor_min;var z:Vector2=anchor_max
-	control.set_anchor_and_offset(SIDE_LEFT,a.x,-o.x,true)
-	control.set_anchor_and_offset(SIDE_RIGHT,z.x, q.x,true)
-	#control.pivot=Vector2.ZERO# Set self when the same node.
 	if unity:
-		control.pivot_offset_ratio=Vector2(p.x,1.0-p.y)
-		control.set_anchor_and_offset(SIDE_BOTTOM,1.0-a.y, o.y,true)
-		control.set_anchor_and_offset(SIDE_TOP,1.0-z.y,-q.y,true)
-	else:
-		control.pivot_offset_ratio=p
-		control.set_anchor_and_offset(SIDE_BOTTOM,z.y, q.y,true)
-		control.set_anchor_and_offset(SIDE_TOP,a.y,-o.y,true)
+		p.y=1.0-p.y;var f:float
+		f=1.0-a.y;a.y=1.0-z.y;z.y=f
+		f=-o.y;o.y=-q.y;q.y=f
+	control.pivot_offset_ratio=Vector2(p)
+	set_anchor_and_offset(control,a,z,o,q)
 
 func anchor(a:int=-1,z:int=-1,p:int=-1)->void:
 	var r:Vector2=anchored_position;
@@ -135,8 +138,11 @@ func _on_dirty()->void:
 	if dirty:return
 	dirty=true
 	#
-	if Engine.is_editor_hint():refresh()
-	elif control!=null:Juggler.instance.delay_call(refresh,LangExtension.k_empty_array,0.0)
+	if Engine.is_editor_hint():
+		refresh()
+	elif control!=null:
+		if Juggler.exists:Juggler.instance.delay_call(refresh,LangExtension.k_empty_array,0.0)
+		else:refresh.call_deferred()
 
 func _ready()->void:
 	dirty=true

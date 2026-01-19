@@ -26,27 +26,41 @@ static func unregister_by(v:Node,m:int)->void:
 
 var _time:float
 
+## Override for better performance.
 func world_to_point(n:Node)->Vector2:
-	if n==null or world==null or bounds.is_zero_approx():return Vector2.ZERO
+	if n==null or bounds.is_zero_approx():return Vector2.ZERO
 	var v:Vector3=GodotExtension.get_global_position(n)
 	var b:Vector4=bounds;var s:Vector2=canvas.size
-	if world is Node3D:
-		v=world.global_transform.inverse()*v
-		v.y=-v.z
-	elif world is Node2D:
-		var u:Vector2=world.global_transform.inverse()*Vector2(v.x,v.y)
-		v.x=u.x;v.y=u.x
+	if world==null:
+		if n is Node3D:v.y=-v.z
+	else:
+		if world is Node3D:
+			v=world.global_transform.inverse()*v
+			v.y=-v.z
+		elif world is Node2D:
+			var u:Vector2=world.global_transform.inverse()*Vector2(v.x,v.y)
+			v.x=u.x;v.y=u.x
 	#
 	v.x-=b.x;v.y-=b.y
 	v.x*=s.x/b.z;v.y*=s.y/b.w
 	return Vector2(v.x,v.y)
 
+## Override for better performance.
 func world_to_angle(n:Node)->float:
-	if n!=null and world!=null:
-		if world is Node3D:if n is Node3D:
-			return (world.global_basis.inverse()*n.global_basis).get_euler().y
-		elif world is Node2D:if n is Node2D:return n.global_rotation-world.global_rotation
-	return 0.0
+	var a:float=0.0
+	if n==null:
+		pass
+	elif world==null:
+		if n is Node3D:
+			a=n.global_basis.get_euler().y
+		elif n is Node2D:
+			a=n.global_rotation
+	else:
+		if world is Node3D:
+			if n is Node3D:a=(world.global_basis.inverse()*n.global_basis).get_euler().y
+		elif world is Node2D:
+			if n is Node2D:a=n.global_rotation-world.global_rotation
+	return a
 
 func render_map()->void:
 	if layer>=0:render_layer(s_layers[layer])
@@ -65,7 +79,6 @@ func render_element(e:Element)->void:
 	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
 
 func _ready()->void:
-	if world==null:world=get_tree().root
 	if canvas==null:canvas=GodotExtension.assign_node(self,"Control")
 
 func _process(delta:float)->void:

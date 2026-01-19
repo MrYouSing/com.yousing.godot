@@ -17,6 +17,8 @@ func is_valid()->bool:
 	return i>0
 
 func sample(f:float)->void:
+	if targets.is_empty():return
+	#
 	if shapes.is_empty():
 		for it in targets:
 			if it==null:shapes.append(-1)

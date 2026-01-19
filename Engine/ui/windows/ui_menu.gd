@@ -77,13 +77,8 @@ func _value_changed(v:int)->void:
 
 func show()->void:
 	if is_popup():
-		var m:PopupMenu=get_popup()
-		if button!=null:
-			if button.has_method(&"show_popup"):button.show_popup()
-			elif m!=null:m.show();m.position=get_position();#print(m.position)
-			else:NativeMenu.popup(rid,get_position())
-		elif m!=null:m.show()
-		else:NativeMenu.popup(rid,get_position())
+		if button!=null&&button.has_method(&"show_popup"):button.show_popup()
+		else:show_popup(get_position())
 	else:
 		var m:Node=menu if menu!=null else self
 		m.set(&"visible",true)
@@ -102,17 +97,22 @@ func to_popup(n:Node)->PopupMenu:
 	return null
 
 func get_position()->Vector2:
-	var m:PopupMenu=get_popup()
-	if m==null or m.is_native_menu():# Native
-		return PlayerInput.get_mouse_position()
-	elif button!=null and button.has_method(&"get_global_rect"):
-		var r:Rect2=button.get_global_rect();var s:Vector2=m.size
+	var m:PopupMenu=get_popup();var r:Rect2
+	if button!=null and button.has_method(&"get_global_rect"):
+		r=button.get_global_rect()
+	#
+	if m==null:# Native
+		r.position=PointerInput.get_mouse_position(DisplayServer.SCREEN_PRIMARY)
+	elif m.is_native_menu():
+		r.position=PointerInput.get_mouse_position(-DisplayServer.SCREEN_OF_MAIN_WINDOW)
+	elif !is_zero_approx(r.size.length_squared()):
+		m.show();var s:Vector2=m.size
 		var p:Vector2=UITransform.preset_to_vec2(anchor)
 		var o:Vector2=MathExtension.rect_position(r,p)
 		p.x*=-1.0# Inside
 		p.y=p.y-1.0# Outside
-		return o+s*p+offset
-	return Vector2.ZERO
+		r.position=o+s*p+offset
+	return r.position
 
 func add_menu(m:PopupMenu,e:Entry)->void:
 	if m==null or e==null:return
@@ -210,6 +210,11 @@ func create()->void:
 func is_popup()->bool:
 	if !is_created:create()
 	return popup!=null or rid.is_valid()
+
+func show_popup(p:Vector2)->void:
+	if !is_created:create()
+	if popup!=null:popup.position=p;popup.show();return
+	if rid.is_valid():NativeMenu.popup(rid,p);return
 
 func get_popup()->PopupMenu:
 	if !is_created:create()

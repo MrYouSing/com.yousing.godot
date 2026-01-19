@@ -9,6 +9,9 @@ var weight:float=1.0:
 func sample(f:float)->void:
 	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
 
+func _ready()->void:
+	sample(weight)# At least once.
+
 # For other systems.
 
 func _on_blend(c:Object,f:float)->void:

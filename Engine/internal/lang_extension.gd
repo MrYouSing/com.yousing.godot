@@ -52,6 +52,27 @@ static func str_to_args(s:String,d:String=",")->Array:
 			return a
 	return k_empty_array
 
+static func enum_to_str(e:int,c:Variant)->String:
+	if !c.is_empty():
+		match typeof(c):
+			TYPE_DICTIONARY:
+				var k:Variant=c.find_key(e);if k!=null:return k
+			TYPE_ARRAY,TYPE_PACKED_STRING_ARRAY:
+				return c[e]
+	return k_empty_string
+
+static func mask_to_str(m:int,c:Variant,d:String="|")->String:
+	if !c.is_empty():
+		var p:PackedStringArray;var j:int;var k:Variant
+		match typeof(c):
+			TYPE_DICTIONARY:
+				var t:Dictionary=c
+				for i in 32:j=1<<i;if m&j!=0:k=t.find_key(j);if k!=null:p.append(k)
+			TYPE_ARRAY,TYPE_PACKED_STRING_ARRAY:
+				for i in c.size():j=1<<i;if m&j!=0:k=c[i];if k!=null:p.append(k)
+		return d.join(p)
+	return k_empty_string
+
 static func file_name(x:String)->String:
 	var i:int=x.rfind("/")
 	if i>=0:x=x.substr(i+1)
@@ -83,6 +104,7 @@ static func combine_path(a:String,b:String)->String:
 
 # Collection APIs
 
+## New an array with new instances.
 static func new_array(c:Script,n:int)->Array:
 	if c==null:
 		var a:Array=Array()
@@ -91,6 +113,21 @@ static func new_array(c:Script,n:int)->Array:
 	else:
 		var a:Array=Array(k_empty_array,TYPE_OBJECT,c.get_instance_base_type(),c)
 		if n>0:a.resize(n);for i in n:a[i]=c.new()
+		return a
+
+## Allocate an array without values.
+static func alloc_array(c:Variant,n:int)->Array:
+	if c==null:
+		var a:Array=Array()
+		if n>0:a.resize(n)
+		return a
+	else:
+		var a:Array=k_empty_array
+		match typeof(c):
+			TYPE_INT:a=Array(a,c,k_empty_name,null)
+			TYPE_OBJECT:a=Array(a,TYPE_OBJECT,c.get_instance_base_type(),c)
+			_:a=Array()
+		if n>0:a.resize(n)
 		return a
 
 static func get_item(a:Array,i:int,v:Variant)->Variant:

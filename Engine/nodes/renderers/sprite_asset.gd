@@ -212,6 +212,16 @@ class Sprite:
 	var index:int
 	var rect:Rect2
 
+	var offset:Vector2=Vector2(NAN,NAN):
+		get:
+			if is_nan(offset.x):
+				var s:Sheet=sheet;if s!=null:
+					var v:Vector2=rect.size
+					if is_zero_approx(v.length_squared()):
+						var w:Vector4=s.size;v=Vector2(w.x,w.y)
+					offset=v*-s.pivot
+			return offset
+
 class Marker:
 	var time:float
 	var name:StringName

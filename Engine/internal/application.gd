@@ -22,10 +22,14 @@ static var on_flush:Signal=LangExtension.new_signal(Application,&"on_flush")
 static var on_focus:Signal=LangExtension.new_signal(Application,&"on_focus")
 static var on_pause:Signal=LangExtension.new_signal(Application,&"on_pause")
 
+  # Shortcut APIs
+
 static var max_fps:int=-1:
 	get:return max_fps if max_fps>0 else roundi(DisplayServer.screen_get_refresh_rate(max_fps))
 
 static func get_tree()->SceneTree:return Engine.get_main_loop() as SceneTree
+
+  # Platform APIs
 
 static func get_platform()->String:
 	if !s_app_platform.is_empty():return s_app_platform
@@ -34,6 +38,7 @@ static func get_platform()->String:
 static func get_locale()->String:
 	if !s_app_locale.is_empty():return s_app_locale
 	var s:String=OS.get_locale()
+	#
 	var l:PackedStringArray=s.split("_")
 	if l.size()>2:return l[0]+"_"+l[2]
 	else:return s
@@ -41,7 +46,11 @@ static func get_locale()->String:
 static func set_locale(l:String)->void:
 	if l==s_app_locale:return
 	s_app_locale=l
+	#
+	TranslationServer.set_locale(l)
 	on_locale.emit(l)
+
+  # Statistics APIs
 
 static func get_frames()->int:
 	if s_app_frames>=0:return s_app_frames
@@ -76,6 +85,8 @@ static func set_resolution(s:Vector2,m:DisplayServer.WindowMode=-1,r:int=-2)->vo
 	if r>=-1:
 		if r<0:r=max_fps
 		Engine.max_fps=r
+
+  # Runtime APIs
 
 static func get_config()->ConfigFile:
 	if s_app_config==null:
@@ -114,6 +125,8 @@ static func end_benchmark()->void:
 	var t:float=s_bm_times.pop_back()
 	var d:float=get_time()
 	debug(c.format([t,d-t,d]))
+
+  # User APIs
 
 static func debug(m:String,l:int=0)->void:
 	if s_app_debug&(1<<l)!=0:match l:

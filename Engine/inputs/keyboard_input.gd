@@ -226,6 +226,10 @@ static var current:KeyboardInput
 var old_keys:Array[Key]
 var new_keys:Array[Key]
 
+func set_enabled(b:bool)->void:
+	if !b:
+		old_keys.clear();new_keys.clear()
+
 func reload()->void:
 	#
 	if !path.is_empty():
@@ -312,3 +316,11 @@ func _exit_tree()->void:
 
 func _process(delta: float)->void:
 	try_update(KEY_UNKNOWN)
+
+func _to_string()->String:
+	try_update(KEY_UNKNOWN)
+	var a:PackedStringArray
+	#var m:int=modifier(~KEY_MASK_CMD_OR_CTRL)
+	#for it in k_modifiers:if m&it.x!=0:a.append(k_keys.find_key(it.y))
+	for it in new_keys:a.append(k_keys.find_key(it))
+	return ",".join(a)

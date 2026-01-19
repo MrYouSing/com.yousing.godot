@@ -29,9 +29,7 @@ func _on_frame(f:Frame)->void:
 	else:
 		r.region_enabled=true
 		r.region_rect=s.rect
-	var v:Vector2=-a.pivot# Pivot to Origin.
-	var w:Vector4=a.size
-	r.offset=Vector2(v.x*w.x,v.y*w.y)
+	r.offset=s.offset
 	#
 	var e:StringName=f.key
 	if !e.is_empty():invoke_event(e)

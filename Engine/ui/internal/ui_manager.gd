@@ -75,7 +75,8 @@ func _notification(what:int)->void:
 		MainLoop.NOTIFICATION_APPLICATION_FOCUS_OUT:
 			Application.focus(false)
 		MainLoop.NOTIFICATION_APPLICATION_PAUSED:
-			if features&0x10!=0:_on_pause(true)
+			if features&0x10!=0:
+				if get_view(&"App.Pause")!=null:_on_pause(true)
 			Application.focus(false)
 
 func _on_pause(b:bool)->void:

@@ -39,7 +39,7 @@ func _process(delta:float)->void:
 	if pivot==null:return
 	#
 	var v:Vector2;
-	if input!=null:v=input.get_stick(1)*delta
+	if input!=null:v=input.stick(1)*delta
 	else: v=Input.get_last_mouse_velocity()*(delta*PlayerInput.mouse_to_stick)
 	v.x*=-1.0# Fix the Y-Axis.
 	rot.y=MathExtension.float_clamp(rot.y+v.x*speed.x,range.y,range.w)

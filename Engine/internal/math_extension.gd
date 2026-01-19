@@ -8,8 +8,18 @@ const k_rad_to_deg:float=180.0/PI
 const k_vec2_half:Vector2=Vector2.ONE*0.5
 const k_vec3_half:Vector3=Vector3.ONE*0.5
 const k_vec4_half:Vector4=Vector4.ONE*0.5
+const k_vec2_nan:Vector2=Vector2(NAN,NAN)
+const k_vec3_nan:Vector3=Vector3(NAN,NAN,NAN)
+const k_vec4_nan:Vector4=Vector4(NAN,NAN,NAN,NAN)
 
 # Math APIs
+
+static func shorts_to_int(a:int,b:int)->int:
+	return (mini(a,b)&0xFFFF)|((maxi(a,b)<<16)&0xFFFF0000)
+
+static func int_to_shorts(i:int)->Vector2i:
+	var a:int=i&0xFFFF;var b:int=(i>>16)&0xFFFF
+	return Vector2i(mini(a,b),maxi(a,b))
 
 static func float_clamp(v:float,a:float,z:float)->float:
 	if a<z:return clampf(v,a,z)
