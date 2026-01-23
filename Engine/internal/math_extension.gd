@@ -87,6 +87,11 @@ static func str_to_rect(s:String,d:String=",",e:bool=true)->Rect2:
 	var a:PackedFloat64Array=s.split_floats(d,e)
 	return Rect2(a[0],a[1],a[2],a[3])
 
+static func vec2_lerp(a:Vector2,b:Vector2,t:Vector2,d:float)->Vector2:
+	if t.x>0.0:return a.move_toward(b,t.x*d)
+	elif t.x>=-1.0:return a.lerp(b,-t.x*t.y*d)
+	return b
+
 static func vec3_lerp(a:Vector3,b:Vector3,t:Vector2,d:float)->Vector3:
 	if t.x>0.0:return a.move_toward(b,t.x*d)
 	elif t.x>=-1.0:return a.lerp(b,-t.x*t.y*d)
@@ -107,6 +112,11 @@ static func vec3_parallel(a:Vector3,b:Vector3)->int:
 static func rect_position(r:Rect2,p:Vector2)->Vector2:
 	var a:Vector2=r.position;var z:Vector2=a+r.size
 	return Vector2(lerpf(a.x,z.x,p.x),lerpf(a.y,z.y,p.y))
+
+## Full version of [method Rect2.has_point].
+static func rect_contain(r:Rect2,p:Vector2)->bool:
+	var a:Vector2=r.position;var z:Vector2=a+r.size
+	return p.x>=a.x and p.y>=a.y and p.x<=z.x and p.y<=z.y
 
 ## 2D-Version [method Basis.looking_at].
 static func clocking_at(v:Vector2)->float:

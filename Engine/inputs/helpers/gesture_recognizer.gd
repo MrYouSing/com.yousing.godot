@@ -30,6 +30,7 @@ func not_single(i:int)->bool:# TODO: Unlock
 	return false
 
 func try_event(g:_GestureEvent,e:InputEvent,b:bool)->void:# TODO: Unlock
+	if g==null:return
 	if g.time<0.0 or b:g.set_event(e,b)
 
 func try_change(t:GestureType,p:Vector2,a:Vector2,b:Vector2)->Vector2:
@@ -40,7 +41,7 @@ func try_change(t:GestureType,p:Vector2,a:Vector2,b:Vector2)->Vector2:
 		return b
 
 func to_distance(f:float)->float:
-	if f>0.0:f*=PointerInput.screen_to_ui()
+	if f>0.0:f*=InputExtension.pixel_to_meter()
 	elif f<0.0:f*=-1.0
 	return f
 
@@ -59,11 +60,15 @@ func _ready()->void:
 	if drag==null:drag=DragEvent.new()
 	if events.is_empty():
 		event=InputEventScreenTouch.new()
+		events=[touch,drag]
 		if engine:
-			events=[touch,drag,PanEvent.new(),ZoomEvent.new()]
 			push_warning("GestureType.Rotate is missed because of godot gesture detection.")
+			if support(GestureType.Pan):events.append(PanEvent.new())
+			else:events.append(null)
+			if support(GestureType.Zoom):events.append(ZoomEvent.new())
+			else:events.append(null)
 		else:
-			events=[touch,drag,TransformEvent.new()]
+			if features&(0x07<<GestureType.Pan)!=0:events.append(TransformEvent.new())
 	#
 	for it in events:if it!=null:it.context=self;it.clear()
 	if input==null:input=PointerInput.current

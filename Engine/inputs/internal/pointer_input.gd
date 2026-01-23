@@ -15,10 +15,6 @@ const k_buttons:PackedStringArray=[
 
 static var current:PointerInput
 
-static func screen_to_ui(i:int=DisplayServer.SCREEN_OF_MAIN_WINDOW)->float:
-	var d:float=DisplayServer.screen_get_dpi(i)
-	return d/2.54
-
 static func get_mouse_position(i:int)->Vector2:
 	var o:Vector2i;match i:
 		DisplayServer.MAIN_WINDOW_ID:o=DisplayServer.window_get_position()
@@ -26,25 +22,43 @@ static func get_mouse_position(i:int)->Vector2:
 		_:o=DisplayServer.screen_get_position(i)
 	return DisplayServer.mouse_get_position()-o
 
+static func on_lock_mouse(e:InputEvent,b:int,k:int)->bool:
+	if e is InputEventMouseButton:
+		if e.button_index==b and e.pressed:
+			Input.mouse_mode=Input.MOUSE_MODE_CAPTURED
+			return true
+	elif e is InputEventKey:
+		if e.physical_keycode==k:
+			Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
+			return true
+	return false
+
 @export_group("Pointer")
 @export_flags(
-	"Unhandled","Native Mouse","Mouse to Touch","Non-emulated Touch","Touch to Mouse","Non-emulated Mouse"
-)var features:int=0
+	"Non-emulated Touch","Mouse to Touch","Non-emulated Mouse","Touch to Mouse",
+	"Unhandled","Native Mouse","Lock Mouse","Mouse To Stick"
+)var features:int=0:
+	set(x):features=x;if is_node_ready():_featured()
 @export var capacity:int=10
+@export var stick:int=-1
 
+var input:PlayerInput
 var mouse:PointerEvent
 var pointers:Array[PointerEvent]
+
+func _featured()->void:
+	InputExtension.set_is_on(Input,&"emulate_touch_from_mouse",features)
+	InputExtension.set_is_on(Input,&"emulate_mouse_from_touch",features>>2)
+	var b:bool=features&0x10!=0;set_process_input(!b);set_process_unhandled_input(b)
+	if features&0x40!=0:Input.mouse_mode=Input.MOUSE_MODE_CAPTURED
+	else:Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
 
 func _ready()->void:
 	mouse=PointerEvent.new();mouse.index=-1
 	pointers=LangExtension.new_array(PointerEvent,capacity)
 	var i:int=-1;for it in pointers:i+=1;it.index=i
-	#
-	var b:bool=features&0x01!=0;set_process_input(!b);set_process_unhandled_input(b)
-	if features&0x04!=0:Input.emulate_touch_from_mouse=true
-	elif features&0x08!=0:Input.emulate_touch_from_mouse=false
-	if features&0x10!=0:Input.emulate_mouse_from_touch=true
-	elif features&0x20!=0:Input.emulate_mouse_from_touch=false
+	_featured()
+	if features&0x80!=0:if input==null:input=PlayerInput.current
 	#
 	if current==null:current=self
 
@@ -53,6 +67,7 @@ func _exit_tree()->void:
 
 func _process(d:float)->void:
 	get_mouse()
+	if stick>=0:_on_stick()
 
 func _input(e:InputEvent)->void:_on_input(e)
 func _unhandled_input(e:InputEvent)->void:_on_input(e)
@@ -65,18 +80,30 @@ func _on_input(e:InputEvent)->void:
 		var p:PointerEvent=pointers[e.index]
 		p.drag(e,e.position,e.pressure)
 	elif e is InputEventMouseButton:
-		if features&0x02!=0:return
+		if features&0x20!=0:return
 		var p:PointerEvent=get_mouse()
 		p.touch(e,e.position,true,e.double_click)
 	elif e is InputEventMouseMotion:
-		if features&0x02!=0:return
+		if features&0x20!=0:return
 		var p:PointerEvent=get_mouse()
 		p.drag(e,e.position,e.pressure)
 
+func _on_stick()->void:
+	if features&0x40!=0:
+		if Input.mouse_mode==Input.MOUSE_MODE_CAPTURED:# On Focus
+			if Input.is_key_pressed(KEY_ESCAPE):Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
+		else:# On Blur
+			if mouse_down(0):Input.mouse_mode=Input.MOUSE_MODE_CAPTURED
+	if features&0x80!=0:
+		if input==null:input=PlayerInput.current
+		if input!=null:
+			var v:Vector2=Input.get_last_mouse_velocity()*InputExtension.s_mouse_to_stick
+			if !v.is_zero_approx():input.try_update();input.m_axes[stick]=v
+
 func set_enabled(b:bool)->void:
 	set_process(b)
-	if features&0x01!=null:set_process_unhandled_input(b)
-	else:set_process_input(b)
+	if features&0x10!=0:set_process_input(false);set_process_unhandled_input(b)
+	else:set_process_input(b);set_process_unhandled_input(false)
 	#
 	if !b:
 		if mouse!=null:mouse.clear()
@@ -89,7 +116,7 @@ func get_touches(a:Array[PointerEvent])->int:
 
 func get_mouse()->PointerEvent:
 	if Application.get_frames()!=mouse.timestamp:
-		if features&0x02!=0:mouse.drag(null,get_mouse_position(DisplayServer.MAIN_WINDOW_ID),0.0)
+		if features&0x20!=0:mouse.drag(null,get_mouse_position(DisplayServer.MAIN_WINDOW_ID),0.0)
 		mouse.button(null,Input.get_mouse_button_mask())
 	return mouse
 

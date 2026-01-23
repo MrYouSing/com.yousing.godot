@@ -46,7 +46,7 @@ func teardown(c:Animator)->void:
 		n.set(&"exit_func",null)
 
 func register(c:AnimationPlayer,n:Node)->void:
-	if c==null or n==null:return
+	if c==null or n==null or events==null:return
 	#
 	var p:NodePath=c.get_parent().get_path_to(n)
 	for it in events.get_clips():

@@ -148,4 +148,5 @@ func _ready()->void:
 	dirty=true
 	if !Engine.is_editor_hint():
 		if control==null:control=GodotExtension.assign_node(self,"Control")
+	if control!=null:control.pivot_offset=Vector2.ZERO
 	refresh()

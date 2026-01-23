@@ -8,7 +8,6 @@ class_name TpsCamera extends Node3D
 @export_range(0.0,1.0,0.001,"or_greater","or_less")var side:float=0.5
 @export_group("Input")
 @export var input:PlayerInput
-@export var cursor:bool=true
 @export var speed:Vector2=Vector2(10.0,10.0)
 @export var range:Vector4=Vector4(-90.0,0.0,90.0,0.0)
 @export_group("Scene")
@@ -26,21 +25,14 @@ func _ready()->void:
 		camera.rotation=Vector3(0.0,PI,0.0)
 		if camera is Camera3D:cam=camera
 		else:cam=camera.get_node_or_null(^"./Camera")
-	if cursor:Input.mouse_mode=Input.MOUSE_MODE_CAPTURED
-
-func _unhandled_input(event: InputEvent)->void:
-	if cursor:
-		if event is InputEventKey and event.physical_keycode==KEY_ESCAPE:
-			Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
-		if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.pressed:
-			Input.mouse_mode=Input.MOUSE_MODE_CAPTURED
+	#if input==null:input=PlayerInput.current
 
 func _process(delta:float)->void:
 	if pivot==null:return
 	#
 	var v:Vector2;
 	if input!=null:v=input.stick(1)*delta
-	else: v=Input.get_last_mouse_velocity()*(delta*PlayerInput.mouse_to_stick)
+	else: v=Input.get_last_mouse_velocity()*(delta*InputExtension.s_mouse_to_stick)
 	v.x*=-1.0# Fix the Y-Axis.
 	rot.y=MathExtension.float_clamp(rot.y+v.x*speed.x,range.y,range.w)
 	rot.x=MathExtension.float_clamp(rot.x+v.y*speed.y,range.x,range.z)
@@ -76,8 +68,10 @@ func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 	if l.settings.has(&"lock"):lock=l.settings.lock
 	if t==null or t.instant():
 		l.direct_to_camera_3d(cam)
+		if l.settings.has(&"pos"):position=l.settings.pos
 		if l.settings.has(&"arm"):arm=l.settings.arm
 	else:#Tween
 		var tmp=Tweenable.cast_tween(c)
 		l.tween_to_camera_3d(cam,tmp,t);Transition.current=self
+		if l.settings.has(&"pos"):t.to_tween(tmp,self,^"position",l.settings.pos)
 		if l.settings.has(&"arm"):t.to_tween(tmp,self,^"arm",l.settings.arm)

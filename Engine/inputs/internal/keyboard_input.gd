@@ -1,4 +1,4 @@
-## An input class for keyboard device.
+## An input class for keyboard devices.
 class_name KeyboardInput extends Node
 
 const k_keys:Dictionary[StringName,int]={

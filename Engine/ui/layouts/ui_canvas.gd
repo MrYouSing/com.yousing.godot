@@ -30,16 +30,16 @@ static func fit_scale(m:AspectRatio,s:Vector2,d:Vector2)->Vector2:
 @export var layer:int
 @export var canvas:Node:
 	set(x):canvas=x;_on_dirty()
+@export var resolution:Vector2i=Vector2i(1920,1080):
+	set(x):resolution=x;_on_dirty()
+@export var resample:float=1.0:
+	set(x):resample=x;_on_dirty()
 @export var mode:AspectRatio=1:
 	set(x):mode=x;_on_dirty()
 @export var pivot:Control.LayoutPreset=Control.PRESET_CENTER:
 	set(x):pivot=x;_on_dirty()
 @export var offset:Vector2:
 	set(x):offset=x;_on_dirty()
-@export var resolution:Vector2i=Vector2i(1920,1080):
-	set(x):resolution=x;_on_dirty()
-@export var resample:float=1.0:
-	set(x):resample=x;_on_dirty()
 
 var dirty:bool
 var screen_to_ui:float
@@ -81,13 +81,14 @@ func refresh()->void:
 		UITransform.set_anchor_and_offset(canvas,p,p,-p*s+offset,(Vector2.ONE-p)*s+offset)
 		canvas.scale=d
 	elif canvas is CanvasLayer:
-		#canvas.scale=d
 		return
 
 func _on_dirty()->void:
 	if ui_to_screen==0.0 or dirty:return
 	dirty=true
-	Juggler.instance.delay_call(refresh,LangExtension.k_empty_array,0.0)
+	#
+	if Juggler.exists:Juggler.instance.delay_call(refresh,LangExtension.k_empty_array,0.0)
+	else:refresh.call_deferred()
 
 func _enter_tree()->void:
 	# Prepare

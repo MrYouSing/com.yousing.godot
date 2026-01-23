@@ -18,6 +18,14 @@ static func create(c:Object,b:Variant,s:Script=null)->Object:
 		c.add_child(o);o.set(&"owner",c)
 	return o
 
+static func get_enabled(o:Object)->bool:
+	if o==null:return false
+	if o.has_method(&"get_enabled"):return o.get_enabled()
+	if o is Node:
+		var b:Variant=o.get(&"visible")
+		return o.is_processing() if b==null else b
+	return false
+
 static func set_enabled(o:Object,b:bool)->void:
 	if o==null:return
 	if o.has_method(&"set_enabled"):o.set_enabled(b);return
@@ -25,6 +33,14 @@ static func set_enabled(o:Object,b:bool)->void:
 	if o is Node:
 		o.set_process(b);o.set_physics_process(b)
 		o.set(&"visible",b)
+
+static func try_enabled(o:Object,i:int)->void:
+	if o==null:return
+	var b:bool;match i:
+		0:b=false
+		1:b=true
+		-1:b=!get_enabled(o)
+	set_enabled(o,b)
 
 static func add_node(n:Node,p:Node=null,b:bool=true)->void:
 	if n==null:return

@@ -34,13 +34,13 @@ func do_update(d:float)->void:
 			if m==0:clear();return# Off
 			elif _mask==0:set_begin(true)# Down
 			elif is_begin():_time+=d# On
-			if !is_done() and !MathExtension.time_outside(_time,time.x,time.z):
+			if !is_done() and !MathExtension.time_outside(_time,time.x,time.y):
 				set_done(t)
 		InteractTrigger.Interact.Combine:
-			if m!=_mask and _mask==f:
+			if m!=_mask and m==f:
 				set_done(t)
 		InteractTrigger.Interact.Repeat:
-			if _mask!=f:
+			if m!=f:
 				clear();return
 			else:
 				if !is_begin():
@@ -65,7 +65,7 @@ func do_update(d:float)->void:
 							clear();return
 	#
 	_mask=m
-	if is_done() and MathExtension.time_dead(t-_done,time.z):
+	if is_done() and MathExtension.time_dead(t-_done-d,time.z):# Next frame of dead.
 		clear()
 
 func clear()->void:

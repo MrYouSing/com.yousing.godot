@@ -1,8 +1,6 @@
 class_name PlayerInput extends Node
 
 static var current:PlayerInput
-# A scale from mouse-space to input-scale.
-static var mouse_to_stick:float=0.0005
 
 @export var deadzone:Vector4=Vector4(0.125,0.5,0.5,0.5)
 @export var axes:Array[StringName]
@@ -45,23 +43,23 @@ func axis(i:int)->float:
 
 func stick(i:int)->Vector2:
 	try_update()
-	return m_axes[i];
+	return m_axes[i]
 
 func on(i:int)->bool:
 	try_update()
-	return (m_buttons&(1<<i))!=0
+	i=1<<i;return m_buttons&i!=0
 
 func off(i:int)->bool:
 	try_update()
-	return (m_buttons&(1<<i))==0
+	i=1<<i;return m_buttons&i==0
 
 func down(i:int)->bool:
 	try_update()
-	return (m_previous&(1<<i))==0 and (m_buttons&(1<<i))!=0
+	i=1<<i;return m_previous&i==0 and m_buttons&i!=0
 
 func up(i:int)->bool:
 	try_update()
-	return (m_previous&(1<<i))!=0 and (m_buttons&(1<<i))==0
+	i=1<<i;return m_previous&i!=0 and m_buttons&i==0
 
 func tap(i:int)->bool:
 	try_update()
@@ -86,5 +84,5 @@ func _ready()->void:
 func _exit_tree()->void:
 	if self==current:current=null
 
-func _process(delta: float)->void:
+func _process(d:float)->void:
 	try_update()

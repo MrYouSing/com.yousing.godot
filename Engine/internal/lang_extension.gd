@@ -18,7 +18,7 @@ static var e_not_implemented:Dictionary={
 	"text":"Not Implemented Exception"
 }
 
-static func throw_exception(c:Object,e:Dictionary)->void:
+static func throw_exception(o:Object,e:Dictionary)->void:
 	var t:String=e["text"]
 	push_error(t)
 	printerr(t)
@@ -125,6 +125,7 @@ static func alloc_array(c:Variant,n:int)->Array:
 		var a:Array=k_empty_array
 		match typeof(c):
 			TYPE_INT:a=Array(a,c,k_empty_name,null)
+			TYPE_STRING_NAME:a=Array(a,TYPE_OBJECT,c,null)
 			TYPE_OBJECT:a=Array(a,TYPE_OBJECT,c.get_instance_base_type(),c)
 			_:a=Array()
 		if n>0:a.resize(n)
@@ -232,42 +233,42 @@ static func shoot_signal(s:Signal,o:Object,a:Array)->void:
 
 	# Object APIs
 
-static func new_signal(c:Object,k:StringName)->Signal:
-	if c==null or k.is_empty():return k_empty_signal
-	if !c.has_signal(k) and !c.has_user_signal(k):c.add_user_signal(k)
-	return Signal(c,k)
+static func new_signal(o:Object,k:StringName)->Signal:
+	if o==null or k.is_empty():return k_empty_signal
+	if !o.has_signal(k) and !o.has_user_signal(k):o.add_user_signal(k)
+	return Signal(o,k)
 
-static func exist_signal(c:Object,k:StringName)->bool:
-	if c==null:return false
-	return c.has_signal(k) or c.has_user_signal(k)
+static func exist_signal(o:Object,k:StringName)->bool:
+	if o==null:return false
+	return o.has_signal(k) or o.has_user_signal(k)
 
-static func add_signal(c:Object,k:StringName,v:Callable,f:int=0)->void:
-	if c==null or v.is_null():return
-	if !c.has_signal(k) and !c.has_user_signal(k):c.add_user_signal(k)
-	if !c.is_connected(k,v):c.connect(k,v,f)
+static func add_signal(o:Object,k:StringName,v:Callable,f:int=0)->void:
+	if o==null or v.is_null():return
+	if !o.has_signal(k) and !o.has_user_signal(k):o.add_user_signal(k)
+	if !o.is_connected(k,v):o.connect(k,v,f)
 
-static func remove_signal(c:Object,k:StringName,v:Callable)->void:
-	if c==null or v.is_null():return
-	if !c.has_signal(k) and !c.has_user_signal(k):return
-	if c.is_connected(k,v):c.disconnect(k,v)
+static func remove_signal(o:Object,k:StringName,v:Callable)->void:
+	if o==null or v.is_null():return
+	if !o.has_signal(k) and !o.has_user_signal(k):return
+	if o.is_connected(k,v):o.disconnect(k,v)
 
-static func send_signal(c:Object,k:StringName,a:Array)->void:
-	if c!=null and !k.is_empty():match a.size():
-		0:c.emit_signal(k)
-		1:c.emit_signal(k,a[0])
-		2:c.emit_signal(k,a[0],a[1])
-		3:c.emit_signal(k,a[0],a[1],a[2])
-		4:c.emit_signal(k,a[0],a[1],a[2],a[3])
-		5:c.emit_signal(k,a[0],a[1],a[2],a[3],a[4])
-		6:c.emit_signal(k,a[0],a[1],a[2],a[3],a[4],a[5])
-		7:c.emit_signal(k,a[0],a[1],a[2],a[3],a[4],a[5],a[6])
-		8:c.emit_signal(k,a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7])
+static func send_signal(o:Object,k:StringName,a:Array)->void:
+	if o!=null and !k.is_empty():match a.size():
+		0:o.emit_signal(k)
+		1:o.emit_signal(k,a[0])
+		2:o.emit_signal(k,a[0],a[1])
+		3:o.emit_signal(k,a[0],a[1],a[2])
+		4:o.emit_signal(k,a[0],a[1],a[2],a[3])
+		5:o.emit_signal(k,a[0],a[1],a[2],a[3],a[4])
+		6:o.emit_signal(k,a[0],a[1],a[2],a[3],a[4],a[5])
+		7:o.emit_signal(k,a[0],a[1],a[2],a[3],a[4],a[5],a[6])
+		8:o.emit_signal(k,a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7])
 
 	# Advanced APIs
 
-static func bake_signal(c:Object,k:StringName,t:Array,m:Array[StringName])->Signal:
-	if !c.has_user_signal(k):c.add_user_signal(k)
-	var tmp:Signal=Signal(c,k);var j:int=m.size()
+static func bake_signal(o:Object,k:StringName,t:Array,m:Array[StringName])->Signal:
+	if !o.has_user_signal(k):o.add_user_signal(k)
+	var tmp:Signal=Signal(o,k);var j:int=m.size()
 	var i:int=-1;for it in t:
 		i+=1;if i<j:k=m[i]
 		if it!=null and it.has_method(k):
@@ -275,10 +276,10 @@ static func bake_signal(c:Object,k:StringName,t:Array,m:Array[StringName])->Sign
 			if !tmp.is_connected(d):tmp.connect(d)
 	return tmp
 
-static func merge_signal(c:Object,s:Signal,r:Signal,a:Array,m:StringName,f:int=0)->Signal:
+static func merge_signal(o:Object,s:Signal,r:Signal,a:Array,m:StringName,f:int=0)->Signal:
 	if s.is_null():
-		if !c.has_user_signal(m):c.add_user_signal(m)
-		s=Signal(c,m)
+		if !o.has_user_signal(m):o.add_user_signal(m)
+		s=Signal(o,m)
 	else:
 		clear_signal(s)
 	#

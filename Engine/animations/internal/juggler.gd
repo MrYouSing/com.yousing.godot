@@ -52,12 +52,12 @@ func _exit_tree()->void:
 func _process(delta:float)->void:
 	if workers.is_empty():return
 	workers[0].update(delta)
-	workers[1].update(delta/Engine.time_scale)
+	workers[1].update(1.0/Application.get_fps())
 
 func _physics_process(delta:float)->void:
 	if workers.is_empty():return
 	workers[2].update(delta)
-	workers[3].update(delta/Engine.time_scale)
+	workers[3].update(1.0/Engine.physics_ticks_per_second)
 
 class Worker:
 	var context:Juggler
@@ -91,8 +91,9 @@ class Worker:
 		delta=d;time+=delta
 		#
 		var m:int=calls.size();if m==0:return
-		var j:int=0;for it in calls:
-			if it!=null and it.update():calls[j]=it;j+=1
+		var j:int=0;var it:Call;for i in m:
+			it=calls[i];if it==null:continue
+			if it.update():calls[j]=it;j+=1
 		# Cleanup.
 		LangExtension.remove_range(calls,j,m-j)
 		delta=0.0
