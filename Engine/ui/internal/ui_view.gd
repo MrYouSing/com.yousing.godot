@@ -4,7 +4,7 @@ class_name UIView extends Node
 @export_group("View")
 @export var path:StringName
 @export var model:UIModel:
-	set(x):model=x;dirty=true;render()
+	set(x):if x!=model:model=x;dirty=true;render()
 
 var dirty:bool=true
 

@@ -21,3 +21,7 @@ func _on_event(c:Object,e:StringName)->void:
 	if t!=null:curve=t.curve;t.to_tween(play_tween(),self,^"weight",f)
 	elif fade>0.0:play_tween().tween_property(self,^"weight",f,fade)
 	else:_on_toggle(c,f>0.5)
+
+func _on_blend(c:Object,f:float)->void:
+	if curve!=null:f=curve.sample_baked(f)
+	_on_toggle(c,f*f>=threshold*threshold)

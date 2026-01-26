@@ -45,6 +45,18 @@ static func set_vector(k:Array[StringName],v:Vector2,d:float=0.0)->void:
 	if v.y>0.0:Input.action_press(k[3], v.y)
 	else:Input.action_release(k[3])
 
+static func set_click(k:StringName,t:float=0.1)->void:
+	set_button(k,true)
+	Juggler.instance.delay_call(
+		func()->void:set_button(k,false),
+		LangExtension.k_empty_array,t)
+
+static func set_swipe(a:Array[StringName],b:StringName,v:Vector2,t:float=0.1)->void:
+	set_vector(a,v);set_button(b,true)
+	Juggler.instance.delay_call(
+		func()->void:set_vector(a,Vector2.ZERO);set_button(b,false),
+		LangExtension.k_empty_array,t)
+
 # Event APIs
 
 static var s_event_inited:bool
@@ -66,6 +78,8 @@ static func event_init()->void:
 	event_add_type(&"Key",InputEventKey,KeyboardInput.k_keys,&"keycode",&"pressed")
 	event_add_type(&"JoypadMotion",InputEventJoypadMotion,GamepadInput.k_axes,&"axis",&"axis_value")
 	event_add_type(&"JoypadButton",InputEventJoypadButton,GamepadInput.k_buttons,&"button_index",&"pressed")
+	event_add_type(&"ScreenDrag",InputEventScreenDrag,e,&"index",&"position")
+	event_add_type(&"ScreenTouch",InputEventScreenTouch,e,&"index",&"pressed")
 
 static func event_add_type(c:StringName,s:Variant,e:Variant,i:StringName,v:StringName)->void:
 	if !s_event_inited:event_init()

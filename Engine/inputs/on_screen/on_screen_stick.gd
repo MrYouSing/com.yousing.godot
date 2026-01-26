@@ -6,7 +6,7 @@ class_name OnScreenStick extends OnScreenControl
 	"Hide","Dynamic","Follow"
 )var features:int:
 	set(x):features=x;if is_node_ready():_featured()
-@export var actions:Array[StringName]=[&"ui_left",&"ui_right",&"ui_up",&"ui_down",&"ui_move"]
+@export var actions:Array[StringName]=[&"ui_left",&"ui_right",&"ui_up",&"ui_down",&"ui_accept"]
 @export_group("Nodes")
 @export var area:Control
 @export var pivot:Control
@@ -73,8 +73,8 @@ func level(v:Vector2)->int:
 	return i
 
 func show(b:bool)->void:
-	GodotExtension.set_enabled(pivot,b)
-	GodotExtension.set_enabled(thumb,b)
+	if pivot!=null:pivot.visible=b
+	if thumb!=null:thumb.visible=b
 
 func render(p:Vector2,v:Vector2)->void:
 	_stick_offset=v
@@ -118,11 +118,18 @@ func drag(p:Vector2)->void:
 	_stick_value=v
 	InputExtension.set_vector(actions,v)
 
+func set_enabled(b:bool)->void:
+	show(features&0x01==0 and b)
+	super.set_enabled(b)
+
 func _featured()->void:
 	if features&0x01!=0:show(false)
 	else:show(true)
+# <!-- Macro.Patch OnInput
+func _input(e:InputEvent)->void:_on_input(e)
+func _unhandled_input(e:InputEvent)->void:_on_input(e)
 
-func _input(e:InputEvent)->void:
+func _on_input(e:InputEvent)->void:
 	var b:bool=false
 	#
 	if e is InputEventScreenTouch:
@@ -140,5 +147,21 @@ func _input(e:InputEvent)->void:
 		if _touch_id==e.index:
 			drag(e.position)
 			b=true
+	elif e is InputEventMouseButton:
+		if e.pressed and in_area(area,e.position):
+			if _touch_id==-1:
+				_touch_id=-2
+				touch(e)
+				b=true
+		else:
+			if _touch_id==-2:
+				touch(null)
+				_touch_id=-1
+				b=true
+	elif e is InputEventMouseMotion:
+		if _touch_id==-2:
+			drag(e.position)
+			b=true
 	#
-	if b:get_viewport().set_input_as_handled()
+	if b:if is_handled_input():get_viewport().set_input_as_handled()
+# Macro.Patch -->

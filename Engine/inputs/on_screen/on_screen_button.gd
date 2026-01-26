@@ -31,6 +31,7 @@ func refresh()->void:
 		var r:Rect2=image.get_global_rect()
 		touch.global_position=r.get_center()
 		set_size(touch.shape,r.size)
+		draw()
 
 func dirty()->bool:
 	var b:bool=Input.is_action_pressed(action)
@@ -52,3 +53,8 @@ func _change()->void:
 	#
 	InputExtension.set_button(action,b)
 	render(b)
+
+func set_enabled(b:bool)->void:
+	if touch!=null:touch.visible=b
+	if image!=null:image.visible=b
+	super.set_enabled(b)

@@ -30,6 +30,9 @@ static func set_size(g:Shape2D,s:Vector2)->void:
 		g.radius=s.x*0.5
 		g.height=s.y
 
+@export_group("Control")
+@export var layer:int
+
 func register(b:bool)->void:
 	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
 
@@ -43,15 +46,25 @@ func dirty()->bool:
 func draw()->void:
 	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
 
+func is_handled_input()->bool:
+	return get_meta(&"Handled",true)
+
+func set_enabled(b:bool)->void:
+	var a:bool=get_meta(&"Unhandled",false)
+	set_process(b)
+	set_process_input(!a and b)
+	set_process_unhandled_input(a and b)
+	if b:draw()
+
 func _ready()->void:
-	get_viewport().size_changed.connect(refresh)
+	UICanvas.register(self,layer,refresh)
 	register(true)
-	refresh();draw()
+	refresh()
+	set_enabled(is_processing())
 
 func _exit_tree()->void:
 	register(false)
-	get_viewport().size_changed.disconnect(refresh)
-
+	UICanvas.unregister(self,layer,refresh)
 
 func _process(d:float)->void:
 	if dirty():draw()

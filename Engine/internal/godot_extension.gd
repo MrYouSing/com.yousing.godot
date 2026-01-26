@@ -75,6 +75,18 @@ static func assign_node(n:Node,s:String)->Node:
 		return n.get_parent()
 	return null
 
+static func refresh_node(n:Node)->void:
+	if n!=null:
+		if n.has_method(&"_on_dirty"):n._on_dirty()
+		elif n.has_method(&"refresh"):n.refresh()
+
+static func input_node(n:Node,i:int)->void:
+	if n!=null:
+		i>>=0;if i&0x3!=0:n.set_process_input(i==0x2)
+		i>>=2;if i&0x3!=0:n.set_process_shortcut_input(i==0x2)
+		i>>=2;if i&0x3!=0:n.set_process_unhandled_key_input(i==0x2)
+		i>>=2;if i&0x3!=0:n.set_process_unhandled_input(i==0x2)
+
 static func get_global_position(n:Node)->Vector3:
 	if n!=null:
 		if n is Node3D:return n.global_position

@@ -21,6 +21,14 @@ static func enum_to_vec2(e:int,f:float,u:bool=false)->Vector2:
 static func preset_to_vec2(p:int)->Vector2:
 	return enum_to_vec2(k_layout_presets[p],0.0,false)
 
+## Full version of [method Control._has_point].
+static func has_point(c:Control,p:Vector2)->bool:
+	if c!=null:
+		var t:Transform2D=c.get_global_transform_with_canvas()
+		p=t.inverse()*p;var s:Vector2=c.size
+		return p.x>=0.0 and p.y>=0.0 and p.x<=s.x and p.y<=s.y
+	return false
+
 static func get_position(c:Control,u:Vector2,w:bool=true)->Vector2:
 	if c!=null:
 		var t:Transform2D=c.get_global_transform_with_canvas() if w else c.get_transform()

@@ -21,6 +21,10 @@ static func int_to_shorts(i:int)->Vector2i:
 	var a:int=i&0xFFFF;var b:int=(i>>16)&0xFFFF
 	return Vector2i(mini(a,b),maxi(a,b))
 
+static func int_repeat(i:int,a:int,z:int=0)->int:
+	if a<z:return wrapi(i,a,z)
+	else:return (i+a)%a#wrapi(i,z,a)
+
 static func float_clamp(v:float,a:float,z:float)->float:
 	if a<z:return clampf(v,a,z)
 	else:return v

@@ -8,9 +8,23 @@ enum AspectRatio {
 	FitInside,
 	FitOutside,
 	Stretch,
+	MatchWidth,
+	MatchHeight,
 }
 
-static var k_instances:Array[UICanvas]=LangExtension.alloc_array(UICanvas,32)
+static var instances:Array[UICanvas]=LangExtension.alloc_array(UICanvas,32)
+
+static func register(n:Node,l:int,c:Callable)->void:
+	if n==null:return
+	var i:UICanvas=instances[l]
+	if i!=null:i.on_refresh.connect(c)
+	else:n.get_viewport().size_changed.connect(c)
+
+static func unregister(n:Node,l:int,c:Callable)->void:
+	if n==null:return
+	var i:UICanvas=instances[l]
+	if i!=null:i.on_refresh.disconnect(c)
+	else:n.get_viewport().size_changed.disconnect(c)
 
 static func fit_scale(m:AspectRatio,s:Vector2,d:Vector2)->Vector2:
 	var a:float=s.x/s.y;var b:float=d.x/d.y
@@ -41,9 +55,11 @@ static func fit_scale(m:AspectRatio,s:Vector2,d:Vector2)->Vector2:
 @export var offset:Vector2:
 	set(x):offset=x;_on_dirty()
 
+signal on_refresh()
+
 var dirty:bool
-var screen_to_ui:float
-var ui_to_screen:float
+var screen_to_ui:Vector2
+var ui_to_screen:Vector2
 
 func get_resolution()->Vector2:
 	if resample<0.0:return resolution/-resample
@@ -58,8 +74,13 @@ func get_scale(m:AspectRatio,s:Vector2,d:Vector2)->Vector4:
 		match m:
 			AspectRatio.FitHorizontally:m=AspectRatio.FitVertically
 			AspectRatio.FitVertically:m=AspectRatio.FitHorizontally
+			AspectRatio.MatchWidth:m=AspectRatio.MatchHeight
+			AspectRatio.MatchHeight:m=AspectRatio.MatchWidth
 		var c:float=s.x;s.x=s.y;s.y=c
-	d=fit_scale(m,s,d)
+	match m:
+		AspectRatio.MatchWidth:s.y=s.x*d.y/d.x;d=Vector2.ONE*(d.x/s.x)
+		AspectRatio.MatchHeight:s.x=s.y*d.x/d.y;d=Vector2.ONE*(d.y/s.y)
+		_:d=fit_scale(m,s,d)
 	return Vector4(s.x,s.y,d.x,d.y)
 
 func refresh()->void:
@@ -69,8 +90,8 @@ func refresh()->void:
 	var w:Vector4=get_scale(mode,get_resolution(),get_screen())
 	var s:Vector2=Vector2(w.x,w.y)
 	var d:Vector2=Vector2(w.z,w.w)
-	ui_to_screen=(d.x+d.y)*0.5
-	screen_to_ui=1.0/ui_to_screen
+	ui_to_screen=d
+	screen_to_ui=Vector2(1.0/d.x,1.0/d.y)
 	#
 	if canvas==null:
 		pass
@@ -82,9 +103,10 @@ func refresh()->void:
 		canvas.scale=d
 	elif canvas is CanvasLayer:
 		return
+	on_refresh.emit()
 
 func _on_dirty()->void:
-	if ui_to_screen==0.0 or dirty:return
+	if ui_to_screen.x==0.0 or dirty:return
 	dirty=true
 	#
 	if Juggler.exists:Juggler.instance.delay_call(refresh,LangExtension.k_empty_array,0.0)
@@ -92,16 +114,16 @@ func _on_dirty()->void:
 
 func _enter_tree()->void:
 	# Prepare
-	if ui_to_screen!=0.0:return
+	if ui_to_screen.x!=0.0:return
 	if canvas==null:canvas=GodotExtension.assign_node(self,"Control")
 	dirty=true;refresh()
 	get_viewport().size_changed.connect(_on_dirty)
 	#
-	if k_instances[layer]==null:k_instances[layer]=self
+	if instances[layer]==null:instances[layer]=self
 
 func _exit_tree()->void:
 	# Cleanup
 	get_viewport().size_changed.disconnect(_on_dirty)
-	ui_to_screen=0.0;screen_to_ui=0.0;dirty=false
+	ui_to_screen=Vector2.ZERO;screen_to_ui=Vector2.ZERO;dirty=false
 	#
-	if self==k_instances[layer]:k_instances[layer]=null
+	if self==instances[layer]:instances[layer]=null

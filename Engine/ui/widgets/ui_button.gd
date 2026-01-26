@@ -27,3 +27,7 @@ func render()->void:
 	else:button.icon=i
 	if tooltip!=null:tooltip.text=t
 	else:button.tooltip_text=t
+
+func _ready()->void:
+	if button==null:button=GodotExtension.assign_node(self,"Button")
+	super._ready()
