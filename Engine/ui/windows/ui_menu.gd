@@ -137,6 +137,7 @@ func add_menu(m:PopupMenu,e:Entry)->void:
 	if e.mask&Mask.Disable!=0:m.set_item_disabled(e.index,true)
 	if e.mask&Mask.Check!=0:m.set_item_checked(e.index,true)
 	if !e.tooltip.is_empty():m.set_item_tooltip(e.index,get_text(e.tooltip))
+	m.set_item_metadata(e.index,e)
 
 func add_native(m:RID,e:Entry)->void:
 	if !m.is_valid() or e==null:return
@@ -263,8 +264,7 @@ class Entry:
 				key=LangExtension.str_to_mask(v,KeyboardInput.k_keys)
 				return true
 			&"$icon":
-				var p:String=v
-				if FileAccess.file_exists(p):icon=load(p)
+				icon=Loader.load_asset(v)
 				return true
 			&"$args":
 				args=LangExtension.str_to_args(v,";")

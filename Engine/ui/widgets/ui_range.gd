@@ -126,7 +126,3 @@ func _ready()->void:
 		_events[2*i]=set_state.bind(i,1);_events[2*i+1]=set_state.bind(i,2)
 		if it!=null:it.min_value=v.x;it.max_value=v.y;it.step=v.z
 	_on_value(v.x-1.0,value)
-
-#func _process(delta: float)->void:
-#	if Input.is_action_just_pressed("left"):value-=10.0
-#	elif Input.is_action_just_pressed("right"):value+=10.0

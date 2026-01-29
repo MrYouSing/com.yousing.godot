@@ -24,7 +24,56 @@ static func throw_exception(o:Object,e:Dictionary)->void:
 	printerr(t)
 	print_stack()
 
-# String APIs
+# Reflection APIs
+
+static func class_of(o:Object,a:PackedStringArray,b:Array[Resource])->int:
+	if o!=null:
+		var i:int=b.find(o.get_script());if i>=0:return a.size()+i
+		i=a.find(o.get_class());if i>=0:return i
+	return -1
+
+static func class_is(o:Object,c:Variant,t:int=-1)->bool:
+	if o!=null:
+		if t<0:typeof(c)
+		match t:
+			TYPE_STRING,TYPE_STRING_NAME:
+				var a:StringName=o.get_class()
+				var b:StringName=c
+				return a==b or ClassDB.is_parent_class(a,b)
+			TYPE_OBJECT:
+				var a:Script=o.get_script()
+				var b:Object=c
+				while a!=null:
+					if a==b:return true
+					a=a.get_base_script()
+			TYPE_ARRAY,TYPE_PACKED_STRING_ARRAY:
+				for it in c:if !o.has_method(it):return false
+				return true
+	return false
+
+static func class_has(c:Variant,m:StringName,k:StringName,b:bool=false)->bool:
+	var d:Array=k_empty_array;match typeof(c):
+		TYPE_STRING,TYPE_STRING_NAME:
+			if ClassDB.class_exists(c):d=ClassDB.call(&"class_get_%s_list"%m,c,!b)
+		TYPE_OBJECT:
+			if c is Script:d=c.call(&"get_script_%s_list"%m)
+			else:d=c.call(&"get_%s_list"%m)
+	for it in d:if it.name==k:return true
+	return false
+
+static func class_cast(o:Object,c:Variant)->Object:
+	match typeof(c):
+		TYPE_STRING,TYPE_STRING_NAME:
+			var b:StringName=c
+			if o==null or !class_is(o,b,TYPE_STRING_NAME):
+				if ClassDB.class_exists(b):return ClassDB.instantiate(b)
+				else:return null
+		TYPE_OBJECT:
+			var b:Resource=c
+			if o==null or !class_is(o,b,TYPE_OBJECT):
+				return b.new()
+		_:return null
+	return o
 
 static func str_to_enum(s:String,c:Variant)->int:
 	if !s.is_empty() and !c.is_empty():match typeof(c):
@@ -72,6 +121,8 @@ static func mask_to_str(m:int,c:Variant,d:String="|")->String:
 				for i in c.size():j=1<<i;if m&j!=0:k=c[i];if k!=null:p.append(k)
 		return d.join(p)
 	return k_empty_string
+
+# String APIs
 
 static func file_name(x:String)->String:
 	var i:int=x.rfind("/")
@@ -145,6 +196,12 @@ static func remove_range(a:Array,o:int,c:int=-1)->void:
 		for i in e:a[o]=a[o+c];o+=1
 	o=o+c-1
 	for i in c:a.remove_at(o-i)
+
+static func merge_array(a:Array,b:Array)->void:
+	for it in b:if !a.has(it):a.append(it)
+
+static func merge_strings(a:PackedStringArray,b:PackedStringArray)->void:
+	for it in b:if !a.has(it):a.append(it)
 
 static func map_to_object(m:Dictionary,o:Object)->void:
 	if m.is_empty() or o==null:return
@@ -241,6 +298,12 @@ static func new_signal(o:Object,k:StringName)->Signal:
 static func exist_signal(o:Object,k:StringName)->bool:
 	if o==null:return false
 	return o.has_signal(k) or o.has_user_signal(k)
+
+static func info_signal(o:Object,k:StringName)->Dictionary:
+	if o!=null and !k.is_empty():
+		var a:Array[Dictionary]=o.get_signal_list()
+		for it in a:if it.name==k:return it
+	return k_empty_dictionary
 
 static func add_signal(o:Object,k:StringName,v:Callable,f:int=0)->void:
 	if o==null or v.is_null():return

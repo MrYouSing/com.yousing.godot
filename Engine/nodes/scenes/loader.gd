@@ -23,6 +23,7 @@ static func init()->void:
 		s_file_api.open=FileAccess.open
 		s_file_api.text=LangExtension.k_empty_callable
 		s_file_api.table=LangExtension.k_empty_callable
+		s_file_api.asset=ResourceLoader.load
 
 static func load_text(f:String)->String:
 	if !s_is_inited:init()
@@ -51,6 +52,16 @@ static func load_table(f:String,d:String=",")->Array[PackedStringArray]:
 				if it.size()>=n:t.append(it)
 			return t
 	return LangExtension.k_empty_table
+
+static func load_asset(f:String)->Resource:
+	if !s_is_inited:init()
+	var m:Callable=s_file_api.asset
+	if !m.is_null():
+		var t:Resource=m.call(f)
+		if t!=null:return t
+	if s_file_api.exists.call(f):
+		return s_file_api.asset.call(f)
+	return null
 
 @export_group("Loader")
 @export var root:Node

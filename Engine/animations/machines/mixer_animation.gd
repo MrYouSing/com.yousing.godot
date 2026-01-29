@@ -4,10 +4,18 @@ class_name MixerAnimation extends StateMachine
 @export_group("Mixer")
 @export var mixers:Array[Node]
 @export var snapshot:Snapshot
+@export var classes:PackedStringArray
+@export var scripts:Array[Resource]=[
+preload("res://addons/yousing/Engine/media/internal/media.gd")
+]
+@export var names:Array[StringName]=[
+&"volume"
+]
 
 func key_of(o:Object)->StringName:
-	if o is Audio:return &"volume"
-	return &"weight"
+	var i:int=LangExtension.class_of(o,classes,scripts)
+	if i>=0:return names[i]
+	else:return &"weight"
 
 func _on_dirty()->void:
 	super._on_dirty()

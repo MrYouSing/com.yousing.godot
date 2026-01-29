@@ -5,8 +5,15 @@ class_name Media extends Node
 @export var player:Node
 @export var album:Album
 @export_group("Player")
-@export var auto:StringName
-@export var loop:bool=false
+@export var url:StringName:
+	set(x):
+		url=x;if is_inited:open(x);play()
+@export var loop:bool=false:
+	set(x):
+		loop=x;if is_inited:if x and !player.is_playing():play()
+@export var bus:StringName:
+	set(x):
+		bus=x;_audio()
 @export var mute:bool=false:
 	set(x):mute=x;_audio()
 @export_range(0.0,1.0,0.001,"or_greater") var volume:float=1.0:
@@ -30,11 +37,36 @@ var paused:bool:
 		if x:pause()
 		else:resume()
 
+var stream:Object:
+	get:
+		if player!=null:return player.stream
+		else:return null
+	set(x):
+		emit(x)
+
+var length:float:get=get_length
+func get_length()->float:LangExtension.throw_exception(self,LangExtension.e_not_implemented);return -1.0
+
+var position:float:get=get_position,set=set_position
+func get_position()->float:LangExtension.throw_exception(self,LangExtension.e_not_implemented);return -1.0
+func set_position(f:float)->void:LangExtension.throw_exception(self,LangExtension.e_not_implemented);return
+
+var progress:float:get=get_progress,set=set_progress
+func get_progress()->float:
+	var l:float=get_length()
+	if l>=0.0:return position/l
+	else:return -1.0
+func set_progress(f:float)->void:
+	var l:float=get_length()
+	if l>=0.0:position=l*f
+
 func _ready()->void:
-	if !auto.is_empty():open(auto);play()
+	if !url.is_empty():open(url);play()
 
 func _audio()->void:
 	if player!=null:
+		var b:StringName=bus
+		if !b.is_empty():player.bus=b
 		var v:float=volume;if mute:v=0.0
 		player.volume_db=linear_to_db(v)
 
@@ -86,15 +118,17 @@ func open(p:StringName)->void:
 	if !is_inited:init()
 	#
 	if player!=null:
-		if album!=null:player.stream=album.load(p)
-		else:player.stream=load("res://"+p)
+		var s:Object=null
+		if album!=null:s=album.load(p)
+		else:s=load("res://"+p)
+		if s!=null:player.stream=s
 
 func emit(o:Variant)->void:
 	if !is_inited:init()
 	if player==null:return
 	#
 	match typeof(o):
-		TYPE_STRING_NAME:open(o);play()
+		TYPE_STRING,TYPE_STRING_NAME:open(o);play()
 		TYPE_INT:player.stream=album.clips[o];play()
 		TYPE_ARRAY:volume=o[1];emit(o[0])
 		TYPE_OBJECT:

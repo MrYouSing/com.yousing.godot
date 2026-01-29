@@ -3,10 +3,10 @@ class_name UIView extends Node
 
 @export_group("View")
 @export var path:StringName
-@export var model:UIModel:
-	set(x):if x!=model:model=x;dirty=true;render()
+@export var model:Resource:
+	set(x):if x!=model:model=x;dirty=true;if is_node_ready():render()
 
-var dirty:bool=true
+var dirty:bool
 
 func render():
 	if !dirty:return

@@ -46,6 +46,24 @@ func move_index(i:int,a:int,z:int)->int:
 	elif i>z:return a+(i-z)
 	return a
 
+func scroll_index(i:Vector2,o:int,c:int,n:int,f:float,j:Vector3)->Vector4i:
+	var w:Vector4i=Vector4i.ZERO
+	var p:int=i.x;var q:int=o+c# Next Index
+	# Set Cache
+	w.w=1
+	# Clamp Index
+	if p==o:
+		if f>=j.y:p=o+1
+	elif p<o:
+		p=o
+	elif p>=q-1:
+		if o<=p and p<=q:
+			if f-j.z<=j.x:p=q-1
+		else:
+			p=q-1
+	#
+	w.x=p;w.y=o;return w
+
 # Override it for better performance.
 func is_input(i:int)->bool:
 	if i>=0 and i<inputs:
@@ -124,6 +142,7 @@ func execute(i:int)->void:
 
 func _ready()->void:
 	if container==null:container=self
+	if capacity<=0:capacity=num_models()
 	render()
 
 func _process(d:float)->void:

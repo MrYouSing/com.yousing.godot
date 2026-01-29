@@ -15,6 +15,17 @@ static func create(m:StringName,i:int,n:Node=null)->Audio:
 		return a
 	return null
 
+func get_length()->float:
+	if is_playing():return stream.get_length()
+	else:return -1.0
+
+func get_position()->float:
+	if is_playing():return player.get_playback_position()
+	else:return -1.0
+
+func set_position(f:float)->void:
+	if is_playing():player.seek(f)
+
 func init()->void:
 	if is_inited:return
 	super.init()
