@@ -15,7 +15,7 @@ func init()->void:
 	for it in clips:
 		if it!=null:library[it.name]=it
 	if !path.is_empty():
-		var t:Array[PackedStringArray]=Loader.load_table(path)
+		var t:Array[PackedStringArray]=Asset.load_table(path)
 		var n:int=t.size();if n>1:
 			var h:PackedStringArray=t[0];var r:PackedStringArray
 			var c:Clip;var s:String

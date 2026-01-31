@@ -32,14 +32,28 @@ func init()->void:
 	#
 	if player!=null:
 		if player is AudioStreamPlayer:type=1
-		elif  player is AudioStreamPlayer2D:type=2
-		elif  player is AudioStreamPlayer3D:type=3
+		elif player is AudioStreamPlayer2D:type=2
+		elif player is AudioStreamPlayer3D:type=3
+		else:player=null
 
 func is_paused()->bool:
 	if !is_inited:init()
 	#
 	if player!=null:return player.stream_paused
 	else:return false
+
+func open(p:StringName)->void:
+	if !is_inited:init()
+	#
+	if player!=null:
+		var s:AudioStream=AudioLoader.load_from_file(p)
+		if s!=null:player.stream=s;return
+	super.open(p)
+
+func play()->void:
+	if !is_inited:init()
+	#
+	if player!=null:player.stream_paused=false;player.play()
 
 func pause()->void:
 	if !is_inited:init()

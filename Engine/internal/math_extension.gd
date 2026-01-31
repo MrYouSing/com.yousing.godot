@@ -68,6 +68,13 @@ static func random_level(f:float,a:Array[float])->int:
 		f-=it# Next level.
 	return i
 
+static func float_to_time(f:float)->Vector4:
+	if f<0.0:return Vector4.ZERO
+	var h:float=floori(f/3600.0);f-=3600.0*h
+	var m:float=floori(f/60.0);f-=60.0*m
+	var s:float=floori(f);f-=s
+	return Vector4(h,m,s,f)
+
 # Geometry APIs
 
 static func str_to_vec2(s:String,d:String=",",e:bool=true)->Vector2:

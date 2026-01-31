@@ -233,7 +233,7 @@ func set_enabled(b:bool)->void:
 func reload()->void:
 	#
 	if !path.is_empty():
-		var t:Array[PackedStringArray]=Loader.load_table(path)
+		var t:Array[PackedStringArray]=Asset.load_table(path)
 		var n:int=t.size();if n>1:
 			n-=1;var l:PackedStringArray;var k:Key
 			src_keys.resize(n);dst_keys.resize(n)

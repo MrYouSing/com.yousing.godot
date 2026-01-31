@@ -186,9 +186,7 @@ func create()->void:
 	is_created=true
 	#
 	if path.is_empty():return
-	var t:Array[PackedStringArray]=Loader.load_table(path)
-	if t.size()<=1:return
-	items=LangExtension.table_to_array(t,Entry)
+	if !Asset.load_array(items,path,Entry):return
 	popup=to_popup(menu)
 	if popup!=null:
 		popup.clear(true);popup.size=Vector2i.ZERO
@@ -264,7 +262,7 @@ class Entry:
 				key=LangExtension.str_to_mask(v,KeyboardInput.k_keys)
 				return true
 			&"$icon":
-				icon=Loader.load_asset(v)
+				icon=IOExtension.load_asset(v)
 				return true
 			&"$args":
 				args=LangExtension.str_to_args(v,";")

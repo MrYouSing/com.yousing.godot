@@ -124,35 +124,6 @@ static func mask_to_str(m:int,c:Variant,d:String="|")->String:
 
 # String APIs
 
-static func file_name(x:String)->String:
-	var i:int=x.rfind("/")
-	if i>=0:x=x.substr(i+1)
-	return x
-
-static func file_name_only(x:String)->String:
-	var i:int=x.rfind("/")
-	var j:int=x.rfind(".")
-	if i>=0:
-		if j>=0 and i<j:x=x.substr(i+1,j-i-1)
-		else:x=x.substr(i+1)
-	return x
-
-static func file_extension(x:String)->String:
-	var i:int=x.rfind(".")
-	if i>=0:return x.substr(i).to_lower()
-	return k_empty_string
-
-static func directory_name(x:String)->String:
-	var i:int=x.rfind("/")
-	if i>=0:x=x.substr(0,i)
-	return x
-
-static func combine_path(a:String,b:String)->String:
-	var x:bool=a.ends_with("/");var y:bool=b.ends_with("/")
-	if x and y:a+b.substr(1)
-	elif x or y:return a+b
-	return a+"/"+b
-
 # Collection APIs
 
 ## New an array with new instances.

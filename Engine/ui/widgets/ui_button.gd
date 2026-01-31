@@ -3,9 +3,11 @@ class_name UIButton extends UIView
 
 @export_group("Button")
 @export var button:Button
-@export var text:Control
+@export var label:Control
 @export var image:TextureRect
 @export var tooltip:Control
+
+var callback:Callable
 
 func render()->void:
 	if !dirty:return
@@ -21,13 +23,17 @@ func render()->void:
 	var i:Texture2D=model.icon
 	var t:StringName=model.description
 	#
-	if text!=null:text.text=d
+	if label!=null:label.text=d
 	else:button.text=d
 	if image!=null:image.texture=i
 	else:button.icon=i
 	if tooltip!=null:tooltip.text=t
 	else:button.tooltip_text=t
 
+func _clicked()->void:
+	if callback.is_valid():callback.call()
+
 func _ready()->void:
 	if button==null:button=GodotExtension.assign_node(self,"Button")
+	if button!=null:button.pressed.connect(_clicked)
 	super._ready()

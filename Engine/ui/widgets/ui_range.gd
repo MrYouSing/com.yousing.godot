@@ -117,6 +117,13 @@ func _on_value(o:float,n:float)->void:
 		direct_to(2,n)
 		auto_to(3,n,2)
 
+func _set(k:StringName,v:Variant)->bool:
+	match k:
+		&"min_value":range.x=v;return true
+		&"max_value":range.y=v;return true
+		&"step":range.z=v;return true
+	return false
+
 func _ready()->void:
 	var v:Vector3=range;var i:int=ranges.size();
 	_states.resize(i);_events.resize(2*i)

@@ -54,14 +54,14 @@ func load_texture(i:int)->void:
 	else:a=new_segment(p)
 	if a.fps<0.0:a.fps=fps
 	if a.events.is_empty():
-		p=LangExtension.combine_path(LangExtension.directory_name(p),a.name+"_events.json")
+		p=IOExtension.combine_path(IOExtension.directory_name(p),a.name+"_events.json")
 		load_event(a.events,p)
 	#
 	var c:Clip=new_clip(a);clips.append(c)
 	library[c.name]=c
 
 func load_event(e:Array[Marker],p:String)->void:
-	p=Loader.load_text(p)
+	p=Asset.load_text(p)
 	if p.is_empty():return
 	#
 	LangExtension.array_add_maps(e,JSON.parse_string(p),Marker)
@@ -95,7 +95,7 @@ class Atlas:
 	var events:Array[Marker]
 
 	func set_json(j:String)->void:
-		j=Loader.load_text(j)
+		j=Asset.load_text(j)
 		if j.is_empty():return
 		LangExtension.map_to_object(JSON.parse_string(j),self)
 
@@ -167,8 +167,8 @@ class Sheet extends Atlas:
 	func set_texture(t:Texture2D,p:String)->void:
 		if t==null:return
 		if p.is_empty():p=t.resource_path
-		var d:String=LangExtension.directory_name(p)
-		p=LangExtension.file_name_only(p)
+		var d:String=IOExtension.directory_name(p)
+		p=IOExtension.file_name_only(p)
 		var i:int=p.rfind("_")
 		#
 		texture=t
@@ -189,7 +189,7 @@ class Sheet extends Atlas:
 					if it=="n":break
 			if i>=0:set_flag(p,k,v)
 		#
-		p=LangExtension.combine_path(d,name+".json")
+		p=IOExtension.combine_path(d,name+".json")
 		set_json(p)
 		var v:Vector2=t.get_size()
 		size=Vector4(v.x/cols,v.y/rows,v.x,v.y)

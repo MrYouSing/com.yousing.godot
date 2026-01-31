@@ -75,7 +75,7 @@ func _value_changed(v:Variant)->void:
 	var p:int=find(v);var n:int=_options.size()
 	if _popup!=null:
 		for i in n:_popup.set_item_checked(i,p&(1<<i)!=0)
-		if !_busy:_popup.id_pressed.emit(-1)
+		_popup.id_pressed.emit(-1)
 	else:
 		for i in n:_views[i].set_pressed_no_signal(p&(1<<i)!=0)
 	#

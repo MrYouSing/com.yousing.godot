@@ -7,10 +7,13 @@ class_name Media extends Node
 @export_group("Player")
 @export var url:StringName:
 	set(x):
-		url=x;if is_inited:open(x);play()
+		url=x;if is_inited:
+			if x.is_empty():stop()
+			else:open(x);play()
 @export var loop:bool=false:
 	set(x):
-		loop=x;if is_inited:if x and !player.is_playing():play()
+		loop=x;if is_inited:
+			if x and !player.is_playing():play()
 @export var bus:StringName:
 	set(x):
 		bus=x;_audio()
@@ -58,7 +61,9 @@ func get_progress()->float:
 	else:return -1.0
 func set_progress(f:float)->void:
 	var l:float=get_length()
-	if l>=0.0:position=l*f
+	if l>=0.0:
+		var p:float=get_progress()
+		if !is_zero_approx(f-p):position=l*f
 
 func _ready()->void:
 	if !url.is_empty():open(url);play()
@@ -120,8 +125,8 @@ func open(p:StringName)->void:
 	if player!=null:
 		var s:Object=null
 		if album!=null:s=album.load(p)
-		else:s=load("res://"+p)
-		if s!=null:player.stream=s
+		else:s=IOExtension.load_asset(p)
+		player.stream=s
 
 func emit(o:Variant)->void:
 	if !is_inited:init()

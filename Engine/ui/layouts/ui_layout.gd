@@ -75,13 +75,13 @@ func load_layout(l:Array)->void:
 		set_layout(c,it)
 
 func load_file(f:String)->void:
-	match LangExtension.file_extension(f):
+	match IOExtension.file_extension(f):
 		".json":
-			var s:String=Loader.load_text(f)
+			var s:String=Asset.load_text(f)
 			if s.is_empty():return
 			else:load_layout(LangExtension.maps_to_array(JSON.parse_string(s),Preset))
 		".csv":
-			var t:Array[PackedStringArray]=Loader.load_table(f)
+			var t:Array[PackedStringArray]=Asset.load_table(f)
 			if t.is_empty():return
 			else:load_layout(LangExtension.table_to_array(t,Preset))
 	layout=f

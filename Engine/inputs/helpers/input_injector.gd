@@ -20,7 +20,7 @@ func clear(b:bool=false)->void:
 	_map.clear()
 
 func inject(p:StringName)->void:
-	var t:Array[PackedStringArray]=Loader.load_table(p)
+	var t:Array[PackedStringArray]=Asset.load_table(p)
 	if !t.is_empty():
 		clear(true)
 		LangExtension.array_add_table(_map,t,Entry)

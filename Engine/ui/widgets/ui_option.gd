@@ -26,9 +26,7 @@ func reload()->void:
 	if s_options.has(path):
 		_options.append_array(s_options.get(path))
 	else:
-		var t:Array[PackedStringArray]=Loader.load_table(path)
-		if !t.is_empty():
-			LangExtension.array_add_table(_options,t,Option)
+		Asset.load_array(_options,path,Option)
 
 func find(v:Variant)->int:
 	var i:int=-1;for it in _options:
@@ -131,7 +129,7 @@ class Option:
 	func _set(k:StringName,v:Variant)->bool:
 		match k:
 			&"$icon":
-				icon=Loader.load_asset(v)
+				icon=IOExtension.load_asset(v)
 				return true
 			&"$value":
 				value=str_to_var(v)

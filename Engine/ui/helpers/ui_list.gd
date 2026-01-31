@@ -26,15 +26,12 @@ var selection:Array[Element]
 var _waiting:bool
 
 func reload()->void:
-	elements.clear()
-	var t:Array[PackedStringArray]=Loader.load_table(path)
-	if t!=null:
-		var tmp:UIList=current;current=self
-		var r:Node=root
-		if root==null:root=GodotExtension.s_root
-		LangExtension.array_add_table(elements,t,Element)
-		root=r
-		current=tmp
+	var tmp:UIList=current;current=self
+	var r:Node=root
+	if root==null:root=GodotExtension.s_root
+	Asset.load_array(elements,path,Element)
+	root=r
+	current=tmp
 
 func find(k:StringName)->Element:
 	var i:int=-1;for it in elements:
@@ -189,13 +186,13 @@ class Element:
 	func _set(k:StringName,v:Variant)->bool:
 		match k:
 			&"$icon":
-				icon=Loader.load_asset(v)
+				icon=IOExtension.load_asset(v)
 				return true
 			&"$node":
 				if UIList.current!=null:node=UIList.current.root.get_node_or_null(v)
 				return true
 			&"$resource":
-				resource=Loader.load_asset(v)
+				resource=IOExtension.load_asset(v)
 				return true
 			&"$parent":
 				var s:String=v

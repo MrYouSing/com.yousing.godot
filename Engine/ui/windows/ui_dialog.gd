@@ -45,11 +45,15 @@ func hide()->void:
 	if fallback!=null:fallback.hide()
 
 func complete()->void:
-	if results.is_empty():on_complete.emit(result)
-	else:on_complete.emit(results)
+	if results.is_empty():
+		if !result.is_empty():on_complete.emit(result)
+	else:
+		on_complete.emit(results)
 	if fallback!=null:
-		if results.is_empty():fallback.emit_signal(message,result)
-		else:fallback.emit_signal(message,results)
+		if results.is_empty():
+			if !result.is_empty():fallback.emit_signal(message,result)
+		else:
+			fallback.emit_signal(message,results)
 
 func show_dialog()->bool:
 	var e:Error=DisplayServer.dialog_show(get_text(title),get_text(text),get_texts(),back_dialog)
@@ -67,7 +71,7 @@ func back_input(s:String)->void:
 
 func show_file()->bool:
 	var p:String=text
-	var e:Error=DisplayServer.file_dialog_show(get_text(title),LangExtension.directory_name(p),LangExtension.file_name(p),get_meta(&"hidden",false),mode,texts,back_file)
+	var e:Error=DisplayServer.file_dialog_show(get_text(title),IOExtension.directory_name(p),IOExtension.file_name(p),get_meta(&"hidden",false),mode,texts,back_file)
 	return e==Error.OK
 
 func back_file(b:bool,a:PackedStringArray,i:int)->void:
@@ -80,7 +84,7 @@ func back_file(b:bool,a:PackedStringArray,i:int)->void:
 
 func show_file_ex()->bool:
 	var p:String=text
-	var e:Error=DisplayServer.file_dialog_with_options_show(get_text(title),LangExtension.directory_name(p),"",LangExtension.file_name(p),get_meta(&"hidden",false),mode,texts,options,back_file_ex)
+	var e:Error=DisplayServer.file_dialog_with_options_show(get_text(title),IOExtension.directory_name(p),"",IOExtension.file_name(p),get_meta(&"hidden",false),mode,texts,options,back_file_ex)
 	return e==Error.OK
 
 func back_file_ex(b:bool,a:PackedStringArray,i:int,d:Dictionary)->void:

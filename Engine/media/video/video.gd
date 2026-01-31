@@ -4,6 +4,11 @@ class_name Video extends Media
 @export_group("Video")
 @export var aspect:UICanvas.AspectRatio:
 	set(x):aspect=x;if is_inited:_size_changed()
+@export var speed:float=1.0:
+	set(x):speed=x;_video()
+
+var _stream:VideoStream
+var _speed:float=1.0
 
 func get_length()->float:
 	if is_playing():return player.get_stream_length() 
@@ -22,9 +27,9 @@ func get_size()->Vector2:
 		if t!=null:return t.get_size()
 	return Vector2.ZERO
 
-func play()->void:
-	super.play()
-	_size_changed()
+func _video()->void:
+	if player!=null:
+		player.speed_scale=speed*_speed
 
 func _size_changed()->void:
 	if aspect>=UICanvas.AspectRatio.MatchWidth:return
@@ -49,17 +54,46 @@ func init()->void:
 	if player!=null:
 		if player is VideoStreamPlayer:
 			type=1;player.loop=false;player.expand=true
+		else:
+			player=null
 
 func is_playing()->bool:
 	if !is_inited:init()
 	#
-	if type==1:return player.is_playing()
+	if player!=null:return player.is_playing()
+	else:return false
+
+func is_paused()->bool:
+	if !is_inited:init()
+	#
+	if player!=null:return player.is_playing() and _speed==0.0
 	else:return false
 
 func open(p:StringName)->void:
 	if !is_inited:init()
 	#
 	if player!=null and FileAccess.file_exists(p):
-		var s:Object=LangExtension.class_cast(player.stream,&"FFmpegVideoStream")
-		if s!=null:s.file=p;player.stream=s;return
+		_stream=LangExtension.class_cast(_stream,&"FFmpegVideoStream")
+		if _stream!=null:_stream.file=p;player.stream=_stream;return
 	super.open(p)
+
+func play()->void:
+	if !is_inited:init()
+	#
+	if player!=null:_speed=1.0;_video();player.play()
+	_size_changed()
+
+func stop()->void:
+	if !is_inited:init()
+	#
+	if player!=null:_speed=1.0;player.stop()
+
+func pause()->void:
+	if !is_inited:init()
+	#
+	if player!=null:_speed=0.0;_video()
+
+func resume()->void:
+	if !is_inited:init()
+	#
+	if player!=null:_speed=1.0;_video()

@@ -47,7 +47,7 @@ func _ready()->void:
 			if UIDatabase.instance!=null:database=UIDatabase.instance
 			else:
 				var s:String="res://assets/databases/"+name+".tres"
-				if ResourceLoader.exists(s):database=ResourceLoader.load(s)
+				database=IOExtension.load_asset(s)
 		if events==null:
 			events=EventMachine.new();events.name=&"Events"
 			GodotExtension.add_node(events,self,false)

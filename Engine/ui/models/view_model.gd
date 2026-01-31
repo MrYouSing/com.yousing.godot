@@ -60,10 +60,10 @@ static func find_class(c:StringName,k:StringName,t:StringName)->int:
 func bind(m:Object,k:StringName,v:Node,p:NodePath)->Binding:
 	if m!=null and v!=null:
 		v=v.get_node_or_null(p);if v!=null:
-			var i:int=find_binder(v,k,type_string(typeof(m.get(k))))
+			var t:int=typeof(m.get(k));var i:int=find_binder(v,k,type_string(t))
 			if i>=0:
 				var b:Binding=Binding.new()
-				b.name=k;b.view=v
+				b.type=t;b.name=k;b.view=v
 				b.content=s_binder_contents[i]
 				b.event=s_binder_events[i]
 				b.notice=s_binder_notices[i]
@@ -77,12 +77,16 @@ func setup(m:Object,v:Node)->Stub:
 			k=names[i];it=bind(m,k,v,paths[i]);if it!=null:
 				if s.bindings.has(k):s.bindings[k+str(i)]=it
 				else:s.bindings[k]=it
-		s.context=self;s.model=m;
+		s.context=self;s.model=m
 		s.bind();return s
 	return null
 
 func teardown(s:Stub)->void:
 	if s!=null:s.dispose()
+
+func _model_changed(s:Stub,a:Object,b:Object)->void:
+	if a!=null and a.has_method(&"_bind"):a._bind(null)
+	if b!=null and b.has_method(&"_bind"):b._bind(s)
 
 class Binding:
 	var stub:Stub
@@ -97,7 +101,7 @@ class Binding:
 
 	func bind()->void:
 		if view!=null:
-			render(value)
+			display=value
 			var d:Dictionary=LangExtension.info_signal(view,event)
 			if !d.is_empty():
 				var c:Callable=_updated if d.args.is_empty() else _changed
@@ -124,19 +128,27 @@ class Binding:
 		set(x):
 			if stub!=null:
 				if stub.model!=null:stub.model.set(name,x)
-				stub.broadcast(self,x)
+				stub.broadcast(name,x)
+
+	func refresh()->void:
+		_synced(value)
 
 	func _synced(x:Variant)->void:# M to V
 		if _busy:return
 		_busy=true
-		render(x)
+		display=x
 		_busy=false
 
 	# View Side
 
-	func render(x:Variant)->void:
-		if notice.is_empty():view.set(content,x)
-		else:view.call(notice,x)
+	var display:Variant:
+		get:
+			if view==null:return null
+			return view.get(content)
+		set(x):
+			if view==null:return
+			if notice.is_empty():view.set(content,x)
+			else:view.call(notice,x)
 
 	func _updated()->void:# V to M
 		if _busy:return
@@ -153,25 +165,21 @@ class Binding:
 class Stub:
 	var context:Object
 	var model:Object:
-		set(x):if x!=model:model=x;refresh()
+		set(x):
+			if x!=model:
+				if context!=null:context._model_changed(self,model,x)
+				model=x;refresh()
 	var bindings:Dictionary[StringName,Binding]
 	signal changed(m:Object)
 
-	var _busy:bool
-
 	func dispose()->void:
-		var it:Binding;for b in bindings.values():
-			it=b;if it!=null:
-				if it.stub!=null:it.unbind();it.stub=null
-				it.free()
-		context=null;model=null;bindings.clear()
-		free()
+		unbind()
+		model=null;context=null;bindings.clear()
 
 	func refresh()->void:
-		_busy=true
 		var it:Binding;for b in bindings.values():
 			it=b;if it!=null and it.stub!=null:it.refresh()
-		_busy=false;broadcast(null,null)
+		broadcast(LangExtension.k_empty_name,null)
 
 	func bind()->void:
 		unbind()
@@ -182,10 +190,19 @@ class Stub:
 		var it:Binding;for b in bindings.values():
 			it=b;if it!=null and it.stub!=null:it.unbind();it.stub=null
 
-	func broadcast(b:Binding,v:Variant)->void:
-		if _busy:return
-		if b!=null:emit_signal(b.name,v)
+	func broadcast(k:StringName,v:Variant)->void:
+		if !k.is_empty():emit_signal(k,v)
 		changed.emit(model)
+
+	func verify(k:StringName)->bool:
+		var it:Binding=bindings.get(k,null)
+		if it!=null:
+			var m:Variant=it.value;var v:Variant=it.display
+			match it.type:
+				TYPE_FLOAT:if is_zero_approx(m-v):return false
+				_:if m==v:return false
+			broadcast(k,m);return true
+		return false
 
 	func _get(k:StringName)->Variant:
 		var it:Binding=bindings.get(k,null)
