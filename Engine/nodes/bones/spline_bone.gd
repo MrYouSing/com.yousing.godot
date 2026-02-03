@@ -1,9 +1,9 @@
 ## A simple implementation for LookAtIK.
 @tool
-class_name SpineBone extends ArrowBone
+class_name SplineBone extends ArrowBone
 
-@export_group("Spine")
-@export var spine:Quaternion=Quaternion.IDENTITY
+@export_group("Spline")
+@export var spline:Quaternion=Quaternion.IDENTITY
 @export var offset:Quaternion=Quaternion.IDENTITY
 @export var names:Array[String]
 @export var indexes:Array[int]
@@ -12,7 +12,7 @@ class_name SpineBone extends ArrowBone
 var poses:Array[Transform3D]
 
 func _on_update(c:Skeleton3D,b:int,d:float)->void:
-	var q:Quaternion=spine
+	var q:Quaternion=spline
 	if start!=null:
 		if end==null:q=start.basis
 		else:

@@ -1,16 +1,14 @@
 ## A placeholder model for ui pattern.
-class_name PlaceholderModel extends Resource
+class_name PlaceholderModel extends AbsModel
 
 @export_group("Model")
 @export var node:NodePath
 @export var resource:Resource
 @export_group("Observer")
-@export var rate:float=-1.0
+@export var rate:float
 @export var keys:Array[StringName]
 
-var _is_inited:bool
 var _model:Object
-var _stub:ViewModel.Stub
 var _call:int=Juggler.k_invalid_id
 
 func _bind(s:ViewModel.Stub)->void:
@@ -20,17 +18,25 @@ func _bind(s:ViewModel.Stub)->void:
 			_call=Juggler.k_invalid_id
 	_stub=s
 	if _stub!=null:
-		if rate>=0.0:
-			_call=Juggler.instance.repeat_call(_tick,LangExtension.k_empty_array,rate,rate)
+		var f:float=MathExtension.time_delta(rate);
+		if is_zero_approx(f):return
+		_call=Juggler.instance.repeat_call(_tick,LangExtension.k_empty_array,f,f)
 
 func _tick()->void:
 	if _stub!=null:
 		if keys.is_empty():_stub.refresh()
 		else:for it in keys:_stub.verify(it)
 
+func read(k:StringName,v:Variant=null)->Variant:
+	if _model!=null:return _model.get(k)
+	else:return v
+
+func write(k:StringName,v:Variant)->void:
+	if _model!=null:_model.set(k,v);
+
 func init()->void:
 	if _is_inited:return
-	_is_inited=true
+	super.init()
 	#
 	if _model!=null:
 		pass
@@ -38,14 +44,3 @@ func init()->void:
 		_model=GodotExtension.s_root.get_node_or_null(node)
 	else:
 		_model=resource
-
-func _get(k:StringName)->Variant:
-	if !_is_inited:init()
-	if _model!=null:return _model.get(k)
-	else:return null
-
-func _set(k:StringName,v:Variant)->bool:
-	if k.begins_with("metadata/"):return false
-	if !_is_inited:init()
-	if _model!=null:_model.set(k,v);return true
-	else:return false

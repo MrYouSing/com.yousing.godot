@@ -53,6 +53,18 @@ static func set_config(f:String,k:PackedStringArray,v:bool)->void:
 			if k.has(i+"/"+j)!=v:c.set_value(i,j,null)
 		c.save(f)
 
+static func save_json(j:Variant,f:String,t:String="\t")->void:
+	var a:FileAccess=FileAccess.open(f,FileAccess.WRITE)
+	a.store_string(JSON.stringify(j,t,false))
+	a.close()
+
+static func load_json(f:String)->Variant:
+	if FileAccess.file_exists(f):
+		var a:FileAccess=FileAccess.open(f,FileAccess.READ)
+		var j:Variant=JSON.parse_string(a.get_as_text())
+		a.close();return j
+	return null
+
 # Resource APIs
 
 static func is_sandbox(f:String)->bool:
@@ -62,5 +74,5 @@ static func is_sandbox(f:String)->bool:
 
 static func load_asset(f:String)->Resource:
 	if !is_sandbox(f):f=s_sandboxes[0]+f
-	if !FileAccess.file_exists(f):return null
-	else:return ResourceLoader.load(f)
+	if FileAccess.file_exists(f):return ResourceLoader.load(f)
+	return null

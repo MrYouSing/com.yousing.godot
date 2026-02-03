@@ -73,8 +73,8 @@ func open(p:StringName)->void:
 	if !is_inited:init()
 	#
 	if player!=null and FileAccess.file_exists(p):
-		_stream=LangExtension.class_cast(_stream,&"FFmpegVideoStream")
-		if _stream!=null:_stream.file=p;player.stream=_stream;return
+		_stream=VideoLoader.load_from_file(p,_stream)
+		if _stream!=null:player.stream=_stream;return
 	super.open(p)
 
 func play()->void:

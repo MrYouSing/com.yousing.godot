@@ -138,6 +138,7 @@ static func debug(m:String,l:int=0)->void:
 static func init()->void:
 	if s_app_inited:return
 	s_app_inited=true
+	get_tree().root.tree_exited.connect(exit)
 	#
 	var c:ConfigFile=get_config();if c!=null:
 		var v:String=ProjectSettings.get_setting("application/config/version","0.0.0.0")
@@ -154,6 +155,7 @@ static func init()->void:
 static func exit()->void:
 	if !s_app_inited:return
 	s_app_inited=false
+	get_tree().root.tree_exited.disconnect(exit)
 	#
 	var c:ConfigFile=s_app_config;if c!=null:
 		c.set_value("Global","Engine","0x%08X"%(Engine.get_version_info().hex))
@@ -186,3 +188,6 @@ static func pause(b:bool)->void:
 	get_tree().paused=b
 	on_pause.emit(b)
 	debug("Application pause({0}) at {1}.".format([b,"%03f."%get_time()]))
+
+static func try_flush()->void:
+	if !s_app_inited:flush()

@@ -42,7 +42,11 @@ func init()->void:
 			i+=1;library[names[i]]=it
 	#
 	sum=0.0;for it in rates:sum+=it
-	
+
+func count()->int:
+	if !is_inited:init()
+	#
+	return clips.size()
 
 func load(k:StringName)->Resource:
 	if !is_inited:init()

@@ -14,9 +14,12 @@ func render():
 	#
 	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
 
+func dispose()->void:
+	if !path.is_empty():UIManager.register(path,null)
+
 func _ready()->void:
 	if !path.is_empty():UIManager.register(path,self)
 	if dirty:render()
 
 func _exit_tree()->void:
-	if !path.is_empty():UIManager.register(path,null)
+	dispose()

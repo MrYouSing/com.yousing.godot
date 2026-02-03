@@ -161,6 +161,10 @@ static func set_item(a:Array,i:int,v:Variant)->void:
 	if i>=a.size():a.append(v)
 	else:a[i]=v
 
+static func move_item(a:Array,i:int,j:int)->void:
+	if j<0:j+=a.size()
+	var v:Variant=a[i];a.remove_at(i);a.insert(j,v)
+
 static func remove_range(a:Array,o:int,c:int=-1)->void:
 	var e:int=a.size()-o;if c<0 or c>e:c=e
 	e=e-c;if e>0:# Move next slice.
@@ -173,6 +177,16 @@ static func merge_array(a:Array,b:Array)->void:
 
 static func merge_strings(a:PackedStringArray,b:PackedStringArray)->void:
 	for it in b:if !a.has(it):a.append(it)
+
+static func remove_array(a:Array,b:Array)->void:
+	var n:int=a.size();var j:int=0
+	for it in a:if !b.has(it):a[j]=it;j+=1
+	if j!=n:a.resize(j)
+
+static func remove_strings(a:PackedStringArray,b:PackedStringArray)->void:
+	var n:int=a.size();var j:int=0
+	for it in a:if !b.has(it):a[j]=it;j+=1
+	if j!=n:a.resize(j)
 
 static func map_to_object(m:Dictionary,o:Object)->void:
 	if m.is_empty() or o==null:return

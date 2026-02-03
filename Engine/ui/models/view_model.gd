@@ -172,6 +172,8 @@ class Stub:
 	var bindings:Dictionary[StringName,Binding]
 	signal changed(m:Object)
 
+	var _busy:bool
+
 	func dispose()->void:
 		unbind()
 		model=null;context=null;bindings.clear()
@@ -211,5 +213,5 @@ class Stub:
 	
 	func _set(k:StringName,v:Variant)->bool:
 		var it:Binding=bindings.get(k,null)
-		if it!=null:it.value=v;return true
+		if it!=null:_busy=true;it.value=v;_busy=false;return true
 		return false

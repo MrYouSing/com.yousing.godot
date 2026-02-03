@@ -61,6 +61,18 @@ static func time_fade(o:float,n:float,t:float)->float:
 	if t>=0.0:return t
 	else:return absf(n-o)/-t
 
+static func time_delta(f:float)->float:
+	if is_zero_approx(f):return 0.0
+	if f<0.0:f=-f/Application.get_fps()
+	return f
+
+static func random_index(a:Array[int],i:int,c:int)->int:
+	var n:int=a.size();if n<=0:
+		n=0;for it in c:if it!=i:a.append(it);n+=1
+		a.shuffle()
+	n-=1;i=a[n];a.remove_at(n)
+	return i
+
 static func random_level(f:float,a:Array[float])->int:
 	f*=randf()
 	var i:int=-1;for it in a:

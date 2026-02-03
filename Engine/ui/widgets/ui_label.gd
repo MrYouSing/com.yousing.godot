@@ -1,4 +1,4 @@
-## A helper class that makes [Label] and [Button] with more formats.
+## A helper class that enables [Label] and [Button] to support more formats.
 class_name UILabel extends Node
 
 @export_group("Label")

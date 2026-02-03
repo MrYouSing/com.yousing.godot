@@ -32,6 +32,12 @@ func set_enabled(b:bool)->void:
 	else:
 		super.set_enabled(_shown)
 
+func get_config(k:StringName,v:Variant)->Variant:
+	return Application.get_config().get_value(name,k,v)
+
+func set_config(k:StringName,v:Variant)->void:
+	Application.get_config().set_value(name,k,v);Application.try_flush()
+
 func _ready()->void:
 	if !path.is_empty():UIManager.register(path,self)
 	if canvas==null:canvas=GodotExtension.assign_node(self,"CanvasItem")

@@ -3,7 +3,7 @@ class_name ControlView extends UIView
 
 static var s_is_inited:bool
 
-func init_static() -> void:
+func init_static()->void:
 	if s_is_inited:return
 	s_is_inited=true
 	#
@@ -28,6 +28,7 @@ func init_static() -> void:
 	ViewModel.register_binder(&"FileDialog",e,&"file_selected",e)
 	ViewModel.register_binder(&"UILabel",&"model",e,e)
 	ViewModel.register_binder(&"UIDialog",e,&"on_complete",e)
+	ViewModel.register_binder(&"UIPlaylist",&"url",e,e)
 	ViewModel.register_binder(&"Media",&"url",e,e)
 	# Graphic
 	ViewModel.register_binder(&"CanvasItem",&"modulate",e,e)
@@ -36,7 +37,10 @@ func init_static() -> void:
 	ViewModel.register_binder(&"TextureRect",&"texture",e,e)
 	ViewModel.register_binder(&"BaseButton.Object",&"icon",e,e)
 	ViewModel.register_binder(&"VideoStreamPlayer",&"stream",e,e)
+	ViewModel.register_binder(&"UIImage",&"model",e,e)
+	# Pattern
 	ViewModel.register_binder(&"UIView",&"model",e,e)
+	ViewModel.register_binder(&"PlaceholderView",&"display",e,e)
 	# Event
 	ViewModel.register_binder(&"UIButton.Callable",&"callback",e,e)
 	# Sub-classes
@@ -45,24 +49,21 @@ func init_static() -> void:
 	ViewModel.inherit_binder(
 		&"Range.max",&"AbsRange.max",&"UIRange.max",
 		&"Range.length",&"AbsRange.length",&"UIRange.length",
-		&"Range.duration",&"AbsRange.duration",&"UIRange.duration"
+		&"Range.duration",&"AbsRange.duration",&"UIRange.duration",
+		&"ListModel.length"
 	)
 	ViewModel.inherit_binder(&"UIOption",&"UIMenu")
 	ViewModel.inherit_binder(&"Label",&"RichTextLabel")
 	ViewModel.inherit_binder(&"TextEdit",&"LineEdit")
 	ViewModel.inherit_binder(&"TextureRect",&"NinePatchRect")
 	ViewModel.inherit_binder(&"VideoStreamPlayer",&"Media.Object")
-	var i:int=ViewModel.s_binder_classes.get(&"CanvasItem");var k:StringName
-	for it in ViewModel.s_binder_engines:
-		k=it+".Color";if ViewModel.s_binder_classes.has(k):continue
-		ViewModel.s_binder_classes[k]=i
 
 @export_group("MVVM")
 @export var view_model:ViewModel
 
 var _stub:ViewModel.Stub
 
-func render():
+func render()->void:
 	if !dirty:return
 	if view_model==null:return
 	dirty=false
@@ -72,6 +73,10 @@ func render():
 	elif model!=_stub.model:_stub.model=model
 	else:_stub.refresh()
 	GodotExtension.set_enabled(self,_stub!=null and model!=null)
+
+func dispose()->void:
+	super.dispose()
+	if _stub!=null:_stub.dispose();_stub=null
 
 func _get(k:StringName)->Variant:
 	if _stub==null:return null

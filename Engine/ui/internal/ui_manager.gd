@@ -55,7 +55,7 @@ func _ready()->void:
 
 func _exit_tree()->void:
 	if Singleton.exit_instance(k_keyword,self):
-		Application.exit()
+		pass
 
 func _process(delta:float)->void:
 	if features&0x02!=0 and _stack.size()>1:

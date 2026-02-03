@@ -40,8 +40,8 @@ class Pool:
 
 	func clear()->void:
 		if streams.is_empty():return
-		var it:AudioStream;for s in streams.values():
-			it=s;if it!=null:it.free()
+		#var it:AudioStream;for s in streams.values():
+		#	it=s;if it!=null:while(it.unreference()):pass
 		streams.clear()
 
 	func load(k:StringName,v:Variant)->AudioStream:
