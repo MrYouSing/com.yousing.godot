@@ -1,4 +1,4 @@
-## A playlist window for media.
+## A playlist window for [Media].
 class_name UIPlaylist extends UIPanel
 
 @export_group("Playlist")
@@ -16,7 +16,7 @@ class_name UIPlaylist extends UIPanel
 	"List",
 	"Random",
 )var features:int=-1
-@export var icons:Dictionary[StringName,Resource]
+@export var icons:Dictionary[String,Resource]
 @export var buttons:Array[Node]=[null,null,null,null,null,null]
 
 var url:String:
@@ -181,7 +181,7 @@ func _ready()->void:
 		view.item_clicked.connect(_clicked)
 	if media!=null:
 		media.loop=false
-		media.on_done.connect(_finished)
+		media.finished.connect(_finished)
 	if model!=null:
 		if _index>=0:select(_index)
 		else:url=model.get(&"value")

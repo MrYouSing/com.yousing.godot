@@ -219,7 +219,7 @@ const k_modifiers:Array[Vector2i]=[
 static var current:KeyboardInput
 
 @export_group("Keyboard")
-@export var path:StringName
+@export var path:String
 @export var src_keys:Array[Key]
 @export var dst_keys:Array[Key]
 

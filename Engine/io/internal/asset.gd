@@ -5,6 +5,15 @@ static var s_is_inited:bool
 static var s_file_api:Dictionary[StringName,Callable]
 static var s_cache_texts:Dictionary[String,String]
 static var s_cache_tables:Dictionary[String,Array]
+static var s_cache_assets:Dictionary[String,Resource]
+
+static var on_clear:Signal=LangExtension.new_signal(Asset,&"on_clear")
+
+static func clear_caches()->void:
+	s_cache_texts.clear()
+	s_cache_tables.clear()
+	s_cache_assets.clear()
+	on_clear.emit()
 
 static func make_array(f:String,c:Variant)->Array:
 	var t:Array[PackedStringArray]=load_table(f)
@@ -24,6 +33,20 @@ static func override_text(k:String,v:String)->void:
 static func override_table(k:String,v:String)->void:
 	s_cache_tables.erase(v);var t:Array[PackedStringArray]=load_table(v)
 	if !t.is_empty():s_cache_tables[k]=t;s_cache_tables.erase(v)
+
+static func load_asset(f:String,a:Resource=null)->Resource:
+	return s_cache_assets.get(f,a)
+
+static func save_asset(f:String,a:Resource)->void:
+	s_cache_assets.set(f,a)
+
+static func auto_asset(f:String,c:Callable)->Resource:
+	var a:Resource=s_cache_assets.get(f,null)
+	if a==null:
+		if c.is_valid():a=c.call(f)
+		else:a=IOExtension.load_asset(f)
+		s_cache_assets.set(f,a)
+	return a
 
 static func init()->void:
 	if s_is_inited:return

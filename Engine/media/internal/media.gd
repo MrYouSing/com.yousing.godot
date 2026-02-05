@@ -5,7 +5,7 @@ class_name Media extends Node
 @export var player:Node
 @export var album:Album
 @export_group("Player")
-@export var url:StringName:
+@export var url:String:
 	set(x):
 		url=x;if is_inited:
 			if x.is_empty():stop()
@@ -15,13 +15,12 @@ class_name Media extends Node
 		loop=x;if is_inited:
 			if x and !player.is_playing():play()
 @export var bus:StringName:
-	set(x):
-		bus=x;_audio()
+	set(x):bus=x;_audio()
 @export var mute:bool=false:
 	set(x):mute=x;_audio()
 @export_range(0.0,1.0,0.001,"or_greater") var volume:float=1.0:
 	set(x):volume=x;_audio()
-signal on_done()
+signal finished()
 
 var is_inited:bool
 var type:int
@@ -41,11 +40,14 @@ var paused:bool:
 		else:resume()
 
 var stream:Object:
-	get:
-		if player!=null:return player.stream
-		else:return null
-	set(x):
-		emit(x)
+	get:return get_stream()
+	set(x):set_stream(x);play()
+func get_stream()->Object:
+	if player!=null:return player.stream
+	else:return null
+func set_stream(s:Object)->void:
+	if !is_inited:init()
+	if player!=null:player.stream=s
 
 var length:float:get=get_length
 func get_length()->float:LangExtension.throw_exception(self,LangExtension.e_not_implemented);return -1.0
@@ -77,7 +79,13 @@ func _audio()->void:
 
 func _done()->void:
 	if loop:play()
-	else:on_done.emit()
+	else:finished.emit()
+
+func open(p:String)->void:
+	var s:Object=null
+	if album!=null:s=album.load(p)
+	else:s=IOExtension.load_asset(p)
+	set_stream(s)
 
 func init()->void:
 	if is_inited:return
@@ -119,26 +127,18 @@ func clone(p:Node,b:bool=false)->Media:
 	if p!=null:GodotExtension.add_node(n,p,b)
 	return m
 
-func open(p:StringName)->void:
-	if !is_inited:init()
-	#
-	if player!=null:
-		var s:Object=null
-		if album!=null:s=album.load(p)
-		else:s=IOExtension.load_asset(p)
-		player.stream=s
-
 func emit(o:Variant)->void:
 	if !is_inited:init()
 	if player==null:return
 	#
-	match typeof(o):
-		TYPE_STRING,TYPE_STRING_NAME:open(o);play()
-		TYPE_INT:player.stream=album.clips[o];play()
-		TYPE_ARRAY:volume=o[1];emit(o[0])
+	var s:Object=null;match typeof(o):
+		TYPE_STRING,TYPE_STRING_NAME:open(o);play();return
+		TYPE_INT:s=album.clips[o]
+		TYPE_ARRAY:volume=o[1];emit(o[0]);return
 		TYPE_OBJECT:
-			if o is Album:player.stream=o.random();play()
-			else:player.stream=o;play()
+			if o is Album:s=o.random
+			else:s=o
+	set_stream(s);play()
 
 func play()->void:
 	if !is_inited:init()

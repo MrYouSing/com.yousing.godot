@@ -24,7 +24,10 @@ func get_position()->float:
 	else:return -1.0
 
 func set_position(f:float)->void:
-	if is_playing():player.seek(f)
+	if is_playing():
+		var b:bool=player.stream_paused
+		player.stream_paused=false;player.seek(f)
+		player.stream_paused=b
 
 func init()->void:
 	if is_inited:return
@@ -36,13 +39,20 @@ func init()->void:
 		elif player is AudioStreamPlayer3D:type=3
 		else:player=null
 
+## TODO: [member AudioStreamPlayer.stream_paused]=true will cause that [member AudioStreamPlayer.playing]=false and [method AudioStreamPlayer.seek] does not work.
+func is_playing()->bool:
+	if !is_inited:init()
+	#
+	if player!=null:return player.playing or player.stream_paused
+	else:return false
+
 func is_paused()->bool:
 	if !is_inited:init()
 	#
 	if player!=null:return player.stream_paused
 	else:return false
 
-func open(p:StringName)->void:
+func open(p:String)->void:
 	if !is_inited:init()
 	#
 	if player!=null:

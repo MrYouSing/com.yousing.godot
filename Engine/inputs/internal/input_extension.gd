@@ -65,6 +65,7 @@ static var s_event_scripts:Array[Object]
 static var s_event_enums:Array[Variant]
 static var s_event_indexes:Array[StringName]
 static var s_event_values:Array[StringName]
+static var s_event_moves:Array[StringName]
 
 static func event_init()->void:
 	if s_event_inited:return
@@ -72,16 +73,16 @@ static func event_init()->void:
 	#
 	var n:StringName=LangExtension.k_empty_name
 	var e:Array=LangExtension.k_empty_array
-	event_add_type(n,InputEvent,e,n,n)
-	event_add_type(&"MouseMotion",InputEventMouseMotion,e,n,&"position")
-	event_add_type(&"MouseButton",InputEventMouseButton,PointerInput.k_buttons,&"button_index",&"pressed")
-	event_add_type(&"Key",InputEventKey,KeyboardInput.k_keys,&"keycode",&"pressed")
-	event_add_type(&"JoypadMotion",InputEventJoypadMotion,GamepadInput.k_axes,&"axis",&"axis_value")
-	event_add_type(&"JoypadButton",InputEventJoypadButton,GamepadInput.k_buttons,&"button_index",&"pressed")
-	event_add_type(&"ScreenDrag",InputEventScreenDrag,e,&"index",&"position")
-	event_add_type(&"ScreenTouch",InputEventScreenTouch,e,&"index",&"pressed")
+	event_add_type(n,InputEvent,e,n,n,n)
+	event_add_type("MouseMotion",InputEventMouseMotion,e,n,&"position",&"screen_velocity")
+	event_add_type("MouseButton",InputEventMouseButton,PointerInput.k_buttons,&"button_index",&"pressed",n)
+	event_add_type("Key",InputEventKey,KeyboardInput.k_keys,&"keycode",&"pressed",n)
+	event_add_type("JoypadMotion",InputEventJoypadMotion,GamepadInput.k_axes,&"axis",&"axis_value",&"axis_value")
+	event_add_type("JoypadButton",InputEventJoypadButton,GamepadInput.k_buttons,&"button_index",&"pressed",n)
+	event_add_type("ScreenDrag",InputEventScreenDrag,e,&"index",&"position",&"screen_velocity")
+	event_add_type("ScreenTouch",InputEventScreenTouch,e,&"index",&"pressed",n)
 
-static func event_add_type(c:StringName,s:Variant,e:Variant,i:StringName,v:StringName)->void:
+static func event_add_type(c:String,s:Variant,e:Variant,i:StringName,v:StringName,m:StringName)->void:
 	if !s_event_inited:event_init()
 	#
 	var k:String="InputEvent"+c
@@ -91,6 +92,7 @@ static func event_add_type(c:StringName,s:Variant,e:Variant,i:StringName,v:Strin
 	s_event_enums.append(e)
 	s_event_indexes.append(i)
 	s_event_values.append(v)
+	s_event_moves.append(m)
 
 static func event_new_input(i:int)->InputEvent:
 	if !s_event_inited:event_init()
@@ -124,3 +126,12 @@ static func event_get_value(e:InputEvent,i:int=-1)->Variant:
 		if i<0:i=s_event_classes.find(e.get_class())
 		return e.get(s_event_values[i])
 	return null
+
+static func event_get_move(e:InputEvent,i:int=-1)->Vector2:
+	if !s_event_inited:event_init()
+	#
+	if e!=null:
+		if i<0:i=s_event_classes.find(e.get_class())
+		var v:Variant=e.get(s_event_moves[i])
+		if v!=null:return v
+	return MathExtension.k_vec2_nan

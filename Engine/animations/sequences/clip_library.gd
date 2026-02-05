@@ -2,7 +2,7 @@
 class_name ClipLibrary extends Resource
 
 @export_group("Clip")
-@export var path:StringName
+@export var path:String
 @export var clips:Array[Clip]
 
 var is_inited:bool

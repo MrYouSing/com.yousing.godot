@@ -19,7 +19,7 @@ static var instance:Theater:
 	&"Master",&"Bgm",&"Sfx",&"Voice",&"UI"
 ]
 
-signal on_speak(o:Node,k:StringName)
+signal on_speak(o:Node,k:String)
 
 var old:Audio
 var sfx_ring:Collections.Ring
@@ -78,7 +78,7 @@ func get_audio(a:Audio,p:Vector3,r:Collections.Ring=null)->Audio:
 		GodotExtension.set_global_position(a.player,p);return c
 	return null
 
-func play_bgm(k:StringName,f:float=0.0)->void:
+func play_bgm(k:String,f:float=0.0)->void:
 	Tweenable.kill_tween(self)
 	#
 	if f>0.0:
@@ -91,7 +91,7 @@ func play_bgm(k:StringName,f:float=0.0)->void:
 		fade.duration=f
 		fade.tr_media_volume(Tweenable.make_tween(self),old,bgm)
 
-func one_shot(k:StringName,p:Vector3,v:float=1.0)->void:
+func one_shot(k:String,p:Vector3,v:float=1.0)->void:
 	var a:Audio=get_audio(sfx,p,sfx_ring);if a==null:return
 	#
 	a.open(k);a.volume=v;a.play()
@@ -101,8 +101,8 @@ func one_emit(o:Variant,p:Vector3,v:float=1.0)->void:
 	#
 	a.volume=v;a.emit(o)
 
-func play_speak(o:Node,k:StringName)->void:
+func play_speak(o:Node,k:String)->void:
 	var a:Audio=get_audio(voice,GodotExtension.get_global_position(o),voice_ring);if a==null:return
 	#
-	a.open(k);a.play()
+	a.open(k);a.play();o.set_meta(&"duration",a.get_length())
 	if on_speak.has_connections():on_speak.emit(o,k)

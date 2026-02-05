@@ -170,7 +170,7 @@ class UpdatedCall extends Call:
 		if worker.time>=time+delay:
 			var i:int=id
 			invoke()
-			if duration>=0.0 and time+delay+duration>=worker.time:
+			if duration>=0.0 and time+delay+duration<=worker.time:
 				if i==id:recycle()
 				return false
 			return i==id

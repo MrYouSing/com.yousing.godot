@@ -82,10 +82,11 @@ static func refresh_node(n:Node)->void:
 
 static func input_node(n:Node,i:int)->void:
 	if n!=null:
-		i>>=0;if i&0x3!=0:n.set_process_input(i==0x2)
-		i>>=2;if i&0x3!=0:n.set_process_shortcut_input(i==0x2)
-		i>>=2;if i&0x3!=0:n.set_process_unhandled_key_input(i==0x2)
-		i>>=2;if i&0x3!=0:n.set_process_unhandled_input(i==0x2)
+		var j:int
+		i>>=0;j=i&0x3;if j!=0:n.set_process_input(j==0x2)
+		i>>=2;j=i&0x3;if j!=0:n.set_process_shortcut_input(j==0x2)
+		i>>=2;j=i&0x3;if j!=0:n.set_process_unhandled_key_input(j==0x2)
+		i>>=2;j=i&0x3;if j!=0:n.set_process_unhandled_input(j==0x2)
 
 static func get_global_position(n:Node)->Vector3:
 	if n!=null:

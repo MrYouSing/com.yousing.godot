@@ -4,7 +4,7 @@ class_name InputInjector extends Node
 static var current:InputInjector
 
 @export_group("Injector")
-@export var path:StringName
+@export var path:String
 
 var _last:StringName
 var _map:Array[Entry]
@@ -19,7 +19,7 @@ func clear(b:bool=false)->void:
 			InputMap.action_erase_event(it.path,it.event)
 	_map.clear()
 
-func inject(p:StringName)->void:
+func inject(p:String)->void:
 	var t:Array[PackedStringArray]=Asset.load_table(p)
 	if !t.is_empty():
 		clear(true)

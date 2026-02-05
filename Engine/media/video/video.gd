@@ -2,6 +2,7 @@
 class_name Video extends Media
 
 @export_group("Video")
+@export var container:AspectRatioContainer
 @export var aspect:UICanvas.AspectRatio:
 	set(x):aspect=x;if is_inited:_size_changed()
 @export var speed:float=1.0:
@@ -32,20 +33,15 @@ func _video()->void:
 		player.speed_scale=speed*_speed
 
 func _size_changed()->void:
-	if aspect>=UICanvas.AspectRatio.MatchWidth:return
-	var c:Control=player;var s:Vector2=get_size()
-	if c!=null and !s.is_zero_approx():
-		var d:Vector2=c.get_parent_area_size()
-		s=UICanvas.fit_scale(aspect,s,d)*s
-		s*=0.5;var m:Vector2=MathExtension.k_vec2_half
-		UITransform.set_anchor_and_offset(c,m,m,-s,s)
+	if player==null or !player.is_playing:return
+	UICanvas.fit_control(container,player,aspect,get_size())
 
 func _ready()->void:
 	super._ready()
-	UICanvas.register(self,0,_size_changed)
+	if container==null:UICanvas.register(self,0,_size_changed)
 
 func _exit_tree() -> void:
-	UICanvas.unregister(self,0,_size_changed)
+	if container==null:UICanvas.unregister(self,0,_size_changed)
 
 func init()->void:
 	if is_inited:return
@@ -69,10 +65,10 @@ func is_paused()->bool:
 	if player!=null:return player.is_playing() and _speed==0.0
 	else:return false
 
-func open(p:StringName)->void:
+func open(p:String)->void:
 	if !is_inited:init()
 	#
-	if player!=null and FileAccess.file_exists(p):
+	if player!=null:
 		_stream=VideoLoader.load_from_file(p,_stream)
 		if _stream!=null:player.stream=_stream;return
 	super.open(p)

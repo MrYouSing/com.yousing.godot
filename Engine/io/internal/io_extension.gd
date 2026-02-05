@@ -23,8 +23,18 @@ static func file_name_only(x:String)->String:
 	return x
 
 static func file_extension(x:String)->String:
-	var i:int=x.rfind(".")
-	if i>=0:return x.substr(i).to_lower()
+	var i:int=x.rfind("/")
+	var j:int=x.rfind(".")
+	if j>=0 and i<j:return x.substr(j).to_lower()
+	return LangExtension.k_empty_string
+
+static func file_variant(x:String,a:PackedStringArray)->String:
+	if x.is_empty():return x
+	var t:String=file_extension(x)
+	var n:int=t.length();if n>0:
+		if a.has(t) and FileAccess.file_exists(t):return t
+		else:x=x.substr(0,x.length()-n)
+	for it in a:t=x+it;if FileAccess.file_exists(t):return t
 	return LangExtension.k_empty_string
 
 static func directory_name(x:String)->String:
@@ -39,6 +49,24 @@ static func combine_path(a:String,b:String)->String:
 	return a+"/"+b
 
 # File APIs
+
+static func create_directory(d:String)->DirAccess:
+	var a:DirAccess=DirAccess.open(d)
+	if a==null:
+		# 
+		if d.ends_with("/"):d.remove_char(d.length()-1)
+		a=create_directory(directory_name(d)+"/")
+		#
+		a.make_dir(file_name(d));a.change_dir(d)
+	return a
+
+static func copy_file(s:String,d:String,w:bool=false)->void:
+	if FileAccess.file_exists(s):
+		if !w and FileAccess.file_exists(d):return
+		#
+		create_directory(directory_name(d))
+		var a:FileAccess=FileAccess.open(d,FileAccess.WRITE)
+		a.store_buffer(FileAccess.get_file_as_bytes(s));a.close()
 
 static func get_config(f:String,k:PackedStringArray)->void:
 	if FileAccess.file_exists(f):
@@ -72,7 +100,15 @@ static func is_sandbox(f:String)->bool:
 	for it in s_sandboxes:if f.begins_with(it):return true
 	return false
 
-static func load_asset(f:String)->Resource:
+static func load_asset(f:String,t:String=LangExtension.k_empty_string)->Resource:
 	if !is_sandbox(f):f=s_sandboxes[0]+f
-	if FileAccess.file_exists(f):return ResourceLoader.load(f)
+	if FileAccess.file_exists(f):return ResourceLoader.load(f,t)
+	return null
+
+static func import_asset(f:String,t:String=LangExtension.k_empty_string)->Resource:
+	if FileAccess.file_exists(f):
+		if !is_sandbox(f):
+			var d:String=combine_path(s_sandboxes[0]+"/imported",file_name(f))
+			copy_file(f,d,true);f=d;EditorInterface.get_resource_filesystem().scan()
+		return ResourceLoader.load(f,t)
 	return null

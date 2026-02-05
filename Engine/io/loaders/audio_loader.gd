@@ -2,40 +2,50 @@
 class_name AudioLoader
 
 static var s_is_inited:bool
-static var s_pools:Dictionary[StringName,Pool]
+static var s_pools:Dictionary[String,Pool]
+
+static func clear()->void:
+	for it in s_pools:s_pools[it].clear()
 
 static func init()->void:
 	if s_is_inited:return
 	s_is_inited=true
-	add_type(AudioStreamWAV,&".wav")
-	add_type(AudioStreamMP3,&".mp3")
-	add_type(AudioStreamOggVorbis,&".ogg")
+	Asset.on_clear.connect(clear)
+	add_type(AudioStreamWAV,".wav")
+	add_type(AudioStreamMP3,".mp3")
+	add_type(AudioStreamOggVorbis,".ogg")
+
+static func support(e:String)->bool:
+	if !s_is_inited:init()
+	#
+	return s_pools.get(e,null)!=null
 
 static func add_type(c:Object,...a:Array)->void:
 	if !s_is_inited:init()
 	#
 	var p:Pool=Pool.new(a[0],c)
+	s_pools[p.name]=p
 	for it in a:s_pools[it]=p
 
 static func load_from_file(f:String,c:bool=true)->AudioStream:
-	if !FileAccess.file_exists(f):return
-	if IOExtension.is_sandbox(f):return ResourceLoader.load(f)
+	if !FileAccess.file_exists(f):return null
 	if !s_is_inited:init()
+	if IOExtension.is_sandbox(f):return ResourceLoader.load(f)
 	#
-	var e:StringName=IOExtension.file_extension(f)
+	var e:String=IOExtension.file_extension(f)
 	var p:Pool=s_pools.get(e,null)
 	if p!=null:
-		var k:StringName=LangExtension.k_empty_name;if c:k=f
+		var k:String=LangExtension.k_empty_name;if c:k=f
 		return p.load(k,f)
 	return null
 
 class Pool:
 	var name:StringName
 	var clazz:Object
-	var streams:Dictionary[StringName,AudioStream]
+	var streams:Dictionary[String,AudioStream]
 	
-	func _init(n:StringName,c:Object)->void:
-		name=n
+	func _init(n:String,c:Object)->void:
+		name=n.substr(1).to_upper()
 		clazz=c
 
 	func clear()->void:
@@ -44,7 +54,7 @@ class Pool:
 		#	it=s;if it!=null:while(it.unreference()):pass
 		streams.clear()
 
-	func load(k:StringName,v:Variant)->AudioStream:
+	func load(k:String,v:Variant)->AudioStream:
 		var b:bool=!k.is_empty();var s:AudioStream=null
 		if b:s=streams.get(k,null)
 		if s==null:
@@ -57,6 +67,6 @@ class Pool:
 					s=clazz.load_from_buffer(v)
 					s.resource_name=k
 				_:
-					return
+					return s
 			if b:streams[k]=s
 		return s

@@ -2,7 +2,7 @@
 class_name UIDialog extends UIWindow
 
 @export_group("Dialog")
-@export_enum("Dialog","Input","File","FileEx","Reserved 0","Reserved 1")
+@export_enum("Dialog","Input","File","FileEx","Drop","Reserved 0")
 var type:int
 @export var mode:DisplayServer.FileDialogMode
 @export var title:StringName
@@ -90,5 +90,33 @@ func show_file_ex()->bool:
 func back_file_ex(b:bool,a:PackedStringArray,i:int,d:Dictionary)->void:
 	option.assign(d);back_file(b,a,i)
 
+func _filter(s:String)->String:
+	if !texts.is_empty():
+		if !texts.has(IOExtension.file_extension(s)):
+			return LangExtension.k_empty_string
+	return IOExtension.check_path(s)
+
+func _dropped(a:PackedStringArray)->void:
+	clear()
+	var s:String;for it in a:
+		s=_filter(it);if s.is_empty():continue
+		results.append(s)
+	#
+	if results.is_empty():return
+	match mode:
+		DisplayServer.FILE_DIALOG_MODE_OPEN_ANY:
+			var t:PackedStringArray=PackedStringArray(results)
+			results.clear();for it in t:result=it;complete()
+			return
+		DisplayServer.FILE_DIALOG_MODE_OPEN_FILES:
+			pass
+		_:
+			result=results[0];results.clear()
+	complete()
+
 func _ready()->void:
+	if type==4:get_window().files_dropped.connect(_dropped)
 	if fallback==null:fallback=GodotExtension.assign_node(self,"Window")
+
+func _exit_tree()->void:
+	if type==4:get_window().files_dropped.disconnect(_dropped)

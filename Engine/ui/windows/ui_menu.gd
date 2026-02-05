@@ -3,7 +3,7 @@ class_name UIMenu extends UIWindow
 
 @export_group("Menu")
 @export var menu:Node
-@export var path:StringName
+@export var path:String
 @export var button:Node
 @export var anchor:Control.LayoutPreset=Control.PRESET_CENTER_TOP
 @export var offset:Vector2

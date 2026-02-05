@@ -5,7 +5,7 @@ static var current:UIList
 
 @export_group("List")
 @export var category:StringName
-@export var path:StringName
+@export var path:String
 @export var root:Node
 @export var container:Node
 @export_group("UI")
@@ -41,7 +41,7 @@ func find(k:StringName)->Element:
 	return null
 
 func rebuild()->void:
-	if container==null:
+	if container==null or elements.is_empty():
 		pass
 	elif container is ItemList:
 		container.clear()

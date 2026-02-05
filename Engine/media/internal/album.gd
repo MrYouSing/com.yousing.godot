@@ -2,14 +2,14 @@
 class_name Album extends Resource
 
 @export_group("Album")
-@export var names:Array[StringName]
+@export var names:PackedStringArray
 @export var clips:Array[Resource]
-@export var paths:Array[StringName]
+@export var paths:PackedStringArray
 @export var rates:Array[float]
 
 var is_inited:bool
 var sum:float
-var library:Dictionary[StringName,Resource]
+var library:Dictionary[String,Resource]
 
 static func from_path(p:String)->Album:
 	var d:DirAccess=DirAccess.open(p)
@@ -48,7 +48,7 @@ func count()->int:
 	#
 	return clips.size()
 
-func load(k:StringName)->Resource:
+func load(k:String)->Resource:
 	if !is_inited:init()
 	#
 	var tmp:Resource=library.get(k,null)

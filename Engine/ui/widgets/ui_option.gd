@@ -4,7 +4,7 @@ class_name UIOption extends Node
 static var s_options:Dictionary[StringName,Array]
 
 @export_group("Option")
-@export var path:StringName
+@export var path:String
 @export var type:Variant.Type
 @export var value:Variant:
 	set(x):_on_changed(x);value=x

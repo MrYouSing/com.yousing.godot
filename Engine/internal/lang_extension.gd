@@ -275,6 +275,14 @@ static func shoot_signal(s:Signal,o:Object,a:Array)->void:
 
 	# Object APIs
 
+static func free_signal(o:Object,k:StringName)->void:
+	if o==null or k.is_empty():return
+	var b:bool=o.has_user_signal(k)
+	if !o.has_signal(k) and !b:return
+	for it in o.get_signal_connection_list(k):
+		o.disconnect(k,it.callable)
+	if b:o.remove_user_signal(k)
+
 static func new_signal(o:Object,k:StringName)->Signal:
 	if o==null or k.is_empty():return k_empty_signal
 	if !o.has_signal(k) and !o.has_user_signal(k):o.add_user_signal(k)
@@ -293,6 +301,11 @@ static func info_signal(o:Object,k:StringName)->Dictionary:
 static func add_signal(o:Object,k:StringName,v:Callable,f:int=0)->void:
 	if o==null or v.is_null():return
 	if !o.has_signal(k) and !o.has_user_signal(k):o.add_user_signal(k)
+	if !o.is_connected(k,v):o.connect(k,v,f)
+
+static func try_signal(o:Object,k:StringName,v:Callable,f:int=0)->void:
+	if o==null or v.is_null():return
+	if !o.has_signal(k) and !o.has_user_signal(k):return
 	if !o.is_connected(k,v):o.connect(k,v,f)
 
 static func remove_signal(o:Object,k:StringName,v:Callable)->void:

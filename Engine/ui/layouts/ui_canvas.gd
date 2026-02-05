@@ -17,13 +17,13 @@ static var instances:Array[UICanvas]=LangExtension.alloc_array(UICanvas,32)
 static func register(n:Node,l:int,c:Callable)->void:
 	if n==null:return
 	var i:UICanvas=instances[l]
-	if i!=null:i.on_refresh.connect(c)
+	if i!=null:i.refreshed.connect(c)
 	else:n.get_viewport().size_changed.connect(c)
 
 static func unregister(n:Node,l:int,c:Callable)->void:
 	if n==null:return
 	var i:UICanvas=instances[l]
-	if i!=null:i.on_refresh.disconnect(c)
+	if i!=null:i.refreshed.disconnect(c)
 	else:n.get_viewport().size_changed.disconnect(c)
 
 static func fit_scale(m:AspectRatio,s:Vector2,d:Vector2)->Vector2:
@@ -40,6 +40,24 @@ static func fit_scale(m:AspectRatio,s:Vector2,d:Vector2)->Vector2:
 		AspectRatio.NoScaling:return Vector2.ONE
 	return d/s
 
+static func fit_control(p:AspectRatioContainer,n:Node,m:AspectRatio,s:Vector2)->void:
+	if s.is_zero_approx():
+		return
+	if p!=null:
+		match m:
+			UICanvas.AspectRatio.FitHorizontally:p.stretch_mode=AspectRatioContainer.STRETCH_WIDTH_CONTROLS_HEIGHT
+			UICanvas.AspectRatio.FitVertically:p.stretch_mode=AspectRatioContainer.STRETCH_HEIGHT_CONTROLS_WIDTH
+			UICanvas.AspectRatio.FitInside:p.stretch_mode=AspectRatioContainer.STRETCH_FIT
+			UICanvas.AspectRatio.FitOutside:p.stretch_mode=AspectRatioContainer.STRETCH_COVER
+		p.ratio=s.aspect()
+		return
+	var c:Control=n;if c!=null:
+		if m<=UICanvas.AspectRatio.Stretch:
+			var d:Vector2=c.get_parent_area_size()
+			s=UICanvas.fit_scale(m,s,d)*s
+			s*=0.5;var h:Vector2=MathExtension.k_vec2_half
+			UITransform.set_anchor_and_offset(c,h,h,-s,s)
+
 @export_group("Canvas")
 @export var layer:int
 @export var canvas:Node:
@@ -55,7 +73,7 @@ static func fit_scale(m:AspectRatio,s:Vector2,d:Vector2)->Vector2:
 @export var offset:Vector2:
 	set(x):offset=x;_on_dirty()
 
-signal on_refresh()
+signal refreshed()
 
 var dirty:bool
 var screen_to_ui:Vector2
@@ -103,7 +121,7 @@ func refresh()->void:
 		canvas.scale=d
 	elif canvas is CanvasLayer:
 		return
-	on_refresh.emit()
+	refreshed.emit()
 
 func _on_dirty()->void:
 	if ui_to_screen.x==0.0 or dirty:return
