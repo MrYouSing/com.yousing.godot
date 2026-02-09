@@ -68,7 +68,8 @@ func set_progress(f:float)->void:
 		if !is_zero_approx(f-p):position=l*f
 
 func _ready()->void:
-	if !url.is_empty():open(url);play()
+	if !url.is_empty() and !is_playing():
+		open(url);play()
 
 func _audio()->void:
 	if player!=null:
@@ -95,7 +96,7 @@ func init()->void:
 	if player==null:
 		player=get_node_or_null(^"./Player")
 		if player==null:player=get_parent()
-	if player!=null:player.finished.connect(_done)
+	if player!=null:LangExtension.try_signal(player,&"finished",_done)
 	_audio()
 
 func is_playing()->bool:

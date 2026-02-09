@@ -3,6 +3,7 @@ class_name UISleep extends Node
 
 @export_group("Sleep")
 @export var duration:float=1.0
+@export var pointer:PointerInput
 @export_flags(
 	"Once","Unhandled","Awake","Sleep",
 	"Any","Mouse Motion","Mouse Button","Key",
@@ -14,6 +15,7 @@ signal slept()
 
 var _awake:bool
 var _time:float
+var _touches:Array[PointerInput.PointerEvent]
 
 func is_moving(e:InputEvent)->bool:
 	var v:Vector2=InputExtension.event_get_move(e)
@@ -21,10 +23,10 @@ func is_moving(e:InputEvent)->bool:
 	else:return !v.is_zero_approx()
 
 func set_enabled(b:bool)->void:
+	if b:_time=0.0
 	if b==_awake:return
 	_awake=b
 	if b:
-		_time=0.0
 		if features&0x4!=0:awoken.emit()
 	else:
 		if features&0x8!=0:slept.emit()
@@ -32,15 +34,25 @@ func set_enabled(b:bool)->void:
 		set_process(false)
 		GodotExtension.input_node(self,0x41)
 
+func is_pressed()->bool:
+	var b:bool=false
+	if pointer!=null:
+		if !b and features&0x0050!=0:
+			if pointer.get_mouse().buttons!=0:b=true
+		if !b and features&0x0810!=0:
+			if pointer.get_touches(_touches)>0:_touches.clear();b=true
+	return b
+
 func _ready()->void:
 	_awake=duration>=0.0;if !_awake:duration*=1.0
 	if features&0x02!=0:GodotExtension.input_node(self,0x81)
 	else:GodotExtension.input_node(self,0x42)
+	if pointer==null:pointer=PointerInput.current
 
 func _process(d:float)->void:
 	if _awake:
 		_time+=d
-		if _time>=duration:set_enabled(false)
+		if _time>=duration:set_enabled(false or is_pressed())
 
 func _input(e:InputEvent)->void:_on_input(e)
 func _unhandled_input(e:InputEvent)->void:_on_input(e)

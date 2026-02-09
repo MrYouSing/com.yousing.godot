@@ -1,12 +1,9 @@
 ## A texture player.
-class_name Picture extends Media
+class_name Picture extends AbsVideo
 
 @export_group("Picture")
 @export var slot:StringName=&"texture"
 @export var duration:float=1.0
-@export var container:AspectRatioContainer
-@export var aspect:UICanvas.AspectRatio:
-	set(x):aspect=x;if is_inited:_size_changed()
 
 var _time:float=-1.0
 var _texture:Texture
@@ -23,6 +20,8 @@ func set_stream(s:Object)->void:
 func get_length()->float:return duration
 func get_position()->float:return _time
 func set_position(f:float)->void:_time=f
+func has_size()->bool:return _texture!=null
+func get_size()->Vector2:return _texture.get_size()
 
 func is_playing()->bool:
 	return _time>=0.0
@@ -42,17 +41,12 @@ func open(p:String)->void:
 func _audio()->void:
 	pass
 
-func _size_changed()->void:
-	if _texture==null:return
-	UICanvas.fit_control(container,player,aspect,_texture.get_size())
+func _speed_changed()->void:
+	pass
 
 func _ready()->void:
 	set_process(false)
 	super._ready()
-	if container==null:UICanvas.register(self,0,_size_changed)
-
-func _exit_tree() -> void:
-	if container==null:UICanvas.unregister(self,0,_size_changed)
 
 func _process(d:float)->void:
 	if _time<0.0:return
@@ -65,7 +59,7 @@ func init()->void:
 	if player==null:
 		player=GodotExtension.assign_node(self,"TextureRect")
 	if player!=null:
-		player.set(&"expand_mode",1)
+		player.set(&"expand_mode",1);type=2
 
 func play()->void:
 	if !is_inited:init()

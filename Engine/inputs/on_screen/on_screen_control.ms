@@ -57,7 +57,7 @@ on_screen_pad.gd,OnInput
  Macro.End --> */
 
 /* <!-- Macro.Call OnInput
- and accept(e),,
+ and accept(e),handle_input(e)#,
  Macro.End --> */
 /* <!-- Macro.Replace Replace
  Macro.End --> */

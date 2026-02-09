@@ -33,6 +33,9 @@ func screen_point(p:Vector2)->Vector2:
 	if _control!=null:return _control.get_global_transform_with_canvas()*p
 	else:return p
 
+func handle_input(e:InputEvent)->void:
+	get_viewport().set_input_as_handled()
+
 func get_point()->Vector2:
 	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
 	return Vector2.ZERO
@@ -50,7 +53,7 @@ func _on_end()->void:
 	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
 
 func _ready()->void:
-	_control=get_node(^".")
+	_control=get_node(^".") as Control
 	if area==null:area=_control
 	if _control==null:GodotExtension.input_node(self,0x42)
 	else:GodotExtension.input_node(self,0x41)
@@ -94,5 +97,5 @@ func _on_input(e:InputEvent)->void:
 			drag(e.position)
 			b=true
 	#
-	if b:get_viewport().set_input_as_handled()
+	if b:handle_input(e)#get_viewport().set_input_as_handled()
 # Macro.Patch -->

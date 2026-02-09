@@ -13,10 +13,6 @@ static func init()->void:
 	Asset.on_clear.connect(clear)
 	add_type(&"VideoStreamTheora",".ogv")
 	var k:StringName;var d:bool=true
-	# Another backend(Unfinished).
-	k=&"VLCMedia";if ClassDB.class_exists(k):
-		if d:print(k+" is found.")
-		#add_vlc(k)#return
 	# TODO: Add supports from plugin.
 	k=&"FFmpegVideoStream";if ClassDB.class_exists(k):
 		# https://docs.unity3d.com/Manual/VideoSources-FileCompatibility.html
@@ -49,7 +45,7 @@ static func get_pool(e:String)->Pool:
 	if p==null:p=s_pools.get(".*",null)
 	return p
 
-static func load_from_file(f:String,s:Resource=null)->Resource:
+static func load_from_file(f:String,s:VideoStream=null)->VideoStream:
 	if !FileAccess.file_exists(f):return null
 	if !s_is_inited:init()
 	if IOExtension.is_sandbox(f):return ResourceLoader.load(f)
@@ -71,7 +67,7 @@ static func load_from_file(f:String,s:Resource=null)->Resource:
 class Pool:
 	var name:StringName
 	var extensions:PackedStringArray
-	var streams:Array[Resource]
+	var streams:Array[VideoStream]
 	
 	func _init(n:StringName,e:Array)->void:
 		name=n
@@ -83,16 +79,16 @@ class Pool:
 		#	if it!=null:while(it.unreference()):pass
 		streams.clear()
 
-	func load(s:Resource,f:String)->void:
+	func load(s:VideoStream,f:String)->void:
 		s.file=f;s.resource_name=IOExtension.file_name(f)
 
-	func obtain(e:String)->Resource:
+	func obtain(e:String)->VideoStream:
 		if extensions.has(".*"):
 			if !extensions.has(e):extensions.append(e)
 		#
 		if streams.is_empty():return ClassDB.instantiate(name)
 		else:return streams.pop_front()
 
-	func recycle(s:Resource)->void:
+	func recycle(s:VideoStream)->void:
 		if s==null or streams.has(s):return
 		streams.push_back(s)

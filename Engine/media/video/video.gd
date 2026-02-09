@@ -1,18 +1,11 @@
 ## A video player.
-class_name Video extends Media
-
-@export_group("Video")
-@export var container:AspectRatioContainer
-@export var aspect:UICanvas.AspectRatio:
-	set(x):aspect=x;if is_inited:_size_changed()
-@export var speed:float=1.0:
-	set(x):speed=x;_video()
+class_name Video extends AbsVideo
 
 var _stream:VideoStream
 var _speed:float=1.0
 
 func get_length()->float:
-	if is_playing():return player.get_stream_length() 
+	if is_playing():return player.get_stream_length()
 	else:return -1.0
 
 func get_position()->float:
@@ -22,26 +15,16 @@ func get_position()->float:
 func set_position(f:float)->void:
 	if is_playing():player.stream_position=f
 
+func has_size()->bool:
+	return player!=null and player.is_playing
+
 func get_size()->Vector2:
-	if is_playing():
-		var t:Texture2D=player.get_video_texture()
-		if t!=null:return t.get_size()
-	return Vector2.ZERO
+	var t:Texture2D=player.get_video_texture()
+	if t!=null:return t.get_size()
+	else:return Vector2.ZERO
 
-func _video()->void:
-	if player!=null:
-		player.speed_scale=speed*_speed
-
-func _size_changed()->void:
-	if player==null or !player.is_playing:return
-	UICanvas.fit_control(container,player,aspect,get_size())
-
-func _ready()->void:
-	super._ready()
-	if container==null:UICanvas.register(self,0,_size_changed)
-
-func _exit_tree() -> void:
-	if container==null:UICanvas.unregister(self,0,_size_changed)
+func _speed_changed()->void:
+	if player!=null:player.speed_scale=speed*_speed
 
 func init()->void:
 	if is_inited:return
@@ -76,7 +59,7 @@ func open(p:String)->void:
 func play()->void:
 	if !is_inited:init()
 	#
-	if player!=null:_speed=1.0;_video();player.play()
+	if player!=null:_speed=1.0;_speed_changed();player.play()
 	_size_changed()
 
 func stop()->void:
@@ -87,9 +70,9 @@ func stop()->void:
 func pause()->void:
 	if !is_inited:init()
 	#
-	if player!=null:_speed=0.0;_video()
+	if player!=null:_speed=0.0;_speed_changed()
 
 func resume()->void:
 	if !is_inited:init()
 	#
-	if player!=null:_speed=1.0;_video()
+	if player!=null:_speed=1.0;_speed_changed()
