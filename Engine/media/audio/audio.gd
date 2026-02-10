@@ -16,8 +16,10 @@ static func create(m:StringName,i:int,n:Node=null)->Audio:
 	return null
 
 func get_length()->float:
-	if is_playing():return stream.get_length()
-	else:return -1.0
+	if player!=null:
+		var s:AudioStream=player.stream
+		if s!=null:return s.get_length()
+	return -1.0
 
 func get_position()->float:
 	if is_playing():return player.get_playback_position()

@@ -1,5 +1,5 @@
 ## The abstract class driven by [InputEventMouseMotion] and [InputEventScreenDrag].
-class_name AbsDrag extends Node
+@abstract class_name AbsDrag extends Node
 
 @export_group("Drag")
 @export var mask:int
@@ -36,21 +36,11 @@ func screen_point(p:Vector2)->Vector2:
 func handle_input(e:InputEvent)->void:
 	get_viewport().set_input_as_handled()
 
-func get_point()->Vector2:
-	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
-	return Vector2.ZERO
-
-func set_point(p:Vector2)->void:
-	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
-
-func _on_begin()->void:
-	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
-
-func _on_change()->void:
-	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
-
-func _on_end()->void:
-	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
+@abstract func get_point()->Vector2
+@abstract func set_point(p:Vector2)->void
+@abstract func _on_begin()->void
+@abstract func _on_change()->void
+@abstract func _on_end()->void
 
 func _ready()->void:
 	_control=get_node(^".") as Control

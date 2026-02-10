@@ -19,7 +19,10 @@ class_name Media extends Node
 @export var mute:bool=false:
 	set(x):mute=x;_audio()
 @export_range(0.0,1.0,0.001,"or_greater") var volume:float=1.0:
-	set(x):volume=x;_audio()
+	get=get_volume,set=set_volume
+func get_volume()->float:return volume
+func set_volume(f:float)->void:volume=f;_audio()
+
 signal finished()
 
 var is_inited:bool
@@ -27,17 +30,19 @@ var type:int
 
 var playing:bool:
 	get:return is_playing()
-	set(x):
-		playing=x;
-		if x:play()
-		else:stop()
+	set(x):set_playing(x);playing=x
+
+func set_playing(b:bool)->void:
+	if b:play()
+	else:stop()
 
 var paused:bool:
 	get:return is_paused()
-	set(x):
-		paused=x;
-		if x:pause()
-		else:resume()
+	set(x):set_paused(x);paused=x
+
+func set_paused(b:bool)->void:
+	if b:pause()
+	else:resume()
 
 var stream:Object:
 	get:return get_stream()

@@ -29,8 +29,9 @@ func render(m:Variant)->void:
 	if graphic==null:return
 	var s:String=LangExtension.k_empty_string
 	match typeof(m):
+		TYPE_NIL:return
 		TYPE_BOOL,TYPE_INT,TYPE_FLOAT:
-			s=texts[int(m)]
+			s=texts[int(m)%texts.size()]
 		TYPE_STRING,TYPE_STRING_NAME:
 			s=m
 			match type:

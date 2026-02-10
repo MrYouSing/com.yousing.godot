@@ -109,6 +109,6 @@ static func import_asset(f:String,t:String=LangExtension.k_empty_string)->Resour
 	if FileAccess.file_exists(f):
 		if !is_sandbox(f):
 			var d:String=combine_path(s_sandboxes[0]+"/imported",file_name(f))
-			copy_file(f,d,true);f=d;EditorInterface.get_resource_filesystem().scan()
+			copy_file(f,d,true);f=d;ClassDB.class_call_static(&"EditorInterface",&"get_resource_filesystem").scan()
 		return ResourceLoader.load(f,t)
 	return null

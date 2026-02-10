@@ -57,7 +57,7 @@ func read(k:StringName,v:Variant=null)->Variant:
 		0:return i
 		1:return i==0
 		2:return _index
-		3:return items[_index]
+		3:if _index>=0 and _index<i:return items[_index]
 		4:return i>0 and _index==0
 		5:return i>0 and _index!=0
 		6:return i>0 and _index==i-1

@@ -26,7 +26,6 @@ func init_static()->void:
 	ViewModel.register_binder(&"BaseButton.String",&"text",e,e)
 	ViewModel.register_binder(&"BaseButton.StringName",&"text",e,e)
 	ViewModel.register_binder(&"FileDialog",e,&"file_selected",e)
-	ViewModel.register_binder(&"UILabel",&"model",e,e)
 	ViewModel.register_binder(&"UIDialog",e,&"on_complete",e)
 	ViewModel.register_binder(&"UIPlaylist",&"url",e,e)
 	ViewModel.register_binder(&"Media",&"url",e,e)
@@ -37,7 +36,7 @@ func init_static()->void:
 	ViewModel.register_binder(&"TextureRect",&"texture",e,e)
 	ViewModel.register_binder(&"BaseButton.Object",&"icon",e,e)
 	ViewModel.register_binder(&"VideoStreamPlayer",&"stream",e,e)
-	ViewModel.register_binder(&"UIImage",&"model",e,e)
+	ViewModel.register_binder(&"AbsGraphic",&"model",&"changed",e)
 	# Pattern
 	ViewModel.register_binder(&"UIView",&"model",e,e)
 	ViewModel.register_binder(&"PlaceholderView",&"display",e,e)

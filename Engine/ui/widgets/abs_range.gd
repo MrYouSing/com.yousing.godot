@@ -1,5 +1,5 @@
 ## An abstract fake [Range].
-class_name AbsRange extends Node
+@abstract class_name AbsRange extends Node
 
 @export_group("Range")
 @export var min_value:float=0.0
@@ -28,8 +28,7 @@ func _set_value(f:float)->void:
 	value=f
 
 ## See [method Range._value_changed]
-func _value_changed(f:float)->void:
-	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
+@abstract func _value_changed(f:float)->void
 
 func set_value(f:float)->void:
 	if LangExtension.is_busy(self):return

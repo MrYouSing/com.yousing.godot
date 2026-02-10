@@ -5,7 +5,7 @@ var _stream:VideoStream
 var _speed:float=1.0
 
 func get_length()->float:
-	if is_playing():return player.get_stream_length()
+	if player!=null:return player.get_stream_length()
 	else:return -1.0
 
 func get_position()->float:

@@ -10,6 +10,8 @@ class_name MultiMedia extends Media
 @export var players:Array[Node]
 @export var loaders:Array[Resource]
 
+var is_done:bool
+
 func find(e:String)->int:
 	var i:int=-1;for it in loaders:
 		i+=1;if it!=null and it.support(e):return i
@@ -31,16 +33,38 @@ func set_stream(s:Object)->void:
 	type=find(IOExtension.file_extension(s.resource_name))
 	if type>=0:refresh();player.stream=s
 
+# Tricks for MediaPlayer.
+
 func get_length()->float:
 	if player!=null:return player.get_length()
 	return -1.0
 
 func get_position()->float:
-	if player!=null:return player.get_position()
+	if player!=null:
+		if is_done:return player.get_length()
+		return player.get_position()
 	return -1.0
 
 func set_position(f:float)->void:
-	if player!=null:player.set_position(f)
+	if player!=null:
+		if is_done:play()
+		player.set_position(f)
+
+func get_volume()->float:
+	if mute:return 0.0
+	else:return volume
+
+func set_volume(f:float)->void:
+	if mute:volume=f
+	else:super.set_volume(f)
+
+func is_paused()->bool:
+	if is_done:return true
+	else:return super.is_paused()
+
+func set_paused(b:bool)->void:
+	if is_done:play()
+	else:super.set_paused(b)
 
 func open(p:String)->void:
 	type=find(IOExtension.file_extension(p))
@@ -53,6 +77,10 @@ func _audio()->void:
 		var v:float=volume;if mute:v=0.0
 		player.volume=v
 
+func _done()->void:
+	is_done=true
+	super._done()
+
 func init()->void:
 	if is_inited:return
 	is_inited=true
@@ -60,7 +88,7 @@ func init()->void:
 	var i:int=-1;for it in players:
 		i+=1;a=actors[i]
 		if a==null:a=it;actors[i]=a
-		GodotExtension.set_enabled(a,false)
+		GodotExtension.set_enabled(a,i==type)
 		if LangExtension.exist_signal(it,&"finished"):
 			it.loop=false
 			it.connect(&"finished",_done)
@@ -68,7 +96,9 @@ func init()->void:
 func play()->void:
 	if !is_inited:init()
 	#
+	is_done=false
 	if player!=null:
+		_audio()
 		player.set(&"aspect",aspect)
 		player.set(&"speed",speed)
 		player.play()

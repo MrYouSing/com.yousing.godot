@@ -3,6 +3,7 @@ class_name Func extends Node
 
 @export_group("Func")
 @export var target:Node
+@export var path:NodePath
 @export var method:StringName
 @export var arguments:Array
 
@@ -14,3 +15,9 @@ func invoke_with(...args:Array)->Variant:
 	if target==null or !target.has_method(method):return null
 	if args.is_empty():return target.callv(method,arguments)
 	else:return target.callv(method,args)
+
+func _ready()->void:
+	if !path.is_empty():
+		var p:Node=target;if p==null:p=GodotExtension.s_root
+		var n:Node=p.get_node_or_null(path)
+		if n!=null:target=n

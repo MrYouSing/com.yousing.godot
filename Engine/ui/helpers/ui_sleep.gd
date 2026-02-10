@@ -4,6 +4,7 @@ class_name UISleep extends Node
 @export_group("Sleep")
 @export var duration:float=1.0
 @export var pointer:PointerInput
+@export var windows:Array[Node]
 @export_flags(
 	"Once","Unhandled","Awake","Sleep",
 	"Any","Mouse Motion","Mouse Button","Key",
@@ -34,6 +35,9 @@ func set_enabled(b:bool)->void:
 		set_process(false)
 		GodotExtension.input_node(self,0x41)
 
+func delay_enabled(b:bool,f:float)->void:
+	Juggler.instance.delay_call(set_enabled,[b],f)
+
 func is_pressed()->bool:
 	var b:bool=false
 	if pointer!=null:
@@ -43,11 +47,20 @@ func is_pressed()->bool:
 			if pointer.get_touches(_touches)>0:_touches.clear();b=true
 	return b
 
+func _windowed()->void:
+	var b:bool=true
+	for it in windows:if it!=null and it.visible:b=false;break
+	set_process(b)
+
 func _ready()->void:
 	_awake=duration>=0.0;if !_awake:duration*=1.0
 	if features&0x02!=0:GodotExtension.input_node(self,0x81)
 	else:GodotExtension.input_node(self,0x42)
 	if pointer==null:pointer=PointerInput.current
+	for it in windows:LangExtension.try_signal(it,&"visibility_changed",_windowed)
+
+func _exit_tree()->void:
+	for it in windows:LangExtension.remove_signal(it,&"visibility_changed",_windowed)
 
 func _process(d:float)->void:
 	if _awake:

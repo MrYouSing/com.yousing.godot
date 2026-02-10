@@ -1,29 +1,16 @@
 ## The abstract control for drag and drop.
-class_name AbsDrop extends Control
+@abstract class_name AbsDrop extends Control
 
 static var current:AbsDrop
 
 @export_group("Drop")
 @export_flags("Drag","Drop")var drop:int=0x3
 
-func in_area(p:Vector2)->bool:
-	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
-	return false
-
-func is_model(m:Variant)->bool:
-	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
-	return false
-
-func get_model()->Variant:
-	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
-	return null
-
-func set_model(m:Variant)->void:
-	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
-
-func get_preview(m:Variant,p:Vector2)->Control:
-	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
-	return null
+@abstract func in_area(p:Vector2)->bool
+@abstract func is_model(m:Variant)->bool
+@abstract func get_model()->Variant
+@abstract func set_model(m:Variant)->void
+@abstract func get_preview(m:Variant,p:Vector2)->Control
 
 func wrap_preview(s:Control,d:Control,p:Vector2)->Control:
 	var c:Control=Control.new();c.name=&"Dummy";c.add_child(d)

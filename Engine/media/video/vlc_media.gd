@@ -19,10 +19,9 @@ func get_duration()->float:
 	return player.get_length()*0.001
 
 func get_length()->float:
-	if _playing:
-		if _time.y>=0.0:return _time.y
-		return get_duration()
-	else:return -1.0
+	if _time.y>=0.0:return _time.y
+	if !is_inited:init()
+	return get_duration()
 
 func get_position()->float:
 	if _playing:
@@ -114,11 +113,12 @@ func play()->void:
 	_playing=true;_time=Vector3.ONE*-1.0
 	if player!=null:
 		player.set_rate(speed)
-		player.visible=_playing;player.play()
+		player.visible=false;player.play()
 		LangExtension.try_signal(player,&"video_frame",_prepared)
 
 func _prepared()->void:# TODO: Fix size_changed()
 	if get_position()<0.01 and _playing:return
+	player.visible=_playing
 	LangExtension.remove_signal(player,&"video_frame",_prepared)
 	_size_changed()
 

@@ -1,15 +1,11 @@
 ## The abstract model for ui pattern.
-class_name AbsModel extends Resource
+@abstract class_name AbsModel extends Resource
 
 var _is_inited:bool
 var _stub:ViewModel.Stub
 
-func read(k:StringName,v:Variant=null)->Variant:
-	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
-	return v
-
-func write(k:StringName,v:Variant)->void:
-	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
+@abstract func read(k:StringName,v:Variant=null)->Variant
+@abstract func write(k:StringName,v:Variant)->void
 
 func _bind(s:ViewModel.Stub)->void:
 	if _stub!=null:pass

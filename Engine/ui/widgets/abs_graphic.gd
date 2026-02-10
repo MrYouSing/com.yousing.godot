@@ -1,21 +1,28 @@
 ## The abstract class for visual widgets.
-class_name AbsGraphic extends Node
+@abstract class_name AbsGraphic extends Node
 
 @export_group("Graphic")
 @export var graphic:Node
-@export var model:Variant=null:
-	set(x):if x!=model:render(x);model=x
+@export var model:Variant:
+	set(x):if x!=model:
+		if is_node_ready():render(x);changed.emit(x)
+		model=x
 
 signal rendered()
+signal changed(m:Variant)
 
-func clazz()->String:
-	return "Control"
-
-func render(m:Variant)->void:
-	if graphic==null:return
-	if !rendered.has_connections():LangExtension.throw_exception(self,LangExtension.e_not_implemented)
-	rendered.emit()
+@abstract func clazz()->String
+@abstract func render(m:Variant)->void
 
 func _ready()->void:
 	if graphic==null:graphic=GodotExtension.assign_node(self,clazz())
-	render(model)
+	var m:Variant=model;render(m);changed.emit(m)
+
+# Messages
+
+func _clicked()->void:
+	var m:Variant=model
+	match typeof(m):
+		TYPE_BOOL:model=!m
+		TYPE_INT:model=m+1
+		TYPE_FLOAT:model=m+1.0

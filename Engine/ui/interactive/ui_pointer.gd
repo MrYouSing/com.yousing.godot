@@ -6,17 +6,27 @@ class_name UIPointer extends Node
 @export var id:int=-1
 @export var control:Control
 
+func set_enabled(b:bool)->void:
+	if control!=null:
+		control.visible=b
+	else:
+		var m:int=DisplayServer.MOUSE_MODE_VISIBLE if b\
+			else DisplayServer.MOUSE_MODE_HIDDEN
+		DisplayServer.mouse_set_mode(m)
+
+func show()->void:set_enabled(true)
+func hide()->void:set_enabled(false)
+
 func set_position(v:Vector2)->void:
 	if control!=null:
 		control.global_position=UITransform.get_position(control,v)
 
 func _ready()->void:
 	if input==null:input=PointerInput.current
-	if control==null:control=GodotExtension.assign_node(self,"Control")
+	if control==null:control=GodotExtension.assign_node(self,"Control") as Control
 
 func _process(d:float)->void:
 	if input==null:return
 	var p:PointerInput.PointerEvent=input.get_pointer(id)
 	if p!=null:
 		set_position(p.position if p.on() else UITransform.k_hidden_pos)
-	

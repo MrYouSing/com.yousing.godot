@@ -18,7 +18,7 @@ func _value_changed(f:float)->void:
 	var s:String;match type:
 		0:s=format%f
 		1:s="{0}/{1}".format([format%(f-a),format%c])
-		2:s=format%((f-a)/c)
+		2:s=format%((f-a)/c*100.0)
 		3:s=time(f)
 		4:s="{0}/{1}".format([time(f-a),time(c)])
 	label.text=s

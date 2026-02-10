@@ -117,7 +117,7 @@ func _value_changed(v:Variant)->void:
 
 func _ready()->void:
 	if type==0:type=typeof(value)
-	if container==null:container=self
+	if container==null and !self.is_class("Node"):container=self
 	reload();rebuild();refresh()
 
 class Option:

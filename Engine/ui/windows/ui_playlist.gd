@@ -26,6 +26,10 @@ var url:String:
 		if x==_url:return
 		_url=x;play(x)
 
+func set_enabled(b:bool)->void:
+	super.set_enabled(b)
+	render_view(buttons[2],_shown)
+
 # List APIs
 
 var _url:String
@@ -103,11 +107,12 @@ func toggle()->void:
 	if features&0x02!=0:set_config("Show",_shown)
 
 func switch()->void:
-	var n:int=Loop.Count
+	var n:int=Loop.Count;var j:int
 	for i in n:
-		if features&(1<<((loop+i)%n+3))!=0:
-			loop=i;break
-	var b:Node=buttons[1];if b!=null:b.set(&"model",loop)
+		j=(loop+1+i)%n
+		if features&(1<<(j+3))!=0:
+			loop=j;break
+	render_view(buttons[3],loop)
 	if features&0x04!=0:set_config("Loop",loop)
 
 func focus()->void:
@@ -165,16 +170,17 @@ func _finished()->void:
 		Loop.Random:select(MathExtension.random_index(_random,_index,count()))
 
 func _ready()->void:
-	var b:Node;var i:int=0;var s:StringName=&"pressed"
-	b=buttons[i];i+=1;if b!=null:b.connect(s,prev)
-	b=buttons[i];i+=1;if b!=null:b.connect(s,next)
-	b=buttons[i];i+=1;if b!=null:b.connect(s,toggle)
-	b=buttons[i];i+=1;if b!=null:b.connect(s,switch)
-	b=buttons[i];i+=1;if b!=null:b.connect(s,clear)
-	b=buttons[i];i+=1;if b!=null:b.connect(&"id_pressed",menu)
 	if features&0x01!=0:_index=get_config("Index",_index)
 	if features&0x02!=0:set_enabled(get_config("Show",true))
 	if features&0x04!=0:loop=get_config("Loop",loop)
+	#
+	var b:Node;var i:int=0;var s:StringName=&"pressed"
+	b=buttons[i];i+=1;if b!=null:b.connect(s,prev)
+	b=buttons[i];i+=1;if b!=null:b.connect(s,next)
+	b=buttons[i];i+=1;if b!=null:b.connect(s,toggle);render_view(b,_shown)
+	b=buttons[i];i+=1;if b!=null:b.connect(s,switch);render_view(b,loop)
+	b=buttons[i];i+=1;if b!=null:b.connect(s,clear)
+	b=buttons[i];i+=1;if b!=null:b.connect(&"id_pressed",menu)
 	if view!=null:
 		refresh()
 		view.item_selected.connect(_selected)
@@ -184,7 +190,7 @@ func _ready()->void:
 		media.finished.connect(_finished)
 	if model!=null:
 		if _index>=0:select(_index)
-		else:url=model.get(&"value")
+		else:var v:Variant=model.get(&"value");if v!=null:url=v
 
 enum Loop {
 	None,

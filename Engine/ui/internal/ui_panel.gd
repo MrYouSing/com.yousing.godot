@@ -38,6 +38,14 @@ func get_config(k:StringName,v:Variant)->Variant:
 func set_config(k:StringName,v:Variant)->void:
 	Application.get_config().set_value(name,k,v);Application.try_flush()
 
+func render_view(v:Node,m:Variant)->void:
+	if v!=null:
+		if v.get_script()==null:
+			match typeof(m):
+				TYPE_BOOL,TYPE_INT,TYPE_FLOAT:
+					if v is BaseButton:v.button_pressed=bool(m);return
+		v.set(&"model",m)
+
 func _ready()->void:
 	if !path.is_empty():UIManager.register(path,self)
 	if canvas==null:canvas=GodotExtension.assign_node(self,"CanvasItem")
