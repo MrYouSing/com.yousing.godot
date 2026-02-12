@@ -35,7 +35,7 @@ func read(k:StringName,v:Variant=null)->Variant:
 func write(k:StringName,v:Variant)->void:
 	if ProjectSettings.has_setting(k):
 		ProjectSettings.set_setting(k,v)
-		if !_keys.has(k):_keys.append(k)
+		if not _keys.has(k):_keys.append(k)
 		flush()
 
 func init()->void:

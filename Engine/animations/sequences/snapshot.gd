@@ -14,7 +14,7 @@ func save(n:Node)->void:
 	var p:NodePath;var v:Variant
 	if floats.size()<c:floats.resize(c);variants.resize(c)
 	for i in c:
-		if i<b:p=paths[i];if !p.is_empty():it=n.get_node_or_null(p)
+		if i<b:p=paths[i];if not p.is_empty():it=n.get_node_or_null(p)
 		if it!=null:
 			v=it.get(names[i]);match typeof(v):
 				TYPE_NIL:floats[i]=NAN;variants[i]=null
@@ -26,8 +26,8 @@ func load(n:Node)->void:
 	var it:Node=n;var b:int=paths.size();var c:int=names.size()
 	var p:NodePath;var f:float
 	for i in c:
-		if i<b:p=paths[i];if !p.is_empty():it=n.get_node_or_null(p)
+		if i<b:p=paths[i];if not p.is_empty():it=n.get_node_or_null(p)
 		if it!=null:
 			f=floats[i]
-			if !is_nan(f):it.set(names[i],f)
+			if not is_nan(f):it.set(names[i],f)
 			else:it.set(names[i],variants[i])

@@ -11,7 +11,7 @@ var m_previous:int
 var m_buttons:int
 
 func set_enabled(b:bool)->void:
-	if !b:
+	if not b:
 		for i in m_axes.size():m_axes[i]=Vector2.ZERO
 		m_previous=0;m_buttons=0
 
@@ -27,13 +27,13 @@ func do_update()->void:
 	var i:int=0;var n:int=axes.size()/4;var v:Vector2;
 	var f:float;var s:float=deadzone.x*deadzone.x;
 	for a in n:
-		if !axes[i].is_empty():
+		if not axes[i].is_empty():
 			m_axes[i/4]=Input.get_vector(axes[i+0],axes[i+1],axes[i+2],axes[i+3],deadzone.x)
 		i+=4
 	# Buttons
 	m_previous=m_buttons;m_buttons=0;
 	i=-1;for k in buttons:
-		i+=1;if !k.is_empty():
+		i+=1;if not k.is_empty():
 			if Input.get_action_strength(k)>deadzone.y:m_buttons|=1<<i
 	# Advanced
 

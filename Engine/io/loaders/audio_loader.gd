@@ -16,20 +16,20 @@ static func init()->void:
 	add_type(AudioStreamOggVorbis,".ogg")
 
 static func support(e:String)->bool:
-	if !s_is_inited:init()
+	if not s_is_inited:init()
 	#
 	return s_pools.get(e,null)!=null
 
 static func add_type(c:Object,...a:Array)->void:
-	if !s_is_inited:init()
+	if not s_is_inited:init()
 	#
 	var p:Pool=Pool.new(a[0],c)
 	s_pools[p.name]=p
 	for it in a:s_pools[it]=p
 
 static func load_from_file(f:String,c:bool=true)->AudioStream:
-	if !FileAccess.file_exists(f):return null
-	if !s_is_inited:init()
+	if not FileAccess.file_exists(f):return null
+	if not s_is_inited:init()
 	if IOExtension.is_sandbox(f):return ResourceLoader.load(f)
 	#
 	var e:String=IOExtension.file_extension(f)
@@ -55,7 +55,7 @@ class Pool:
 		streams.clear()
 
 	func load(k:String,v:Variant)->AudioStream:
-		var b:bool=!k.is_empty();var s:AudioStream=null
+		var b:bool=not k.is_empty();var s:AudioStream=null
 		if b:s=streams.get(k,null)
 		if s==null:
 			match typeof(v):

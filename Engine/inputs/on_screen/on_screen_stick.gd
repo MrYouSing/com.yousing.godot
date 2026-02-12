@@ -108,7 +108,7 @@ func drag(p:Vector2)->void:
 	render(_stick_origin,v)
 	#
 	var j:int=level(v)-2
-	if !actions[4].is_empty():InputExtension.set_button(actions[4],j>=-1)
+	if not actions[4].is_empty():InputExtension.set_button(actions[4],j>=-1)
 	for i in actions.size()-5:
 		InputExtension.set_button(actions[5+i],i==j)
 	#

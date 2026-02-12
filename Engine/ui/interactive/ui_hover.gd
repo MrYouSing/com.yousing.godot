@@ -72,6 +72,6 @@ func _exit_tree()->void:
 	#_enters.clear();_exits.clear()
 
 func _process(d:float)->void:
-	if !_hover and _time>=0.0:
+	if not _hover and _time>=0.0:
 		if Application.get_time()-_time>=timeout:
 			set_hover(null)

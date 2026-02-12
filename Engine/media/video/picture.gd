@@ -13,7 +13,7 @@ func get_stream()->Object:
 	else:return null
 
 func set_stream(s:Object)->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	if player!=null:player.set(slot,s)
 	_texture=s;_size_changed()
 
@@ -27,7 +27,7 @@ func is_playing()->bool:
 	return _time>=0.0
 
 func is_paused()->bool:
-	return !is_processing()
+	return not is_processing()
 
 func pause()->void:
 	set_process(false)
@@ -62,13 +62,13 @@ func init()->void:
 		player.set(&"expand_mode",1);type=2
 
 func play()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	_time=0.0;set_process(true)
 	if player!=null:player.set(slot,_texture)
 
 func stop()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	set_process(false);_time=-1.0
 	if player!=null:player.set(slot,null)

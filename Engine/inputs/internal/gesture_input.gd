@@ -38,8 +38,8 @@ func fallback(s:Signal,t:GestureType)->void:
 	print("{0}.{1} at {2}".format([GestureType.find_key(t),s.get_name(),"%.3f"%Application.get_time()]))
 
 func fire_gesture(s:Signal,t:GestureType,p:Vector2)->void:
-	if support(t)==false or !contain(p):return
-	if s.is_null() or !s.has_connections():fallback(s,t);return
+	if support(t)==false or not contain(p):return
+	if s.is_null() or not s.has_connections():fallback(s,t);return
 	#
 	temp.type=t
 	temp.position=p
@@ -58,7 +58,7 @@ func end_gesture(t:GestureType,p:Vector2)->void:
 
 func _ready()->void:
 	var b:bool=features&0x01!=0
-	set_process_input(!b)
+	set_process_input(not b)
 	set_process_unhandled_input(b)
 	#
 	if current==null:current=self

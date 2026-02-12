@@ -56,7 +56,7 @@ func _material(x:StringName)->void:
 
 func _footstep()->void:
 	open(material);play()
-	if !scale.is_zero_approx():volume=interval(scale)
+	if not scale.is_zero_approx():volume=interval(scale)
 	if on_footstep.has_connections():on_footstep.emit(get_foot())
 	# Next
 	time+=interval(next)

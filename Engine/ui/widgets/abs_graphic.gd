@@ -23,6 +23,6 @@ func _ready()->void:
 func _clicked()->void:
 	var m:Variant=model
 	match typeof(m):
-		TYPE_BOOL:model=!m
+		TYPE_BOOL:model=not m
 		TYPE_INT:model=m+1
 		TYPE_FLOAT:model=m+1.0

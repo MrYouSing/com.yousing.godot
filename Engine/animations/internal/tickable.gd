@@ -10,8 +10,8 @@ var _time:float=-1.0
 
 func set_enabled(b:bool)->void:
 	var a:bool=_time>=0.0
-	if !a and b:_play();_time=_step
-	elif a and !b:_stop();_time=-1.0
+	if not a and b:_play();_time=_step
+	elif a and not b:_stop();_time=-1.0
 	set_process(b)
 
 func _play()->void:

@@ -85,7 +85,7 @@ func _on_pause(b:bool)->void:
 	if v!=null:active_view(v,b)
 
 func _on_quit(b:bool)->void:
-	if !b:
+	if not b:
 		var v:Object=find_view(&"App.Quit",true)
 		if v==null:b=true
 		else:active_view(v,true)
@@ -101,7 +101,7 @@ func init_ui()->void:
 		events.add_listener(&"App.Resume",_on_pause.bind(false))
 		events.add_listener(&"App.Quit",_on_quit.bind(false))
 		events.add_listener(&"App.Exit",_on_quit.bind(true))
-	if !prefabs.is_empty():
+	if not prefabs.is_empty():
 		flush_view(get_view(prefabs.keys()[0]))
 
 # Get/Set

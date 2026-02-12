@@ -25,29 +25,29 @@ static func init()->void:
 		return
 
 static func support(e:String)->bool:
-	if !s_is_inited:init()
+	if not s_is_inited:init()
 	#
 	var p:Pool=get_pool(e)
 	if p!=null and p.extensions.has(e):return true
 	return false
 
 static func add_type(c:Variant,...a:Array)->void:
-	if !s_is_inited:init()
+	if not s_is_inited:init()
 	#
 	var p:Pool=Pool.new(c,a)
 	s_pools[c]=p
-	for it in a:if !s_pools.has(it):s_pools[it]=p
+	for it in a:if not s_pools.has(it):s_pools[it]=p
 
 static func get_pool(e:String)->Pool:
-	if !s_is_inited:init()
+	if not s_is_inited:init()
 	#
 	var p:Pool=s_pools.get(e,null)
 	if p==null:p=s_pools.get(".*",null)
 	return p
 
 static func load_from_file(f:String,s:VideoStream=null)->VideoStream:
-	if !FileAccess.file_exists(f):return null
-	if !s_is_inited:init()
+	if not FileAccess.file_exists(f):return null
+	if not s_is_inited:init()
 	if IOExtension.is_sandbox(f):return ResourceLoader.load(f)
 	#
 	var e:String=IOExtension.file_extension(f)
@@ -57,7 +57,7 @@ static func load_from_file(f:String,s:VideoStream=null)->VideoStream:
 			s=p.obtain(e)
 		else:
 			e=IOExtension.file_extension(s.file);
-			if !p.extensions.has(e):
+			if not p.extensions.has(e):
 				var q:Pool=get_pool(e)
 				if q!=null:q.recycle(s)
 				s=p.obtain(e)
@@ -84,7 +84,7 @@ class Pool:
 
 	func obtain(e:String)->VideoStream:
 		if extensions.has(".*"):
-			if !extensions.has(e):extensions.append(e)
+			if not extensions.has(e):extensions.append(e)
 		#
 		if streams.is_empty():return ClassDB.instantiate(name)
 		else:return streams.pop_front()

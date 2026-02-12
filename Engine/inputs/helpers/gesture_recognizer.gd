@@ -17,7 +17,7 @@ var drag:_GestureEvent
 
 func set_enabled(b:bool)->void:
 	super.set_enabled(b)
-	if !b:
+	if not b:
 		for it in events:if it!=null:it.clear()
 
 func num_singles()->int:return 2
@@ -92,12 +92,12 @@ func _on_input(e:InputEvent)->void:
 	elif e is InputEventScreenDrag:# Trigger empty event when re-focus.
 		if not_single(e.index):return
 		#
-		try_event(drag,e,!e.screen_relative.is_zero_approx())
+		try_event(drag,e,not e.screen_relative.is_zero_approx())
 	elif engine:
 		if e is InputEventPanGesture:
-			try_event(events[num_singles()],e,!e.delta.is_zero_approx())
+			try_event(events[num_singles()],e,not e.delta.is_zero_approx())
 		elif e is InputEventMagnifyGesture:
-			try_event(events[num_singles()+1],e,!is_zero_approx(e.factor-1.0))
+			try_event(events[num_singles()+1],e,not is_zero_approx(e.factor-1.0))
 
 func _process(d:float)->void:
 	if input!=null:# TODO: Unlock
@@ -112,7 +112,7 @@ func _on_single(n:int,c:int)->int:
 			event.index=p.index;event.position=p.position
 			if n!=touch.timestamp:
 				if drag.time>=0.0:pass# TODO: Unlock
-				else:touch.set_event(event,!touch.diff(p.index))
+				else:touch.set_event(event,not touch.diff(p.index))
 			if n!=drag.timestamp:
 				if drag.diff(p.index):drag.set_event(event,false)
 		else:
@@ -163,7 +163,7 @@ class _GestureEvent extends GestureInput.GestureEvent:
 		timestamp=Application.get_frames()
 		if e!=null:position=e.position
 		if time>=0.0:# On
-			if !b:# Up
+			if not b:# Up
 				_on_end(e)
 				time=-1.0
 				origin=Vector2.ZERO
@@ -201,7 +201,7 @@ class TouchEvent extends _GestureEvent:
 	func _on_change(e:InputEvent)->void:
 		var c:GestureRecognizer=context
 		if sub_time>=0.0:# On
-			if !c.in_range(get_time(),get_distance(),c.hold_args):stop()
+			if not c.in_range(get_time(),get_distance(),c.hold_args):stop()
 		elif sub_time>=-1.0:# Off
 			var t:float=get_time()
 			if c.in_range(t,get_distance(),c.hold_args):
@@ -318,7 +318,7 @@ class TransformEvent extends DualEvent:
 		scale=MathExtension.k_vec2_nan
 		#
 		super._on_begin(e)
-		if !c.engine:
+		if not c.engine:
 			c.begin_gesture(GestureType.Pan,position)
 			c.begin_gesture(GestureType.Zoom,position)
 
@@ -332,7 +332,7 @@ class TransformEvent extends DualEvent:
 		t.origin=origin
 		t.value=MathExtension.clocking_at(v)-MathExtension.clocking_at(start)
 		rotate=c.try_change(GestureType.Rotate,position,rotate,Vector2(t.value,0.0))
-		if !c.engine:
+		if not c.engine:
 			point=c.try_change(GestureType.Pan,position,point,position)
 			t.value=v.length()/start.length()
 			scale=c.try_change(GestureType.Zoom,position,scale,Vector2(t.value,0.0))
@@ -340,6 +340,6 @@ class TransformEvent extends DualEvent:
 	func _on_end(e:InputEvent)->void:
 		var c:GestureRecognizer=context
 		super._on_end(e)
-		if !c.engine:
+		if not c.engine:
 			c.end_gesture(GestureType.Pan,position)
 			c.end_gesture(GestureType.Zoom,position)

@@ -30,7 +30,7 @@ func asset(k:StringName)->Resource:
 	if v!=null:return v
 	#
 	var p:String=k if k.begins_with("res://") else path(k)
-	if !p.is_empty():
+	if not p.is_empty():
 		v=ResourceLoader.load(p);
 		assets[k]=v;return v
 	return null
@@ -96,7 +96,7 @@ func hide(e:String)->void:
 			GodotExtension.add_node(it,hidden,false)
 
 func load(k:StringName,a:bool=false)->void:
-	if !scenes.is_empty() and !a:unload(LangExtension.k_empty_string)
+	if not scenes.is_empty() and not a:unload(LangExtension.k_empty_string)
 	var s:PackedScene=asset(k);if s==null:return
 	#
 	var n:Node=s.instantiate();
@@ -128,7 +128,7 @@ func get_loader(k:StringName)->Loader:
 func prefab_async(k:StringName,c:Callable)->void:
 	var p:Collections.Pool=pools.get(k,null)
 	if p!=null:
-		if !c.is_null():c.call(p.source)
+		if not c.is_null():c.call(p.source)
 	else:
 		var l:Loader=get_loader(k)
 		if l!=null:
@@ -142,7 +142,7 @@ func prefab_async(k:StringName,c:Callable)->void:
 func load_async(k:StringName,c:Callable,a:bool=false)->void:
 	if assets.has(k):
 		self.load(k,a);
-		if !c.is_null():c.call(self)
+		if not c.is_null():c.call(self)
 	else:
 		var l:Loader=get_loader(k)
 		if l!=null:
@@ -188,6 +188,6 @@ func _on_prefab(l:Loader)->void:
 func _on_load(l:Loader)->void:
 	if l.progress==1.0:
 		var k:StringName=l.name;assets[k]=l.asset;
-		if !l.arguments.is_empty():self.load(k,l.arguments[0])
+		if not l.arguments.is_empty():self.load(k,l.arguments[0])
 	#
 	loaders.erase(l);l.path=Loader.k_recycle

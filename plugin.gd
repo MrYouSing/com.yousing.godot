@@ -31,7 +31,7 @@ func set_types(r:String,l:Array[String],b:bool)->void:
 		var s:Script=load(r+it);if s==null:continue
 		var c:StringName=s.get_global_name()
 		var p:StringName=s.get_instance_base_type()
-		if !ClassDB.is_parent_class(p,&"Node") and !ClassDB.is_parent_class(p,&"Resource"):
+		if not ClassDB.is_parent_class(p,&"Node") and not ClassDB.is_parent_class(p,&"Resource"):
 			continue
 		#
 		if b:

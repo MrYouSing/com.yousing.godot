@@ -9,7 +9,7 @@ static func create(m:StringName,i:int,n:Node=null)->Audio:
 		3:p=AudioStreamPlayer3D.new();p.name=&"AudioPlayer3D"
 	if p!=null:
 		var a:Audio=Audio.new()
-		if !m.is_empty():a.name=m;p.bus=m
+		if not m.is_empty():a.name=m;p.bus=m
 		if n!=null:n.add_child(p);
 		p.add_child(a);a.player=p
 		return a
@@ -43,19 +43,19 @@ func init()->void:
 
 ## TODO: [member AudioStreamPlayer.stream_paused]=true will cause that [member AudioStreamPlayer.playing]=false and [method AudioStreamPlayer.seek] does not work.
 func is_playing()->bool:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:return player.playing or player.stream_paused
 	else:return false
 
 func is_paused()->bool:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:return player.stream_paused
 	else:return false
 
 func open(p:String)->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:
 		var s:AudioStream=AudioLoader.load_from_file(p)
@@ -63,16 +63,16 @@ func open(p:String)->void:
 	super.open(p)
 
 func play()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:player.stream_paused=false;player.play()
 
 func pause()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:player.stream_paused=true
 
 func resume()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:player.stream_paused=false

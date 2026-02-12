@@ -78,7 +78,7 @@ static func shape_overlap(c:PhysicsDirectSpaceState3D,p:Vector3,q:Basis,s:Shape3
 	#
 	shared_shape.shape=s;shared_shape.margin=0.0
 	var tmp:Array[Dictionary]=c.intersect_shape(shared_shape,shared_max)
-	if !tmp.is_empty():return tmp
+	if not tmp.is_empty():return tmp
 	return LangExtension.k_empty_array
 
 static func sphere_overlap(c:PhysicsDirectSpaceState3D,p:Vector3,r:float,m:int,e:Array[RID],f:int=-1)->Array:

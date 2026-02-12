@@ -17,18 +17,18 @@ func _ready()->void:
 func find_event(e:StringName,b:bool)->Signal:
 	var s:Signal=events.get(e,LangExtension.k_empty_signal)
 	if s.is_null() and b:
-		if !has_user_signal(e):add_user_signal(e)
+		if not has_user_signal(e):add_user_signal(e)
 		s=Signal(self,e);events[e]=s
 	return s
 
 func add_listener(e:StringName,l:Callable,f:int=0)->void:
 	if l.is_null():return
 	var s:Signal=find_event(e,true)
-	if !s.is_connected(l):s.connect(l,f)
+	if not s.is_connected(l):s.connect(l,f)
 
 func remove_listener(e:StringName,l:Callable)->void:
 	var s:Signal=find_event(e,false)
-	if !s.is_null():
+	if not s.is_null():
 		if l.is_null():LangExtension.clear_signal(s)
 		elif s.is_connected(l):s.disconnect(l)
 

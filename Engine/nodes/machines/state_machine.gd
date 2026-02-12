@@ -11,7 +11,7 @@ var idle:StringName
 signal on_state(c:Object,k:StringName,v:Variant,t:Transition)
 
 func _ready()->void:
-	if !state.is_empty():
+	if not state.is_empty():
 		idle=state
 		var tmp:StringName=state;state=&"*";set_state(tmp)
 

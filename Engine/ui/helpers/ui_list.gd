@@ -59,7 +59,7 @@ func rebuild()->void:
 		else:
 			container.column_titles_visible=true
 			container.set_column_title(0,tr(title,category))
-			if !tooltip.is_empty():
+			if not tooltip.is_empty():
 				container.set_column_title_tooltip_text(0,tr(tooltip,category))
 		LangExtension.add_signal(container,&"button_clicked",_clicked)
 		match mode:
@@ -78,7 +78,7 @@ func item(c:ItemList,i:int,e:Element)->void:
 	#
 	if t!=null:c.add_icon_item(t);c.set_item_text(i,k)
 	else:c.add_item(k)
-	if !e.tooltip.is_empty():c.set_item_tooltip(i,tr(e.tooltip,category))
+	if not e.tooltip.is_empty():c.set_item_tooltip(i,tr(e.tooltip,category))
 	c.set_item_metadata(i,e)
 
 func tree(c:Tree,i:int,e:Element)->TreeItem:
@@ -94,7 +94,7 @@ func tree(c:Tree,i:int,e:Element)->TreeItem:
 		TreeItem.CELL_MODE_CUSTOM:
 			m=0
 		TreeItem.CELL_MODE_RANGE:
-			if !range.is_zero_approx():
+			if not range.is_zero_approx():
 				k=LangExtension.k_empty_name;v.set_cell_mode(i,m)
 				v.set_range_config(i,range.x,range.y,range.z,range.w!=0.0)
 			b=true
@@ -102,8 +102,8 @@ func tree(c:Tree,i:int,e:Element)->TreeItem:
 			b=true
 	v.set_cell_mode(i,m);v.set_editable(i,b)
 	if t!=null:v.set_icon(i,t)
-	if !k.is_empty():v.set_text(i,k)
-	if !e.tooltip.is_empty():v.set_tooltip_text(i,tr(e.tooltip,category))
+	if not k.is_empty():v.set_text(i,k)
+	if not e.tooltip.is_empty():v.set_tooltip_text(i,tr(e.tooltip,category))
 	v.set_metadata(i,e)
 	for j in buttons.size():
 		if e.buttons&(1<<j)!=0:

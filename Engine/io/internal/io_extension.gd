@@ -62,7 +62,7 @@ static func create_directory(d:String)->DirAccess:
 
 static func copy_file(s:String,d:String,w:bool=false)->void:
 	if FileAccess.file_exists(s):
-		if !w and FileAccess.file_exists(d):return
+		if not w and FileAccess.file_exists(d):return
 		#
 		create_directory(directory_name(d))
 		var a:FileAccess=FileAccess.open(d,FileAccess.WRITE)
@@ -72,7 +72,7 @@ static func get_config(f:String,k:PackedStringArray)->void:
 	if FileAccess.file_exists(f):
 		var c:ConfigFile=ConfigFile.new();c.load(f);var s:String
 		for i in c.get_sections():for j in c.get_section_keys(i):
-			s=i+"/"+j;if !k.has(s):k.append(s)
+			s=i+"/"+j;if not k.has(s):k.append(s)
 
 static func set_config(f:String,k:PackedStringArray,v:bool)->void:
 	if FileAccess.file_exists(f):
@@ -101,13 +101,13 @@ static func is_sandbox(f:String)->bool:
 	return false
 
 static func load_asset(f:String,t:String=LangExtension.k_empty_string)->Resource:
-	if !is_sandbox(f):f=s_sandboxes[0]+f
+	if not is_sandbox(f):f=s_sandboxes[0]+f
 	if FileAccess.file_exists(f):return ResourceLoader.load(f,t)
 	return null
 
 static func import_asset(f:String,t:String=LangExtension.k_empty_string)->Resource:
 	if FileAccess.file_exists(f):
-		if !is_sandbox(f):
+		if not is_sandbox(f):
 			var d:String=combine_path(s_sandboxes[0]+"/imported",file_name(f))
 			copy_file(f,d,true);f=d;ClassDB.class_call_static(&"EditorInterface",&"get_resource_filesystem").scan()
 		return ResourceLoader.load(f,t)

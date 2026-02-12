@@ -30,10 +30,10 @@ func init()->void:
 	if is_inited:return
 	is_inited=true
 	#
-	if !paths.is_empty():
+	if not paths.is_empty():
 		clips.clear();names.clear()
 		var c:Resource;for it in paths:
-			if !it.is_empty():
+			if not it.is_empty():
 				c=load(it);if c==null:continue
 				clips.append(c);names.append(IOExtension.file_name_only(it))
 	if names.size()>0:
@@ -44,12 +44,12 @@ func init()->void:
 	sum=0.0;for it in rates:sum+=it
 
 func count()->int:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	return clips.size()
 
 func load(k:String)->Resource:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	var tmp:Resource=library.get(k,null)
 	if tmp!=null and tmp is Album:
@@ -57,7 +57,7 @@ func load(k:String)->Resource:
 	return tmp
 
 func random()->Resource:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	var i:int=-1
 	if sum<=0.0:i=randi()%clips.size()

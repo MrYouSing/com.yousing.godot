@@ -65,7 +65,7 @@ func vibrate(v:Vector3)->void:
 		if v.is_zero_approx():Input.stop_joy_vibration(device)
 		else:Input.start_joy_vibration(device,v.x,v.y,v.z)
 	else:
-		if !v.is_zero_approx():
+		if not v.is_zero_approx():
 			Input.vibrate_handheld(maxf(v.z,0.1)*1000,(v.x+v.y)*0.5)
 
 func try_update()->void:
@@ -105,7 +105,7 @@ func _featured()->void:
 	var a:bool=features&0x01==0
 	var b:bool=features&0x04!=0
 	set_process(a)
-	set_process_input(a and !b)
+	set_process_input(a and not b)
 	set_process_unhandled_input(a and b)
 
 func _ready()->void:

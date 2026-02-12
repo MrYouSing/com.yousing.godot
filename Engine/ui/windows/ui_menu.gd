@@ -54,7 +54,7 @@ func _on_click(i:int)->void:
 
 ## [method Range._value_changed]
 func _value_changed(v:int)->void:
-	if !is_popup():return
+	if not is_popup():return
 	var t:String;if join.is_empty():
 		var i:int=-1;for it in indexes:
 			i+=1;if v==i:
@@ -105,7 +105,7 @@ func get_position()->Vector2:
 		r.position=PointerInput.get_mouse_position(DisplayServer.SCREEN_PRIMARY)
 	elif m.is_native_menu():
 		r.position=PointerInput.get_mouse_position(-DisplayServer.SCREEN_OF_MAIN_WINDOW)
-	elif !is_zero_approx(r.size.length_squared()):
+	elif not is_zero_approx(r.size.length_squared()):
 		m.show();var s:Vector2=m.size
 		var p:Vector2=UITransform.preset_to_vec2(anchor)
 		var o:Vector2=MathExtension.rect_position(r,p)
@@ -136,11 +136,11 @@ func add_menu(m:PopupMenu,e:Entry)->void:
 	#
 	if e.mask&Mask.Disable!=0:m.set_item_disabled(e.index,true)
 	if e.mask&Mask.Check!=0:m.set_item_checked(e.index,true)
-	if !e.tooltip.is_empty():m.set_item_tooltip(e.index,get_text(e.tooltip))
+	if not e.tooltip.is_empty():m.set_item_tooltip(e.index,get_text(e.tooltip))
 	m.set_item_metadata(e.index,e)
 
 func add_native(m:RID,e:Entry)->void:
-	if !m.is_valid() or e==null:return
+	if not m.is_valid() or e==null:return
 	var i:Texture2D=e.icon
 	var t:String=get_text(e.text)
 	var c:Callable=_on_press
@@ -150,7 +150,7 @@ func add_native(m:RID,e:Entry)->void:
 		NativeMenu.add_separator(m);return
 	elif e.mask&Mask.Submenu!=0:
 		var s:Node=get_node_or_null(NodePath(e.text))
-		if s==null or !s.has_method(&"get_rid"):NativeMenu.add_item(m,t,c,k,e.id,e.key)
+		if s==null or not s.has_method(&"get_rid"):NativeMenu.add_item(m,t,c,k,e.id,e.key)
 		else:NativeMenu.add_submenu_item(m,t,s.get_rid(),e.id)
 	elif t==null:
 		if e.mask&Mask.Radio!=0:NativeMenu.add_radio_check_item(m,t,c,k,e.id,e.key)
@@ -163,7 +163,7 @@ func add_native(m:RID,e:Entry)->void:
 	#
 	if e.mask&Mask.Disable!=0:NativeMenu.set_item_disabled(m,e.index,true)
 	if e.mask&Mask.Check!=0:NativeMenu.set_item_checked(m,e.index,true)
-	if !e.tooltip.is_empty():NativeMenu.set_item_tooltip(m,e.index,get_text(e.tooltip))
+	if not e.tooltip.is_empty():NativeMenu.set_item_tooltip(m,e.index,get_text(e.tooltip))
 
 func add_button(m:Node,e:Entry)->void:
 	if m==null or e==null or button==null:return
@@ -179,14 +179,14 @@ func draw_button(b:Node,e:Entry)->void:
 	#
 	b.set(&"visible",true)
 	b.set(&"text",t);b.set(&"icon",i)
-	if !e.tooltip.is_empty():b.set(&"tooltip_text",get_text(e.tooltip))
+	if not e.tooltip.is_empty():b.set(&"tooltip_text",get_text(e.tooltip))
 
 func create()->void:
 	if is_created:return
 	is_created=true
 	#
 	if path.is_empty():return
-	if !Asset.load_array(items,path,Entry):return
+	if not Asset.load_array(items,path,Entry):return
 	popup=to_popup(menu)
 	if popup!=null:
 		popup.clear(true);popup.size=Vector2i.ZERO
@@ -207,35 +207,35 @@ func create()->void:
 	if j<n:indexes.resize(j)
 
 func is_popup()->bool:
-	if !is_created:create()
+	if not is_created:create()
 	return popup!=null or rid.is_valid()
 
 func show_popup(p:Vector2)->void:
-	if !is_created:create()
+	if not is_created:create()
 	if popup!=null:popup.position=p;popup.show();return
 	if rid.is_valid():NativeMenu.popup(rid,p);return
 
 func get_popup()->PopupMenu:
-	if !is_created:create()
+	if not is_created:create()
 	return popup
 
 func get_rid()->RID:
-	if !is_created:create()
+	if not is_created:create()
 	return rid
 
 func add_item(e:Entry)->void:
-	if !is_created:create()
+	if not is_created:create()
 	if popup!=null:add_menu(popup,e);return
 	if rid.is_valid():add_native(rid,e);return
 
 func get_item_text(i:int)->String:
-	if !is_created:create()
+	if not is_created:create()
 	if popup!=null:return popup.get_item_text(i)
 	if rid.is_valid():return NativeMenu.get_item_text(rid,i)
 	return LangExtension.k_empty_string
 
 func set_item_checked(i:int,b:bool)->void:
-	if !is_created:create()
+	if not is_created:create()
 	if popup!=null:popup.set_item_checked(i,b);return
 	if rid.is_valid():NativeMenu.set_item_checked(rid,i,b);return
 

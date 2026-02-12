@@ -39,7 +39,7 @@ static func try_enabled(o:Object,i:int)->void:
 	var b:bool;match i:
 		0:b=false
 		1:b=true
-		-1:b=!get_enabled(o)
+		-1:b=not get_enabled(o)
 	set_enabled(o,b)
 
 static func add_node(n:Node,p:Node=null,b:bool=true)->void:
@@ -114,7 +114,7 @@ static func get_anim_player(t:AnimationTree)->AnimationPlayer:
 
 static func set_anim_player(t:AnimationTree,a:AnimationPlayer,b:bool=false)->void:
 	if t==null or a==null:return
-	if !b and !t.anim_player.is_empty():return
+	if not b and not t.anim_player.is_empty():return
 	t.anim_player=t.get_path_to(a)
 
 static func get_expression_node(t:AnimationTree)->Node:
@@ -123,7 +123,7 @@ static func get_expression_node(t:AnimationTree)->Node:
 
 static func set_expression_node(t:AnimationTree,a:Node,b:bool=false)->void:
 	if t==null or a==null:return
-	if !b and !t.advance_expression_base_node.is_empty() and t.advance_expression_base_node!=^".":return
+	if not b and not t.advance_expression_base_node.is_empty() and t.advance_expression_base_node!=^".":return
 	t.advance_expression_base_node=t.get_path_to(a)
 
 static func get_bone_global_poses(c:Skeleton3D,i:Array[int],p:Array[Transform3D])->void:

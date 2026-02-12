@@ -77,13 +77,13 @@ func init()->void:
 	for i in n:load_texture(i)
 
 func get_clip(i:int)->Clip:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if i>=0 and i<clips.size():return clips[i]
 	else:return null
 
 func find_clip(k:StringName)->Clip:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	return library.get(k,null)
 

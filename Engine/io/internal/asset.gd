@@ -28,11 +28,11 @@ static func load_array(a:Array,f:String,c:Variant,r:bool=true)->bool:
 
 static func override_text(k:String,v:String)->void:
 	s_cache_texts.erase(v);var s:String=load_text(v)
-	if !s.is_empty():s_cache_texts[k]=s;s_cache_texts.erase(v)
+	if not s.is_empty():s_cache_texts[k]=s;s_cache_texts.erase(v)
 
 static func override_table(k:String,v:String)->void:
 	s_cache_tables.erase(v);var t:Array[PackedStringArray]=load_table(v)
-	if !t.is_empty():s_cache_tables[k]=t;s_cache_tables.erase(v)
+	if not t.is_empty():s_cache_tables[k]=t;s_cache_tables.erase(v)
 
 static func load_asset(f:String,a:Resource=null)->Resource:
 	return s_cache_assets.get(f,a)
@@ -60,18 +60,18 @@ static func init()->void:
 		s_file_api.table=LangExtension.k_empty_callable
 
 static func exist_asset(f:String)->bool:
-	if !s_is_inited:init()
+	if not s_is_inited:init()
 	var m:Callable=s_file_api.exists
-	if !m.is_null():return m.call(f)
+	if not m.is_null():return m.call(f)
 	return FileAccess.file_exists(f)
 
 static func load_text(f:String)->String:
-	if !s_is_inited:init()
+	if not s_is_inited:init()
 	if s_cache_texts.has(f):return s_cache_texts[f]
 	#
-	var m:Callable=s_file_api.text;if !m.is_null():
+	var m:Callable=s_file_api.text;if not m.is_null():
 		var s:String=m.call(f)
-		if !s.is_empty():
+		if not s.is_empty():
 			s_cache_texts.set(f,s);return s
 	#
 	if exist_asset(f):
@@ -82,12 +82,12 @@ static func load_text(f:String)->String:
 	return LangExtension.k_empty_string
 
 static func load_table(f:String,d:String=",")->Array[PackedStringArray]:
-	if !s_is_inited:init()
+	if not s_is_inited:init()
 	if s_cache_tables.has(f):return s_cache_tables[f]
 	#
-	var m:Callable=s_file_api.table;if !m.is_null():
+	var m:Callable=s_file_api.table;if not m.is_null():
 		var t:Array[PackedStringArray]=m.call(f)
-		if !t.is_empty():
+		if not t.is_empty():
 			s_cache_tables.set(f,t);return t
 	#
 	if exist_asset(f):
@@ -95,7 +95,7 @@ static func load_table(f:String,d:String=",")->Array[PackedStringArray]:
 		if a!=null:
 			var it=a.get_csv_line(d);var n:int=it.size()
 			var t:Array[PackedStringArray];t.append(it)
-			while !a.eof_reached():
+			while not a.eof_reached():
 				it=a.get_csv_line(d)
 				if it.size()>=n:t.append(it)
 			s_cache_tables.set(f,t);return t

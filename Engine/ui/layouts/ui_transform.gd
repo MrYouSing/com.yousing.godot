@@ -92,7 +92,7 @@ func begin()->void:dirty=true
 func end()->void:refresh()
 
 func refresh()->void:
-	if !dirty:return
+	if not dirty:return
 	if control==null:return
 	dirty=false
 	#
@@ -154,7 +154,7 @@ func _on_dirty()->void:
 
 func _ready()->void:
 	dirty=true
-	if !Engine.is_editor_hint():
+	if not Engine.is_editor_hint():
 		if control==null:control=GodotExtension.assign_node(self,"Control")
 	if control!=null:control.pivot_offset=Vector2.ZERO
 	refresh()

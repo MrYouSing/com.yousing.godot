@@ -13,12 +13,12 @@ var _rotation:Basis
 
 func _on_find_hit(d:Dictionary)->void:
 	super._on_find_hit(d)
-	if !d.is_empty():
+	if not d.is_empty():
 		_done=true;_position=d.position
 		_on_plane(d.normal)
 
 func _on_miss_hit(d:Dictionary)->void:
-	if !d.is_empty():
+	if not d.is_empty():
 		_done=true;_position=_origin+_direction*distance.x
 
 func _on_plane(n:Vector3)->void:
@@ -35,7 +35,7 @@ func _ready()->void:
 
 func _process(delta:float)->void:
 	var p:Vector3=node.global_position
-	_done=false;detect();if !_done:
+	_done=false;detect();if not _done:
 		_position=_origin+_direction*distance.y
 		_on_plane(Vector3.ZERO)
 	if delta<0.0:node.global_position=_position

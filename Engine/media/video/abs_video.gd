@@ -17,7 +17,7 @@ func _size_changed()->void:
 @abstract func _speed_changed()->void
 
 func _ready()->void:
-	if !url.is_empty() and !is_playing():
+	if not url.is_empty() and not is_playing():
 		open(url);play()
 	UICanvas.register(self,0,_size_changed)
 

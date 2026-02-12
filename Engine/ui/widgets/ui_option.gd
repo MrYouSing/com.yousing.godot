@@ -59,7 +59,7 @@ func menu(m:PopupMenu,o:Option,i=-1)->void:
 			if o.icon!=null:m.add_icon_item(o.icon,k,i)
 			else:m.add_item(k,i)
 			m.set_item_metadata(i,o.value)
-			if !o.tooltip.is_empty():m.set_item_tooltip(i,tr(o.tooltip,category))
+			if not o.tooltip.is_empty():m.set_item_tooltip(i,tr(o.tooltip,category))
 
 func render(n:Node,o:Option)->void:
 	if n!=null and o!=null:
@@ -117,7 +117,7 @@ func _value_changed(v:Variant)->void:
 
 func _ready()->void:
 	if type==0:type=typeof(value)
-	if container==null and !self.is_class("Node"):container=self
+	if container==null and not self.is_class("Node"):container=self
 	reload();rebuild();refresh()
 
 class Option:

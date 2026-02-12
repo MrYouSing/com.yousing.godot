@@ -17,9 +17,9 @@ func init()->void:
 
 var display:Variant:
 	get():
-		if !_is_inited:init()
+		if not _is_inited:init()
 		if _view!=null:return _view.get(content)
 		return null
 	set(x):
-		if !_is_inited:init()
+		if not _is_inited:init()
 		if _view!=null:_view.set(content,x)

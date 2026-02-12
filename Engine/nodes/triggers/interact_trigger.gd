@@ -34,7 +34,7 @@ func do_update(d:float)->void:
 			if m==0:clear();return# Off
 			elif _mask==0:set_begin(true)# Down
 			elif is_begin():_time+=d# On
-			if !is_done() and !MathExtension.time_outside(_time,time.x,time.y):
+			if not is_done() and not MathExtension.time_outside(_time,time.x,time.y):
 				set_done(t)
 		InteractTrigger.Interact.Combine:
 			if m!=_mask and m==f:
@@ -43,7 +43,7 @@ func do_update(d:float)->void:
 			if m!=f:
 				clear();return
 			else:
-				if !is_begin():
+				if not is_begin():
 					set_begin(true);_time=time.x
 				else:
 					_time-=d
@@ -52,7 +52,7 @@ func do_update(d:float)->void:
 						_count+=1;set_done(t)
 		_:
 			var n:int=interact-1000
-			if !is_done() and _count<n:
+			if not is_done() and _count<n:
 				match is_tap(m,d):
 					3:# Success.
 						_count+=1;
@@ -92,7 +92,7 @@ func is_tap(m:int,d:float)->int:
 	if _mask==0 and m!=0:# Down
 		set_begin(true);b=1
 	elif _mask!=0 and m==0:# Up
-		if !is_begin():pass
+		if not is_begin():pass
 		elif MathExtension.time_alive(_time,time.x):b=3
 		else:b=-1
 		set_begin(false)

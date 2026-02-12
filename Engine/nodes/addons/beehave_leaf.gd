@@ -26,7 +26,7 @@ func tick(a:Node,b:Blackboard)->int:
 		else:return FAILURE
 	else:# Action
 		var t:float=Application.get_time()
-		if time<0.0:time=t;if !invoke(a,b):return FAILURE
+		if time<0.0:time=t;if not invoke(a,b):return FAILURE
 		#
 		if t-time<=duration:return RUNNING
 		else:time=-1.0;return SUCCESS

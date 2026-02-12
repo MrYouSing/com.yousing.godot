@@ -2,7 +2,7 @@
 class_name Singleton
 
 static func get_instance(k:StringName)->Object:
-	if !Engine.has_singleton(k):return null
+	if not Engine.has_singleton(k):return null
 	else:return Engine.get_singleton(k)
 
 static func set_instance(k:StringName,v:Object)->void:

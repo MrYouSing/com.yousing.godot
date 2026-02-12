@@ -19,7 +19,7 @@ func _on_dirty()->void:
 	#
 	exclude.clear();
 	for it in exclusion:
-		if it !=null and it.has_method(&"get_rid"):exclude.append(it.get_rid())
+		if it!=null and it.has_method(&"get_rid"):exclude.append(it.get_rid())
 	#
 	var i:int=0;var m:int=targets.size();
 	var it:Object;while i<m:
@@ -28,14 +28,14 @@ func _on_dirty()->void:
 		++i
 
 func _on_find_hit(d:Dictionary)->void:
-	if !d.is_empty():
+	if not d.is_empty():
 		apply(Physics.HitInfo.from_dict(d))
 		_on_find(d.collider)
 
 func _on_miss_hit(d:Dictionary)->void:
-	if !d.is_empty():
+	if not d.is_empty():
 		_on_miss(d.collider)
-		if !infos.is_empty():erase(d.collider)
+		if not infos.is_empty():erase(d.collider)
 
 func _on_find(o:Object)->void:
 	targets.append(o)
@@ -48,15 +48,15 @@ func clear()->void:
 	infos.clear()
 
 func apply(h:Physics.HitInfo)->void:
-	if h==null||!h.rid.is_valid():return
+	if h==null||not h.rid.is_valid():return
 	infos[h.rid]=h
 
 func erase(o:Object)->void:
-	if o==null and !o.has_method("get_rid"):return
+	if o==null and not o.has_method("get_rid"):return
 	infos.erase(o.get_rid())
 
 func fetch(o:Object)->Physics.HitInfo:
-	if o==null and !o.has_method("get_rid"):return null
+	if o==null and not o.has_method("get_rid"):return null
 	return infos.get(o.get_rid(),null)
 
 func detect()->bool:

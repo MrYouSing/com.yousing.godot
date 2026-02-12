@@ -6,5 +6,5 @@ class_name ToggleTrigger extends BaseTrigger
 
 func is_trigger()->bool:
 	if trigger!=null and trigger.is_trigger():
-		is_on=!is_on
+		is_on=not is_on
 	return is_on

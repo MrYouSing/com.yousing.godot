@@ -34,8 +34,8 @@ func update_visible(v:int)->bool:
 
 func update_control(u:Vector2,z:float,s:Vector2)->void:
 	var c:Vector2=range
-	if !c.is_zero_approx():if z<c.x or z>c.y:
-		if !update_visible(-1):return
+	if not c.is_zero_approx():if z<c.x or z>c.y:
+		if not update_visible(-1):return
 	#
 	c=s*0.5
 	update_scale(z)
@@ -48,14 +48,14 @@ func update_position(u:Vector2,z:float,s:Vector2)->void:
 	if z>=0.0:
 		var a:Vector2=(control.size*control.scale)*0.5;s+=a;a*=-1.0
 		if u.x<a.x or u.y<a.y or u.x>s.x or u.y>s.y:
-			if !update_visible(-3):return
+			if not update_visible(-3):return
 		update_visible(0);u+=pivot
 	else:
-		if !update_visible(-2):return
+		if not update_visible(-2):return
 	control.global_position=UITransform.get_position(control,u)
 
 func update_rotation(u:Vector2,c:Vector2)->void:
-	if control==null or !rotated:return
+	if control==null or not rotated:return
 	#
 	control.rotation=MathExtension.clocking_at(u-c)
 

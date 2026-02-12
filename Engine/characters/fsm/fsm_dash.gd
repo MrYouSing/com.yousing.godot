@@ -20,7 +20,7 @@ func update_animation(c:CharacterController,d:Vector3)->void:
 	if motor!=null:
 		if lock:motor.direction=c.input_to_world(Vector2.DOWN)
 		else:motor.direction=d
-	if c.animator!=null and !blend.is_empty():
+	if c.animator!=null and not blend.is_empty():
 		c.animator.write(blend,c.world_to_animation(d))
 
 func _on_enter()->void:

@@ -13,7 +13,7 @@ class_name Media extends Node
 @export var loop:bool=false:
 	set(x):
 		loop=x;if is_inited:
-			if x and !player.is_playing():play()
+			if x and not is_playing():play()
 @export var bus:StringName:
 	set(x):bus=x;_audio()
 @export var mute:bool=false:
@@ -51,7 +51,7 @@ func get_stream()->Object:
 	if player!=null:return player.stream
 	else:return null
 func set_stream(s:Object)->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	if player!=null:player.stream=s
 
 var length:float:get=get_length
@@ -70,16 +70,16 @@ func set_progress(f:float)->void:
 	var l:float=get_length()
 	if l>=0.0:
 		var p:float=get_progress()
-		if !is_zero_approx(f-p):position=l*f
+		if not is_zero_approx(f-p):position=l*f
 
 func _ready()->void:
-	if !url.is_empty() and !is_playing():
+	if not url.is_empty() and not is_playing():
 		open(url);play()
 
 func _audio()->void:
 	if player!=null:
 		var b:StringName=bus
-		if !b.is_empty():player.bus=b
+		if not b.is_empty():player.bus=b
 		var v:float=volume;if mute:v=0.0
 		player.volume_db=linear_to_db(v)
 
@@ -105,19 +105,19 @@ func init()->void:
 	_audio()
 
 func is_playing()->bool:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:return player.playing
 	else:return false
 
 func is_paused()->bool:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:return player.paused
 	else:return false
 
 func clone(p:Node,b:bool=false)->Media:
-	if !is_inited:init()
+	if not is_inited:init()
 	if player==null:return null
 	#
 	var n:Node;var m:Media
@@ -134,7 +134,7 @@ func clone(p:Node,b:bool=false)->Media:
 	return m
 
 func emit(o:Variant)->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	if player==null:return
 	#
 	var s:Object=null;match typeof(o):
@@ -147,21 +147,21 @@ func emit(o:Variant)->void:
 	set_stream(s);play()
 
 func play()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:player.play()
 
 func stop()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:player.stop()
 
 func pause()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:player.pause()
 
 func resume()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:player.resume()

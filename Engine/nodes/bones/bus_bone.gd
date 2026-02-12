@@ -28,7 +28,7 @@ func _on_bus_modification(c:Skeleton3D,b:int,d:float)->void:
 	on_execute.emit(c,b,d)
 
 func _process_modification_with_delta(delta:float)->void:
-	if influence<=0.0 or !active:return
+	if influence<=0.0 or not active:return
 	#
 	var c:Skeleton3D=get_skeleton()
 	if c!=null:_on_bus_modification(c,bone_index,delta)

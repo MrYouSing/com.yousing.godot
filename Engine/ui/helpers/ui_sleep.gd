@@ -21,7 +21,7 @@ var _touches:Array[PointerInput.PointerEvent]
 func is_moving(e:InputEvent)->bool:
 	var v:Vector2=InputExtension.event_get_move(e)
 	if is_nan(v.x):return true
-	else:return !v.is_zero_approx()
+	else:return not v.is_zero_approx()
 
 func set_enabled(b:bool)->void:
 	if b:_time=0.0
@@ -41,9 +41,9 @@ func delay_enabled(b:bool,f:float)->void:
 func is_pressed()->bool:
 	var b:bool=false
 	if pointer!=null:
-		if !b and features&0x0050!=0:
+		if not b and features&0x0050!=0:
 			if pointer.get_mouse().buttons!=0:b=true
-		if !b and features&0x0810!=0:
+		if not b and features&0x0810!=0:
 			if pointer.get_touches(_touches)>0:_touches.clear();b=true
 	return b
 
@@ -53,7 +53,7 @@ func _windowed()->void:
 	set_process(b)
 
 func _ready()->void:
-	_awake=duration>=0.0;if !_awake:duration*=1.0
+	_awake=duration>=0.0;if not _awake:duration*=1.0
 	if features&0x02!=0:GodotExtension.input_node(self,0x81)
 	else:GodotExtension.input_node(self,0x42)
 	if pointer==null:pointer=PointerInput.current

@@ -39,16 +39,16 @@ func index_of(k:StringName)->int:
 
 func select(i:int)->void:
 	_index=i
-	var s:String=resource_name;if !s.is_empty():
+	var s:String=resource_name;if not s.is_empty():
 		Application.get_config().set_value("ListModel",s,i);Application.try_flush()
 	if i<0 or i>=items.size():return
 	# Events
 	var v:Variant=items[i]
-	if _stub!=null and !_stub._busy:_stub.broadcast(property,v)
+	if _stub!=null and not _stub._busy:_stub.broadcast(property,v)
 	index_changed.emit(i);value_changed.emit(v)
 
 func flush()->void:
-	if !destination.is_empty():
+	if not destination.is_empty():
 		IOExtension.save_json(JSON.from_native(items,true),destination)
 
 func read(k:StringName,v:Variant=null)->Variant:
@@ -97,20 +97,20 @@ func init()->void:
 	select(_index)
 
 func count()->int:
-	if !_is_inited:init()
+	if not _is_inited:init()
 	return items.size()
 
 func prev()->void:
-	if !_is_inited:init()
+	if not _is_inited:init()
 	var n:int=items.size()
 	select((_index-1+n)%n)
 
 func next()->void:
-	if !_is_inited:init()
+	if not _is_inited:init()
 	var n:int=items.size()
 	select((_index+1)%n)
 
 func random()->void:
-	if !_is_inited:init()
+	if not _is_inited:init()
 	var n:int=items.size()
 	select(randi()%n)

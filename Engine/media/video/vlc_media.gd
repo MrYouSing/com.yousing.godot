@@ -12,7 +12,7 @@ func get_stream()->Object:
 	else:return null
 
 func set_stream(s:Object)->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	if player!=null:player.media=s
 
 func get_duration()->float:
@@ -20,7 +20,7 @@ func get_duration()->float:
 
 func get_length()->float:
 	if _time.y>=0.0:return _time.y
-	if !is_inited:init()
+	if not is_inited:init()
 	return get_duration()
 
 func get_position()->float:
@@ -93,13 +93,13 @@ func init()->void:
 			player=null
 
 func is_paused()->bool:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:return player.get_state()==4
 	else:return false
 
 func open(p:String)->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:
 		var m:Resource=VlcLoader.load_from_file(p)
@@ -107,7 +107,7 @@ func open(p:String)->void:
 	super.open(p)
 
 func play()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	set_process(true)
 	_playing=true;_time=Vector3.ONE*-1.0
@@ -123,7 +123,7 @@ func _prepared()->void:# TODO: Fix size_changed()
 	_size_changed()
 
 func stop()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	set_process(false)
 	_playing=false;_time=Vector3.ONE*-1.0
@@ -131,11 +131,11 @@ func stop()->void:
 		player.stop_async();player.visible=_playing
 
 func pause()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:player.set_pause(true)
 
 func resume()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:player.set_pause(false)

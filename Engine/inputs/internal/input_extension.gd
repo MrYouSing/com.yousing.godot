@@ -83,7 +83,7 @@ static func event_init()->void:
 	event_add_type("ScreenTouch",InputEventScreenTouch,e,&"index",&"pressed",n)
 
 static func event_add_type(c:String,s:Variant,e:Variant,i:StringName,v:StringName,m:StringName)->void:
-	if !s_event_inited:event_init()
+	if not s_event_inited:event_init()
 	#
 	var k:String="InputEvent"+c
 	var p:int=s_event_classes.find(k);if p>=0:return
@@ -95,23 +95,23 @@ static func event_add_type(c:String,s:Variant,e:Variant,i:StringName,v:StringNam
 	s_event_moves.append(m)
 
 static func event_new_input(i:int)->InputEvent:
-	if !s_event_inited:event_init()
+	if not s_event_inited:event_init()
 	#
 	return s_event_scripts[i].new()
 
 static func event_get_enum(i:int)->Variant:
-	if !s_event_inited:event_init()
+	if not s_event_inited:event_init()
 	#
 	return s_event_enums[i]
 
 static func event_get_type(e:InputEvent)->int:
-	if !s_event_inited:event_init()
+	if not s_event_inited:event_init()
 	#
 	if e!=null:return s_event_classes.find(e.get_class())
 	return -1
 
 static func event_get_index(e:InputEvent,i:int=-1)->int:
-	if !s_event_inited:event_init()
+	if not s_event_inited:event_init()
 	#
 	if e!=null:
 		if i<0:i=s_event_classes.find(e.get_class())
@@ -120,7 +120,7 @@ static func event_get_index(e:InputEvent,i:int=-1)->int:
 	return -1
 
 static func event_get_value(e:InputEvent,i:int=-1)->Variant:
-	if !s_event_inited:event_init()
+	if not s_event_inited:event_init()
 	#
 	if e!=null:
 		if i<0:i=s_event_classes.find(e.get_class())
@@ -128,7 +128,7 @@ static func event_get_value(e:InputEvent,i:int=-1)->Variant:
 	return null
 
 static func event_get_move(e:InputEvent,i:int=-1)->Vector2:
-	if !s_event_inited:event_init()
+	if not s_event_inited:event_init()
 	#
 	if e!=null:
 		if i<0:i=s_event_classes.find(e.get_class())

@@ -45,7 +45,7 @@ func _ready()->void:
 	if style==null:return
 	if scroll==null or view==null or content==null:
 		style=null;return
-	if !LangExtension.class_is(content,k_interface):
+	if not LangExtension.class_is(content,k_interface):
 		Application.debug(content.name+" is not ScrollView.Content!",3);content=null
 		style=null;return
 	style.layout_apply(content)

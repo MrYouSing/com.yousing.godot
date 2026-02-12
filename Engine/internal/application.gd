@@ -32,11 +32,11 @@ static func get_tree()->SceneTree:return Engine.get_main_loop() as SceneTree
   # Platform APIs
 
 static func get_platform()->String:
-	if !s_app_platform.is_empty():return s_app_platform
+	if not s_app_platform.is_empty():return s_app_platform
 	return OS.get_name()
 
 static func get_locale()->String:
-	if !s_app_locale.is_empty():return s_app_locale
+	if not s_app_locale.is_empty():return s_app_locale
 	var s:String=OS.get_locale()
 	#
 	var l:PackedStringArray=s.split("_")
@@ -73,7 +73,7 @@ static func get_delta()->float:
 	return 1.0/get_fps()
 
 static func get_resolution()->Vector2:
-	if !s_app_resolution.is_zero_approx():return s_app_resolution
+	if not s_app_resolution.is_zero_approx():return s_app_resolution
 	var s:Vector2i=get_tree().root.size
 	return Vector2(s.x,s.y)
 
@@ -98,8 +98,8 @@ static func set_config(c:ConfigFile,s:String,d:String)->void:
 		LangExtension.shoot_signal(on_flush,s_app_config,LangExtension.k_empty_array)
 	s_app_config=c
 	if s_app_config!=null:
-		var b:bool=!d.is_empty();if b and FileAccess.file_exists(d):s=d
-		if !s.is_empty() and FileAccess.file_exists(s):s_app_config.load(s)
+		var b:bool=not d.is_empty();if b and FileAccess.file_exists(d):s=d
+		if not s.is_empty() and FileAccess.file_exists(s):s_app_config.load(s)
 		if b:on_flush.connect(s_app_config.save.bind(d))
 
 static func get_plugin(k:StringName,a:bool)->Dictionary[StringName,Callable]:
@@ -153,7 +153,7 @@ static func init()->void:
 	debug("Application init() at %03f."%get_time())
 
 static func exit()->void:
-	if !s_app_inited:return
+	if not s_app_inited:return
 	s_app_inited=false
 	get_tree().root.tree_exited.disconnect(exit)
 	#
@@ -190,4 +190,4 @@ static func pause(b:bool)->void:
 	debug("Application pause({0}) at {1}.".format([b,"%03f."%get_time()]))
 
 static func try_flush()->void:
-	if !s_app_inited:flush()
+	if not s_app_inited:flush()

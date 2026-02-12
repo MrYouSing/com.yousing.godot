@@ -53,7 +53,7 @@ var _rect:UITransform
 
 func _ready()->void:
 	_rect=GodotExtension.create(self,Control,UITransform)
-	if !layout.is_empty():load_file(layout)
+	if not layout.is_empty():load_file(layout)
 
 func set_layout(c:Control,p:Preset)->void:
 	if c==null or p==null:return

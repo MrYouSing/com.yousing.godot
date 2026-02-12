@@ -11,16 +11,16 @@ static var s_binder_users:PackedStringArray
 static func add_type(e:PackedStringArray,u:PackedStringArray,t:StringName)->void:
 	var i:int=t.find(".");if i>=0:t=t.substr(0,i)
 	if ClassDB.class_exists(t):
-		if !e.has(t):e.append(t)
+		if not e.has(t):e.append(t)
 	else:
-		if !u.has(t):u.append(t)
+		if not u.has(t):u.append(t)
 
 static func check_member(c:StringName,m:StringName,k:StringName)->void:
-	if !k.is_empty() and !LangExtension.class_has(c,m,k):
+	if not k.is_empty() and not LangExtension.class_has(c,m,k):
 		Application.debug("{1}@{2} is Not found in {0}.".format([c,m,k]),2)
 
 static func register_binder(k:StringName,c:StringName,e:StringName,n:StringName)->void:
-	if !s_binder_classes.has(k):
+	if not s_binder_classes.has(k):
 		if ClassDB.class_exists(k):
 			check_member(k,&"property",c)
 			check_member(k,&"signal",e)
@@ -45,7 +45,7 @@ static func find_binder(v:Object,k:StringName,t:StringName)->int:
 		var s:Script=v.get_script()
 		while s!=null and i<0:i=find_class(s.get_global_name(),k,t);s=s.get_base_script()
 		var c:String=v.get_class()
-		while !c.is_empty() and i<0:i=find_class(c,k,t);c=ClassDB.get_parent_class(c)
+		while not c.is_empty() and i<0:i=find_class(c,k,t);c=ClassDB.get_parent_class(c)
 	return i
 
 static func find_class(c:StringName,k:StringName,t:StringName)->int:
@@ -103,17 +103,17 @@ class Binding:
 		if view!=null:
 			display=value
 			var d:Dictionary=LangExtension.info_signal(view,event)
-			if !d.is_empty():
+			if not d.is_empty():
 				var c:Callable=_updated if d.args.is_empty() else _changed
-				if !view.is_connected(event,c):view.connect(event,c)
-			if !notice.is_empty() and !view.has_method(notice):
+				if not view.is_connected(event,c):view.connect(event,c)
+			if not notice.is_empty() and not view.has_method(notice):
 				notice=LangExtension.k_empty_name
 		LangExtension.add_signal(stub,name,_synced)
 
 	func unbind()->void:
 		if view!=null:
 			var d:Dictionary=LangExtension.info_signal(view,event)
-			if !d.is_empty():
+			if not d.is_empty():
 				var c:Callable=_updated if d.args.is_empty() else _changed
 				if view.is_connected(event,c):view.disconnect(event,c)
 		LangExtension.remove_signal(stub,name,_synced)
@@ -193,7 +193,7 @@ class Stub:
 			it=b;if it!=null and it.stub!=null:it.unbind();it.stub=null
 
 	func broadcast(k:StringName,v:Variant)->void:
-		if !k.is_empty():emit_signal(k,v)
+		if not k.is_empty():emit_signal(k,v)
 		changed.emit(model)
 
 	func verify(k:StringName)->bool:

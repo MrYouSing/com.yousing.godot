@@ -7,7 +7,7 @@ class_name CompositeMixer extends BaseMixer
 @export var remaps:Array[Vector4]
 
 func sample(f:float)->void:
-	if !range.is_zero_approx():f=lerpf(range.x,range.y,f)
+	if not range.is_zero_approx():f=lerpf(range.x,range.y,f)
 	var j:int=remaps.size()
 	if j==0:
 		for it in mixers:

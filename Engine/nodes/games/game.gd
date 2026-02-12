@@ -37,7 +37,7 @@ func get_friendship(a:Player,b:Player)->int:
 	return -1
 
 func create_unit(p:Player,k:StringName,c:Node,m:Variant)->Unit:
-	if p!=null and !k.is_empty():
+	if p!=null and not k.is_empty():
 		var s:Stage=Stage.instance
 		var n:Node=s.prefab(k);if n==null:return null
 		#

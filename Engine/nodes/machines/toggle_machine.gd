@@ -16,7 +16,7 @@ func _on_toggle(c:Object,b:bool)->void:
 	is_on=b
 	#
 	if dirty:_on_dirty()
-	if threshold<0.0:b=!b
+	if threshold<0.0:b=not b
 	#
 	on_execute.emit(c,b)
 

@@ -49,7 +49,7 @@ var pointers:Array[PointerEvent]
 func _featured()->void:
 	InputExtension.set_is_on(Input,&"emulate_touch_from_mouse",features)
 	InputExtension.set_is_on(Input,&"emulate_mouse_from_touch",features>>2)
-	var b:bool=features&0x10!=0;set_process_input(!b);set_process_unhandled_input(b)
+	var b:bool=features&0x10!=0;set_process_input(not b);set_process_unhandled_input(b)
 	if features&0x40!=0:Input.mouse_mode=Input.MOUSE_MODE_CAPTURED
 	else:Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
 
@@ -75,7 +75,7 @@ func _unhandled_input(e:InputEvent)->void:_on_input(e)
 func _on_input(e:InputEvent)->void:
 	if e is InputEventScreenTouch:
 		var p:PointerEvent=pointers[e.index]
-		p.touch(e,e.position,e.pressed and !e.canceled,e.double_tap)
+		p.touch(e,e.position,e.pressed and not e.canceled,e.double_tap)
 	elif e is InputEventScreenDrag:
 		var p:PointerEvent=pointers[e.index]
 		p.drag(e,e.position,e.pressure)
@@ -98,14 +98,14 @@ func _on_stick()->void:
 		if input==null:input=PlayerInput.current
 		if input!=null:
 			var v:Vector2=Input.get_last_mouse_velocity()*InputExtension.s_mouse_to_stick
-			if !v.is_zero_approx():input.try_update();input.m_axes[stick]=v
+			if not v.is_zero_approx():input.try_update();input.m_axes[stick]=v
 
 func set_enabled(b:bool)->void:
 	set_process(b)
 	if features&0x10!=0:set_process_input(false);set_process_unhandled_input(b)
 	else:set_process_input(b);set_process_unhandled_input(false)
 	#
-	if !b:
+	if not b:
 		if mouse!=null:mouse.clear()
 		for it in pointers:if it!=null:it.clear()
 
@@ -171,7 +171,7 @@ class PointerEvent:
 		var n:int=Application.get_frames()#+1
 		#
 		if press>=0:# On
-			if !b:# Up
+			if not b:# Up
 				press=-1;release=n
 		else:# Off
 			if b:# Down

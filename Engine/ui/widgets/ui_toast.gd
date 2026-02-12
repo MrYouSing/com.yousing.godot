@@ -15,11 +15,11 @@ var _kill:Callable
 func _ready()->void:
 	if view==null:view=GodotExtension.assign_node(self,"Node2D")
 	if label==null:label=GodotExtension.assign_node(self,"Label")
-	if !event.is_empty():
+	if not event.is_empty():
 		LangExtension.add_signal(UIManager.instance,event,make_text)
 
 func _exit_tree()->void:
-	if !event.is_empty() and UIManager.exists:
+	if not event.is_empty() and UIManager.exists:
 		LangExtension.remove_signal(UIManager.instance,event,make_text)
 
 func stop_call()->void:
@@ -42,5 +42,5 @@ func kill_text()->void:
 	stop_call()
 	#
 	GodotExtension.set_enabled(view,false)
-	if !_kill.is_null():_kill.call()
+	if not _kill.is_null():_kill.call()
 	_kill=LangExtension.k_empty_callable

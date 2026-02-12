@@ -14,4 +14,4 @@ func get_character()->CharacterController:
 
 func _on_init()->void:
 	character=get_character()
-	if !view.is_empty():actor=get_node_or_null(view)
+	if not view.is_empty():actor=get_node_or_null(view)

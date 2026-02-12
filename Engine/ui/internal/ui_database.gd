@@ -29,9 +29,9 @@ func init()->void:
 	if instance==null:instance=self
 
 func query(i:int)->Resource:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
-	if !query_map.is_empty():
+	if not query_map.is_empty():
 		var m:Resource=query_map.get(i,null)
 		if m!=null:return m
 	else:
@@ -39,9 +39,9 @@ func query(i:int)->Resource:
 	return null
 
 func find(k:StringName)->Resource:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
-	if !find_map.is_empty():
+	if not find_map.is_empty():
 		var m:Resource=find_map.get(k,null)
 		if m!=null:return m
 	else:

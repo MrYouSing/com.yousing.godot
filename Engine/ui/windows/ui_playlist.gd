@@ -60,7 +60,7 @@ func push(i:int,s:String)->void:
 	if i>=0 and i<a.size():a[i]=s
 
 func play(f:String)->void:
-	if model!=null and !f.is_empty():
+	if model!=null and not f.is_empty():
 		var n:int=count();model.set(&"value",f);
 		var v:Variant=model.get(&"index");if v!=null:
 			var i:int=v
@@ -103,7 +103,7 @@ func next()->void:
 	var n:int=count();_selected((_index+1)%n)
 
 func toggle()->void:
-	set_enabled(!_shown)
+	set_enabled(not _shown)
 	if features&0x02!=0:set_config("Show",_shown)
 
 func switch()->void:
@@ -138,7 +138,7 @@ func refresh()->void:
 		i+=1;s=text(it);t=icon(it)
 		if t==null:view.add_item(s)
 		else:view.add_icon_item(t);view.set_item_text(i,s)
-		s=tooltip(it);if !s.is_empty():view.set_item_tooltip(i,s)
+		s=tooltip(it);if not s.is_empty():view.set_item_tooltip(i,s)
 
 func menu(i:int)->void:
 	match i:

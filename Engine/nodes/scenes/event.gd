@@ -13,4 +13,4 @@ var event:Signal:
 
 func invoke(...args:Array)->void:
 	var e:Signal=event
-	if !e.is_null() and e.has_connections():e.emit(args)
+	if not e.is_null() and e.has_connections():e.emit(args)

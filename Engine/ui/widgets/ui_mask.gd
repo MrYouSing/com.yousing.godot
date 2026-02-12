@@ -30,7 +30,7 @@ func menu(m:PopupMenu,o:Option,i=-1)->void:
 				if radio:m.add_radio_check_item(k,i)
 				else:m.add_check_item(k,i)
 			m.set_item_metadata(i,o.value)
-			if !o.tooltip.is_empty():m.set_item_tooltip(i,tr(o.tooltip,category))
+			if not o.tooltip.is_empty():m.set_item_tooltip(i,tr(o.tooltip,category))
 
 func find(v:Variant)->int:
 	var m:int=0;_names.clear()
@@ -51,7 +51,7 @@ func find(v:Variant)->int:
 	return m
 
 func _index_selected(i:int)->Variant:
-	var b:bool=!pressed(i)
+	var b:bool=not pressed(i)
 	if type==TYPE_INT:
 		var m:int=0
 		for j in _options.size():

@@ -11,16 +11,16 @@ class_name UIView extends Node
 var dirty:bool
 
 func render():
-	if !dirty:return
+	if not dirty:return
 	dirty=false
 	#
 	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
 
 func dispose()->void:
-	if !path.is_empty():UIManager.register(path,null)
+	if not path.is_empty():UIManager.register(path,null)
 
 func _ready()->void:
-	if !path.is_empty():UIManager.register(path,self)
+	if not path.is_empty():UIManager.register(path,self)
 	if dirty:render()
 
 func _exit_tree()->void:

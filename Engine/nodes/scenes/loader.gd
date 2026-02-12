@@ -7,7 +7,7 @@ static var s_pool:Collections.Pool=Collections.Pool.new(Loader)
 static func obtain(k:StringName,p:Node,c:Callable)->Loader:
 	var l:Loader=s_pool.obtain()
 	l.name=k;GodotExtension.add_node(l,p,false)
-	if !c.is_null():l.on_done.connect(c,CONNECT_ONE_SHOT)
+	if not c.is_null():l.on_done.connect(c,CONNECT_ONE_SHOT)
 	return l
 
 @export_group("Loader")

@@ -46,12 +46,12 @@ func hide()->void:
 
 func complete()->void:
 	if results.is_empty():
-		if !result.is_empty():on_complete.emit(result)
+		if not result.is_empty():on_complete.emit(result)
 	else:
 		on_complete.emit(results)
 	if fallback!=null:
 		if results.is_empty():
-			if !result.is_empty():fallback.emit_signal(message,result)
+			if not result.is_empty():fallback.emit_signal(message,result)
 		else:
 			fallback.emit_signal(message,results)
 
@@ -91,8 +91,8 @@ func back_file_ex(b:bool,a:PackedStringArray,i:int,d:Dictionary)->void:
 	option.assign(d);back_file(b,a,i)
 
 func _filter(s:String)->String:
-	if !texts.is_empty():
-		if !texts.has(IOExtension.file_extension(s)):
+	if not texts.is_empty():
+		if not texts.has(IOExtension.file_extension(s)):
 			return LangExtension.k_empty_string
 	return IOExtension.check_path(s)
 

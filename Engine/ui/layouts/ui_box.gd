@@ -44,7 +44,7 @@ func _tick()->void:
 				r=_rect(0);for i in n-1:r=r.merge(_rect(i))
 			else:
 				r=_rect(0).merge(_rect(n-1))
-			if !offset.is_empty():r.position+=container.call(offset)
+			if not offset.is_empty():r.position+=container.call(offset)
 	if control!=null:
 		var p:Vector2=r.position;var s:Vector2=r.size
 		p.x+=padding.x;p.y+=padding.y

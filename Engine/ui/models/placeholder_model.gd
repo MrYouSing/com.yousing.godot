@@ -40,7 +40,7 @@ func init()->void:
 	#
 	if _model!=null:
 		pass
-	elif !node.is_empty():
+	elif not node.is_empty():
 		_model=GodotExtension.s_root.get_node_or_null(node)
 	else:
 		_model=resource

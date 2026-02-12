@@ -21,7 +21,7 @@ func clear(b:bool=false)->void:
 
 func inject(p:String)->void:
 	var t:Array[PackedStringArray]=Asset.load_table(p)
-	if !t.is_empty():
+	if not t.is_empty():
 		clear(true)
 		LangExtension.array_add_table(_map,t,Entry)
 		for it in _map:register(it)
@@ -90,7 +90,7 @@ func register(e:Entry)->void:
 		e.event=event(e)
 		if e.event==null:return
 	# Input
-	if !InputMap.has_action(k):InputMap.add_action(k)
+	if not InputMap.has_action(k):InputMap.add_action(k)
 	if e.deadzone>=0.0:InputMap.action_set_deadzone(k,e.deadzone)
 	InputMap.action_add_event(k,e.event)
 
@@ -100,7 +100,7 @@ func listen(c:Callable)->void:
 
 func _ready()->void:
 	set_process_input(false)
-	if !path.is_empty():inject(path)
+	if not path.is_empty():inject(path)
 	#
 	if current==null:current=self
 

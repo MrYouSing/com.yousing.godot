@@ -25,7 +25,7 @@ func setup()->void:
 			m.owner=self;mixers.append(m)
 	else:
 		for it in mixers:if it is MorphMixer:
-			if !it.is_valid():it.targets=targets;it.shapes.clear()
+			if not it.is_valid():it.targets=targets;it.shapes.clear()
 	var n:int=mixers.size()
 	if weights.size()<n:weights.resize(n)
 	#
@@ -39,5 +39,5 @@ func _ready()->void:
 	setup()
 
 func _process(delta:float)->void:
-	if Engine.is_editor_hint() and !mixers.is_empty():dirty=true
+	if Engine.is_editor_hint() and not mixers.is_empty():dirty=true
 	if dirty:sample(weight)

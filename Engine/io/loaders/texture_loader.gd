@@ -33,8 +33,8 @@ static func init()->void:
 	Asset.on_clear.connect(clear)
 
 static func load_from_file(f:String,c:bool=true)->Texture:
-	if !FileAccess.file_exists(f):return null
-	if !s_is_inited:init()
+	if not FileAccess.file_exists(f):return null
+	if not s_is_inited:init()
 	if IOExtension.is_sandbox(f):return ResourceLoader.load(f,"ImageTexture")
 	#
 	var t:Texture=null;if c:

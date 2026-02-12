@@ -72,7 +72,7 @@ func is_input(i:int)->bool:
 			if it!=null:return it.is_trigger()
 		if i<buttons.size():
 			var it:StringName=buttons[i]
-			if !it.is_empty():return Input.is_action_just_pressed(it)
+			if not it.is_empty():return Input.is_action_just_pressed(it)
 		if UIManager.exists:
 			return UIManager.instance.is_tap(i)
 	return false

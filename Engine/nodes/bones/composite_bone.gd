@@ -20,7 +20,7 @@ class_name CompositeBone extends Node
 			if it==null:continue
 			#
 			if it is BaseBone:it._on_blend(self,f)
-			else:it.influence=f;active=!is_zero_approx(f)
+			else:it.influence=f;active=not is_zero_approx(f)
 @export_group("Composite")
 @export_flags_3d_physics var mask:int=-1
 @export var scale:float=1.0:

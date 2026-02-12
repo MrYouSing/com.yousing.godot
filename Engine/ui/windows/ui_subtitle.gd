@@ -32,7 +32,7 @@ var url:String:
 	set(x):if x!=url:url=x;self.load(x)
 
 var time:float=-1.0:
-	set(x):if !is_zero_approx(x-time):time=x;seek(x)
+	set(x):if not is_zero_approx(x-time):time=x;seek(x)
 
 var _call:int=Juggler.k_invalid_id
 var _list:Array[Dictionary]
@@ -61,7 +61,7 @@ func set_item(i:int,b:float,e:float,s:String)->void:
 func load(f:String)->void:
 	clear()
 	f=IOExtension.file_variant(f,get_extensions())
-	if !f.is_empty():
+	if not f.is_empty():
 		var r:Resource=null;if IOExtension.is_sandbox(f):
 			r=IOExtension.load_asset(f,"Subtitles")
 		else:
@@ -114,7 +114,7 @@ func clear_shoot()->void:
 	var j:Juggler=Juggler.instance;j.kill_call(_call)
 	_call=Juggler.k_invalid_id
 	render(-1,0,0.0);set_process(media!=null)# Resume
-	var u:String=url;if !u.is_empty():self.load(u)# Revert
+	var u:String=url;if not u.is_empty():self.load(u)# Revert
 
 func speak(o:Object,s:String)->void:
 	var t:Vector2=Vector2(o.get_meta(&"delay",0.0),o.get_meta(&"duration",1.0))
@@ -122,7 +122,7 @@ func speak(o:Object,s:String)->void:
 
 func _ready()->void:
 	if label==null:label=GodotExtension.assign_node(self,"Label")
-	if !event.is_empty():UIManager.instance.events.add_listener(event,shoot)
+	if not event.is_empty():UIManager.instance.events.add_listener(event,shoot)
 	set_process(media!=null)
 
 func _process(d:float)->void:

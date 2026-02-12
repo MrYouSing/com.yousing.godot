@@ -17,7 +17,7 @@ func render(m:Variant)->void:
 		TYPE_NIL:return
 		TYPE_BOOL,TYPE_INT,TYPE_FLOAT:
 			var i:int=int(m)%list.size();t=list[i]
-			if !tooltips.is_empty():graphic.set(&"tooltip_text",tooltips[i])
+			if not tooltips.is_empty():graphic.set(&"tooltip_text",tooltips[i])
 		TYPE_STRING,TYPE_STRING_NAME:
 			t=dict.get(m,null)
 	graphic.set(slot,t)

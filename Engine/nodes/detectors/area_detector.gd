@@ -22,7 +22,7 @@ func teardown(a:Node)->void:
 			a.body_exited.disconnect(_on_exit)
 
 func detect()->bool:
-	return !targets.is_empty()
+	return not targets.is_empty()
 
 func _on_enter(o:Object)->void:
 	if dirty:_on_dirty()

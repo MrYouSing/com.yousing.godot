@@ -9,10 +9,10 @@ class_name UIDetector extends Node
 var results:Array[Control]
 
 func visual_control(c:Control)->bool:
-	return c.visible and !is_zero_approx(c.modulate.a*c.self_modulate.a)
+	return c.visible and not is_zero_approx(c.modulate.a*c.self_modulate.a)
 
 func valid_control(c:Control)->bool:
-	return layer&c.visibility_layer!=0 and !blacklist.has(c.get_class())
+	return layer&c.visibility_layer!=0 and not blacklist.has(c.get_class())
 
 func detect_control(c:Control,p:Vector2)->bool:
 	if c!=null:

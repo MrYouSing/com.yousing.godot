@@ -37,19 +37,19 @@ func init()->void:
 			player=null
 
 func is_playing()->bool:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:return player.is_playing()
 	else:return false
 
 func is_paused()->bool:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:return player.is_playing() and _speed==0.0
 	else:return false
 
 func open(p:String)->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:
 		_stream=VideoLoader.load_from_file(p,_stream)
@@ -57,22 +57,22 @@ func open(p:String)->void:
 	super.open(p)
 
 func play()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:_speed=1.0;_speed_changed();player.play()
 	_size_changed()
 
 func stop()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:_speed=1.0;player.stop()
 
 func pause()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:_speed=0.0;_speed_changed()
 
 func resume()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	if player!=null:_speed=1.0;_speed_changed()

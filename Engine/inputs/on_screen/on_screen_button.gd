@@ -49,7 +49,7 @@ func render(b:bool)->void:
 
 func _change()->void:
 	var b:bool=touch.is_pressed()
-	if toggle and b:b=!Input.is_action_pressed(action)
+	if toggle and b:b=not Input.is_action_pressed(action)
 	#
 	InputExtension.set_button(action,b)
 	render(b)

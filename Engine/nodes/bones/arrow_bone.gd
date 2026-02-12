@@ -13,5 +13,5 @@ func _on_update(c:Skeleton3D,b:int,d:float)->void:
 		var q:Basis;
 		if end==null:q=start.global_basis
 		else:q=MathExtension.looking_at(end.global_position-start.global_position)
-		if !normal.is_zero_approx():q=MathExtension.get_heading(q,normal)
+		if not normal.is_zero_approx():q=MathExtension.get_heading(q,normal)
 		global_basis=q.get_rotation_quaternion()# Discard the scale.

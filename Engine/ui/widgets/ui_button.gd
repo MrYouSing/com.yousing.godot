@@ -10,7 +10,7 @@ class_name UIButton extends UIView
 var callback:Callable
 
 func render()->void:
-	if !dirty:return
+	if not dirty:return
 	if button==null:return
 	dirty=false
 	#

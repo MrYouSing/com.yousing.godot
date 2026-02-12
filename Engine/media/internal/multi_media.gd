@@ -73,7 +73,7 @@ func open(p:String)->void:
 func _audio()->void:
 	if player!=null:
 		var b:StringName=bus
-		if !b.is_empty():player.bus=b
+		if not b.is_empty():player.bus=b
 		var v:float=volume;if mute:v=0.0
 		player.volume=v
 
@@ -94,7 +94,7 @@ func init()->void:
 			it.connect(&"finished",_done)
 
 func play()->void:
-	if !is_inited:init()
+	if not is_inited:init()
 	#
 	is_done=false
 	if player!=null:

@@ -34,7 +34,7 @@ func _on_toggle(c:Object,b:bool)->void:
 	active=b
 
 func _on_blend(c:Object,f:float)->void:
-	influence=f;active=!is_zero_approx(f)
+	influence=f;active=not is_zero_approx(f)
 
 func _on_bus_modification(c:Skeleton3D,b:int,d:float)->void:
 	if b<0:b=bone_index

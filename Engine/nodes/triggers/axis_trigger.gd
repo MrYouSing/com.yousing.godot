@@ -30,9 +30,9 @@ func do_update()->void:
 	var v:Vector2=vector();var s:float=v.length_squared();var d:float=deadzone.z
 	var r:Vector2=Vector2(MathExtension.k_deg_to_rad*deadzone.x,MathExtension.k_deg_to_rad*deadzone.y)
 	var b:bool=s>d*d
-	d=deadzone.w;if b and !is_zero_approx(d):
+	d=deadzone.w;if b and not is_zero_approx(d):
 		b=s<=d*d
-	if b and !is_zero_approx(r.x*r.y):
+	if b and not is_zero_approx(r.x*r.y):
 		d=MathExtension.clocking_at(v)
 		b=MathExtension.radian_inside(d,r.x,r.y)
 	value=b
@@ -41,9 +41,9 @@ func is_trigger()->bool:
 	try_update()
 	match action:
 		InputTrigger.Action.On:return value
-		InputTrigger.Action.Off:return !value
-		InputTrigger.Action.Down:return !previous and value
-		InputTrigger.Action.Up:return previous and !value
+		InputTrigger.Action.Off:return not value
+		InputTrigger.Action.Down:return not previous and value
+		InputTrigger.Action.Up:return previous and not value
 	return false
 
 func _process(delta:float)->void:

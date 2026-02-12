@@ -102,7 +102,7 @@ func get_scale(m:AspectRatio,s:Vector2,d:Vector2)->Vector4:
 	return Vector4(s.x,s.y,d.x,d.y)
 
 func refresh()->void:
-	if !dirty:return
+	if not dirty:return
 	dirty=false
 	#
 	var w:Vector4=get_scale(mode,get_resolution(),get_screen())

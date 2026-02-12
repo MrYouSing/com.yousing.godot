@@ -88,7 +88,7 @@ func exit_info(c:Animator,o:Dictionary[StringName,Variant],k:StringName,d:Dictio
 		if l>=0:# Check machine.
 			var m:Object=c.get_machine(l)
 			if m!=null:
-				if c.is_fading(m) or !c.get_state(m,d,false):return false
+				if c.is_fading(m) or not c.get_state(m,d,false):return false
 		d.argument=v;return true
 	return false
 
@@ -115,7 +115,7 @@ func exit_eval(c:Animator,l:int=0)->bool:
 	if a!=null:
 		var m:Object=c.get_machine(l)
 		if m is AnimationNodeStateMachinePlayback:
-			if !c.is_fading(m) and c.get_state(m,c.info,false):
+			if not c.is_fading(m) and c.get_state(m,c.info,false):
 				var k:StringName=c.info.name;var t:float=c.info.time
 				if exit_info(c,a.exit_times,k,c.info,-1) and t>=c.info.argument:return true
 				if exit_info(c,a.exit_funcs,k,c.info,-1) and c.context.call(c.info.argument):return true

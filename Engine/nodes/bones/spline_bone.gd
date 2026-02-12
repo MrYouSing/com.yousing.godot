@@ -19,7 +19,7 @@ func _on_update(c:Skeleton3D,b:int,d:float)->void:
 			var v:Vector3=end.global_position-start.global_position
 			q=MathExtension.looking_at(v)
 			q=start.global_basis.inverse().get_rotation_quaternion()*q
-	if !normal.is_zero_approx():
+	if not normal.is_zero_approx():
 		q=MathExtension.looking_at((q*Vector3.BACK).slide(normal))
 	if q.is_equal_approx(Quaternion.IDENTITY):return
 	#
@@ -29,7 +29,7 @@ func _on_update(c:Skeleton3D,b:int,d:float)->void:
 	GodotExtension.get_bone_global_poses(c,indexes,poses)
 	#
 	var p:Quaternion;
-	if !offset.is_equal_approx(Quaternion.IDENTITY):
+	if not offset.is_equal_approx(Quaternion.IDENTITY):
 		q=Basis((offset*q.get_axis()).normalized(),q.get_angle())
 	for i in indexes.size():
 		b=indexes[i];if b<0:continue

@@ -16,7 +16,7 @@ func _on_blend(c:Object,f:float)->void:
 	weight=f
 	if dirty:_on_dirty()
 	#
-	if !remap.is_zero_approx():
+	if not remap.is_zero_approx():
 		f=remap(f,remap.x,remap.y,remap.z,remap.w)
 	on_execute.emit(c,f)
 

@@ -32,7 +32,7 @@ func _on_frame(f:Frame)->void:
 	r.offset=s.offset
 	#
 	var e:StringName=f.key
-	if !e.is_empty():invoke_event(e)
+	if not e.is_empty():invoke_event(e)
 
 func _on_complete()->void:
 	if clip!=null:

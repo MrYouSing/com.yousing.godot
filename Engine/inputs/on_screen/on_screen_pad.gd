@@ -30,7 +30,7 @@ func touch(e:InputEvent)->void:
 	else:
 		if features&0x04!=0:
 			var v:Vector2=_touch_last-_touch_point
-			if !MathExtension.time_dead(t-_touch_time,swipe.x):
+			if not MathExtension.time_dead(t-_touch_time,swipe.x):
 				if v.length_squared()>swipe.y*swipe.y:
 					InputExtension.set_swipe(actions,actions[5],v.normalized())
 		_touch_time=-1.0

@@ -227,12 +227,12 @@ var old_keys:Array[Key]
 var new_keys:Array[Key]
 
 func set_enabled(b:bool)->void:
-	if !b:
+	if not b:
 		old_keys.clear();new_keys.clear()
 
 func reload()->void:
 	#
-	if !path.is_empty():
+	if not path.is_empty():
 		var t:Array[PackedStringArray]=Asset.load_table(path)
 		var n:int=t.size();if n>1:
 			n-=1;var l:PackedStringArray;var k:Key
@@ -251,7 +251,7 @@ func reload()->void:
 var _timestamp:int=-1
 func try_update(k:Key)->void:
 	#
-	if k!=KEY_UNKNOWN and !src_keys.has(k):
+	if k!=KEY_UNKNOWN and not src_keys.has(k):
 		src_keys.append(k);dst_keys.append(k)
 	#
 	var n:int=Application.get_frames()
@@ -271,15 +271,15 @@ func on(k:Key)->bool:
 
 func off(k:Key)->bool:
 	try_update(k)
-	return !new_keys.has(k)
+	return not new_keys.has(k)
 
 func down(k:Key)->bool:
 	try_update(k)
-	return !old_keys.has(k) and new_keys.has(k)
+	return not old_keys.has(k) and new_keys.has(k)
 
 func up(k:Key)->bool:
 	try_update(k)
-	return old_keys.has(k) and !new_keys.has(k)
+	return old_keys.has(k) and not new_keys.has(k)
 
 var _modifier:Vector2i=Vector2i.LEFT
 func modifier(m:int)->int:

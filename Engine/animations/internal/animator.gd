@@ -34,7 +34,7 @@ func set_time(d:Dictionary[StringName,Variant],l:float,p:float)->void:
 
 func is_fading(m:AnimationNodeStateMachinePlayback)->bool:
 	if m!=null:
-		return !m.get_fading_from_node().is_empty()
+		return not m.get_fading_from_node().is_empty()
 	return false
 
 func get_fading(m:AnimationNodeStateMachinePlayback,d:Dictionary[StringName,Variant])->bool:
@@ -54,7 +54,7 @@ func get_state(m:AnimationNodeStateMachinePlayback,d:Dictionary[StringName,Varia
 		d.clear();
 		if n:d.type=&"Next"
 		else:d.type=&"Current"
-		if is_fading(m) and !n:
+		if is_fading(m) and not n:
 			d.name=m.get_fading_from_node()
 			set_time(d,m.get_fading_from_length(),m.get_fading_from_play_position())
 		else:

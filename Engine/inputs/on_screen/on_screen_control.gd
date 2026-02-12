@@ -52,7 +52,7 @@ func is_handled_input()->bool:
 func set_enabled(b:bool)->void:
 	var a:bool=get_meta(&"Unhandled",false)
 	set_process(b)
-	set_process_input(!a and b)
+	set_process_input(not a and b)
 	set_process_unhandled_input(a and b)
 	if b:draw()
 

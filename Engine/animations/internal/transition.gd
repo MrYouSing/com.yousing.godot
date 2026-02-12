@@ -63,7 +63,7 @@ func to_media_volume(t:Tween,o:Media,v:float)->void:
 	to_tween(t,o,^"volume",v)
 	if v>0.0:
 		if o.volume==v:o.volume=0.0
-		if !o.playing:o.play()
+		if not o.playing:o.play()
 	else:
 		var cb:=func()->void:if is_zero_approx(o.volume):o.stop()
 		t.finished.connect(cb)

@@ -16,7 +16,7 @@ func is_trigger()->bool:
 		match action:
 			InputTrigger.Action.Any:return Input.is_anything_pressed()
 			InputTrigger.Action.On:return Input.is_action_pressed(name)
-			InputTrigger.Action.Off:return !Input.is_action_pressed(name)
+			InputTrigger.Action.Off:return not Input.is_action_pressed(name)
 			InputTrigger.Action.Down:return Input.is_action_just_pressed(name)
 			InputTrigger.Action.Up:return Input.is_action_just_released(name)
 	return false

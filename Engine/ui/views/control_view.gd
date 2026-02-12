@@ -63,10 +63,10 @@ func init_static()->void:
 var _stub:ViewModel.Stub
 
 func render()->void:
-	if !dirty:return
+	if not dirty:return
 	if view_model==null:return
 	dirty=false
-	if !s_is_inited:init_static()
+	if not s_is_inited:init_static()
 	#
 	if _stub==null:_stub=view_model.setup(model,self)
 	elif model!=_stub.model:_stub.model=model

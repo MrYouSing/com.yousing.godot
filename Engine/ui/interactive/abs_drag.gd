@@ -12,7 +12,7 @@ var _start_point:Vector2
 
 func accept(e:InputEvent)->bool:
 	if mask!=0:if mask&(1<<InputExtension.event_get_index(e))==0:return false
-	if area!=null:if !UITransform.has_point(area,screen_point(e.position)):return false
+	if area!=null:if not UITransform.has_point(area,screen_point(e.position)):return false
 	return true
 
 func touch(e:InputEvent)->void:

@@ -27,7 +27,7 @@ func set_model(m:Node3D)->void:
 func get_facing(v:Vector3)->Vector3:
 	if motor!=null:motor.direction=Vector3.ZERO# Reset for realtime.
 	if lock:return input_to_world(Vector2.DOWN) 
-	elif !v.is_zero_approx():return v.normalized()
+	elif not v.is_zero_approx():return v.normalized()
 	else:return get_rotation()*Vector3.BACK
 
 func sync_animation(v:Vector3)->void:
@@ -54,10 +54,10 @@ func _process(delta:float)->void:
 	if motor==null:return
 	# Get
 	var v:Vector3=input_to_world(get_move())*speed;
-	var d:Vector3;var b=!v.is_zero_approx();
+	var d:Vector3;var b=not v.is_zero_approx();
 	# Apply
 	motor.direction=get_facing(v)
 	motor.velocity=MathExtension.vec3_lerp(motor.velocity,v,smooth,delta)
-	if !moving and b:sync_animation(v)
+	if not moving and b:sync_animation(v)
 	else:sync_animation(motor.velocity)
 	moving=b

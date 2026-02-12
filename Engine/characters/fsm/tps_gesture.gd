@@ -24,9 +24,9 @@ func _on_motor(c:Node,m:Node,b:bool)->void:
 			_smooth=c.smooth
 			_blend=c.blend
 			#
-			if !is_zero_approx(speed):c.speed=speed
-			if !smooth.is_zero_approx():c.smooth=smooth
-			if !blend.is_empty():c.blend=blend
+			if not is_zero_approx(speed):c.speed=speed
+			if not smooth.is_zero_approx():c.smooth=smooth
+			if not blend.is_empty():c.blend=blend
 			#
 			if _blend!=c.blend:c.moving=false
 		else:

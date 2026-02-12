@@ -33,7 +33,7 @@ func set_enabled(b:bool)->void:
 func get_rotation()->Quaternion:
 	if motor!=null:
 		var v=motor.direction
-		if !v.is_zero_approx():
+		if not v.is_zero_approx():
 			v.y=0.0;return MathExtension.looking_at(v,normal)
 	var t:Node3D=model;if t==null:t=root
 	return MathExtension.get_heading(t.global_basis,normal)

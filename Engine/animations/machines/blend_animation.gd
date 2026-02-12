@@ -26,5 +26,5 @@ func _on_blend(c:Object,f:float)->void:
 	if dirty:_on_dirty()
 	#
 	if curve!=null:f=curve.sample_baked(f)
-	if !remap.is_zero_approx():f=remap.x*f+remap.y
+	if not remap.is_zero_approx():f=remap.x*f+remap.y
 	on_execute.emit(c,f)

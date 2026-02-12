@@ -47,14 +47,14 @@ static func class_is(o:Object,c:Variant,t:int=-1)->bool:
 					if a==b:return true
 					a=a.get_base_script()
 			TYPE_ARRAY,TYPE_PACKED_STRING_ARRAY:
-				for it in c:if !o.has_method(it):return false
+				for it in c:if not o.has_method(it):return false
 				return true
 	return false
 
 static func class_has(c:Variant,m:StringName,k:StringName,b:bool=false)->bool:
 	var d:Array=k_empty_array;match typeof(c):
 		TYPE_STRING,TYPE_STRING_NAME:
-			if ClassDB.class_exists(c):d=ClassDB.call(&"class_get_%s_list"%m,c,!b)
+			if ClassDB.class_exists(c):d=ClassDB.call(&"class_get_%s_list"%m,c,not b)
 		TYPE_OBJECT:
 			if c is Script:d=c.call(&"get_script_%s_list"%m)
 			else:d=c.call(&"get_%s_list"%m)
@@ -65,18 +65,18 @@ static func class_cast(o:Object,c:Variant)->Object:
 	match typeof(c):
 		TYPE_STRING,TYPE_STRING_NAME:
 			var b:StringName=c
-			if o==null or !class_is(o,b,TYPE_STRING_NAME):
+			if o==null or not class_is(o,b,TYPE_STRING_NAME):
 				if ClassDB.class_exists(b):return ClassDB.instantiate(b)
 				else:return null
 		TYPE_OBJECT:
 			var b:Resource=c
-			if o==null or !class_is(o,b,TYPE_OBJECT):
+			if o==null or not class_is(o,b,TYPE_OBJECT):
 				return b.new()
 		_:return null
 	return o
 
 static func str_to_enum(s:String,c:Variant)->int:
-	if !s.is_empty() and !c.is_empty():match typeof(c):
+	if not s.is_empty() and not c.is_empty():match typeof(c):
 		TYPE_DICTIONARY:
 			return c.get(s,-1)
 		TYPE_ARRAY,TYPE_PACKED_STRING_ARRAY:
@@ -84,7 +84,7 @@ static func str_to_enum(s:String,c:Variant)->int:
 	return -1
 
 static func str_to_mask(s:String,c:Variant,d:String="|")->int:
-	var m:int=0;if !s.is_empty() and !c.is_empty():match typeof(c):
+	var m:int=0;if not s.is_empty() and not c.is_empty():match typeof(c):
 		TYPE_DICTIONARY:
 			var t:Dictionary=c
 			var i:int;for it in s.split(d,false):i=t.get(it,-1);if i>=0:m|=i
@@ -93,7 +93,7 @@ static func str_to_mask(s:String,c:Variant,d:String="|")->int:
 	return m
 
 static func str_to_args(s:String,d:String=",")->Array:
-	if !s.is_empty():
+	if not s.is_empty():
 		var p:PackedStringArray=s.split(d);var i:int=p.size()
 		if i>0:
 			var a:Array;a.resize(i)
@@ -102,7 +102,7 @@ static func str_to_args(s:String,d:String=",")->Array:
 	return k_empty_array
 
 static func enum_to_str(e:int,c:Variant)->String:
-	if !c.is_empty():
+	if not c.is_empty():
 		match typeof(c):
 			TYPE_DICTIONARY:
 				var k:Variant=c.find_key(e);if k!=null:return k
@@ -111,7 +111,7 @@ static func enum_to_str(e:int,c:Variant)->String:
 	return k_empty_string
 
 static func mask_to_str(m:int,c:Variant,d:String="|")->String:
-	if !c.is_empty():
+	if not c.is_empty():
 		var p:PackedStringArray;var j:int;var k:Variant
 		match typeof(c):
 			TYPE_DICTIONARY:
@@ -173,19 +173,19 @@ static func remove_range(a:Array,o:int,c:int=-1)->void:
 	for i in c:a.remove_at(o-i)
 
 static func merge_array(a:Array,b:Array)->void:
-	for it in b:if !a.has(it):a.append(it)
+	for it in b:if not a.has(it):a.append(it)
 
 static func merge_strings(a:PackedStringArray,b:PackedStringArray)->void:
-	for it in b:if !a.has(it):a.append(it)
+	for it in b:if not a.has(it):a.append(it)
 
 static func remove_array(a:Array,b:Array)->void:
 	var n:int=a.size();var j:int=0
-	for it in a:if !b.has(it):a[j]=it;j+=1
+	for it in a:if not b.has(it):a[j]=it;j+=1
 	if j!=n:a.resize(j)
 
 static func remove_strings(a:PackedStringArray,b:PackedStringArray)->void:
 	var n:int=a.size();var j:int=0
-	for it in a:if !b.has(it):a[j]=it;j+=1
+	for it in a:if not b.has(it):a[j]=it;j+=1
 	if j!=n:a.resize(j)
 
 static func map_to_object(m:Dictionary,o:Object)->void:
@@ -231,12 +231,12 @@ static func array_add_table(a:Array,t:Array[PackedStringArray],c:Script)->void:
 	# Busy Lock
 
 static func is_busy(o:Object)->bool:
-	if o==null:return !s_lock_busy.is_empty()
+	if o==null:return not s_lock_busy.is_empty()
 	return s_lock_busy.has(o)
 
 static func not_busy(o:Object)->bool:
 	if o==null:return s_lock_busy.is_empty()
-	return !s_lock_busy.has(o)
+	return not s_lock_busy.has(o)
 
 static func begin_busy(o:Object)->void:
 	if o==null:return
@@ -250,12 +250,12 @@ static func end_busy(o:Object)->void:
 	# Signal APIs
 
 static func clear_signal(s:Signal)->void:
-	if !s.is_null() and s.has_connections():
+	if not s.is_null() and s.has_connections():
 		for it in s.get_connections():
 			s.disconnect(it.callable)
 
 static func call_signal(s:Signal,a:Array)->void:
-	if !s.is_null():match a.size():
+	if not s.is_null():match a.size():
 		0:s.emit()
 		1:s.emit(a[0])
 		2:s.emit(a[0],a[1])
@@ -267,7 +267,7 @@ static func call_signal(s:Signal,a:Array)->void:
 		8:s.emit(a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7])
 
 static func shoot_signal(s:Signal,o:Object,a:Array)->void:
-	if !s.is_null() and o!=null:
+	if not s.is_null() and o!=null:
 		var t:Array[Callable];var c:Callable
 		for it in s.get_connections():
 			c=it.callable;if c.get_object()==o:t.append(c)
@@ -278,14 +278,14 @@ static func shoot_signal(s:Signal,o:Object,a:Array)->void:
 static func free_signal(o:Object,k:StringName)->void:
 	if o==null or k.is_empty():return
 	var b:bool=o.has_user_signal(k)
-	if !o.has_signal(k) and !b:return
+	if not o.has_signal(k) and not b:return
 	for it in o.get_signal_connection_list(k):
 		o.disconnect(k,it.callable)
 	if b:o.remove_user_signal(k)
 
 static func new_signal(o:Object,k:StringName)->Signal:
 	if o==null or k.is_empty():return k_empty_signal
-	if !o.has_signal(k) and !o.has_user_signal(k):o.add_user_signal(k)
+	if not o.has_signal(k) and not o.has_user_signal(k):o.add_user_signal(k)
 	return Signal(o,k)
 
 static func exist_signal(o:Object,k:StringName)->bool:
@@ -293,28 +293,28 @@ static func exist_signal(o:Object,k:StringName)->bool:
 	return o.has_signal(k) or o.has_user_signal(k)
 
 static func info_signal(o:Object,k:StringName)->Dictionary:
-	if o!=null and !k.is_empty():
+	if o!=null and not k.is_empty():
 		var a:Array[Dictionary]=o.get_signal_list()
 		for it in a:if it.name==k:return it
 	return k_empty_dictionary
 
 static func add_signal(o:Object,k:StringName,v:Callable,f:int=0)->void:
 	if o==null or v.is_null():return
-	if !o.has_signal(k) and !o.has_user_signal(k):o.add_user_signal(k)
-	if !o.is_connected(k,v):o.connect(k,v,f)
+	if not o.has_signal(k) and not o.has_user_signal(k):o.add_user_signal(k)
+	if not o.is_connected(k,v):o.connect(k,v,f)
 
 static func try_signal(o:Object,k:StringName,v:Callable,f:int=0)->void:
 	if o==null or v.is_null():return
-	if !o.has_signal(k) and !o.has_user_signal(k):return
-	if !o.is_connected(k,v):o.connect(k,v,f)
+	if not o.has_signal(k) and not o.has_user_signal(k):return
+	if not o.is_connected(k,v):o.connect(k,v,f)
 
 static func remove_signal(o:Object,k:StringName,v:Callable)->void:
 	if o==null or v.is_null():return
-	if !o.has_signal(k) and !o.has_user_signal(k):return
+	if not o.has_signal(k) and not o.has_user_signal(k):return
 	if o.is_connected(k,v):o.disconnect(k,v)
 
 static func send_signal(o:Object,k:StringName,a:Array)->void:
-	if o!=null and !k.is_empty():match a.size():
+	if o!=null and not k.is_empty():match a.size():
 		0:o.emit_signal(k)
 		1:o.emit_signal(k,a[0])
 		2:o.emit_signal(k,a[0],a[1])
@@ -328,28 +328,28 @@ static func send_signal(o:Object,k:StringName,a:Array)->void:
 	# Advanced APIs
 
 static func bake_signal(o:Object,k:StringName,t:Array,m:Array[StringName])->Signal:
-	if !o.has_user_signal(k):o.add_user_signal(k)
+	if not o.has_user_signal(k):o.add_user_signal(k)
 	var tmp:Signal=Signal(o,k);var j:int=m.size()
 	var i:int=-1;for it in t:
 		i+=1;if i<j:k=m[i]
 		if it!=null and it.has_method(k):
 			var d=Callable(it,k)
-			if !tmp.is_connected(d):tmp.connect(d)
+			if not tmp.is_connected(d):tmp.connect(d)
 	return tmp
 
 static func merge_signal(o:Object,s:Signal,r:Signal,a:Array,m:StringName,f:int=0)->Signal:
 	if s.is_null():
-		if !o.has_user_signal(m):o.add_user_signal(m)
+		if not o.has_user_signal(m):o.add_user_signal(m)
 		s=Signal(o,m)
 	else:
 		clear_signal(s)
 	#
-	if !r.is_null() and r.has_connections():# From Engine
+	if not r.is_null() and r.has_connections():# From Engine
 		for it in r.get_connections():
 			s.connect(it.callable,it.flags)
-	if !a.is_empty() and !m.is_empty():# From User
+	if not a.is_empty() and not m.is_empty():# From User
 		for it in a:
 			if it!=null and it.has_method(m):
 				var d:Callable=Callable(it,m)
-				if !s.is_connected(d):s.connect(d,f)
+				if not s.is_connected(d):s.connect(d,f)
 	return s

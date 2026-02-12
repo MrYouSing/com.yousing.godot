@@ -18,14 +18,14 @@ func init()->void:
 	#
 
 func _get(k:StringName)->Variant:
-	if !_is_inited:init()
+	if not _is_inited:init()
 	return read(k,null)
 
 func _set(k:StringName,v:Variant)->bool:
-	if !_is_inited:
+	if not _is_inited:
 		if k.begins_with("metadata/"):return false
 		init()
 	#
 	write(k,v)
-	if _stub!=null and !_stub._busy:_stub.broadcast(k,v)
+	if _stub!=null and not _stub._busy:_stub.broadcast(k,v)
 	return true
