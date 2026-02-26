@@ -42,6 +42,8 @@ static func try_enabled(o:Object,i:int)->void:
 		-1:b=not get_enabled(o)
 	set_enabled(o,b)
 
+  # Node APIs
+
 static func add_node(n:Node,p:Node=null,b:bool=true)->void:
 	if n==null:return
 	if p==null:p=s_root
@@ -88,16 +90,37 @@ static func input_node(n:Node,i:int)->void:
 		i>>=2;j=i&0x3;if j!=0:n.set_process_unhandled_key_input(j==0x2)
 		i>>=2;j=i&0x3;if j!=0:n.set_process_unhandled_input(j==0x2)
 
+  # Transform APIs
+
 static func get_global_position(n:Node)->Vector3:
 	if n!=null:
 		if n is Node3D:return n.global_position
-		elif n is Node2D:var v:Vector2=n.global_position;return Vector3(v.x,v.y,0.0)
+		else:var v:Vector2=n.get(&"global_position");return Vector3(v.x,v.y,0.0)
 	return Vector3.ZERO
 
 static func set_global_position(n:Node,p:Vector3)->void:
 	if n!=null:
 		if n is Node3D:n.global_position=p
-		elif n is Node2D:n.global_position=Vector2(p.x,p.y)
+		else:n.set(&"global_position",Vector2(p.x,p.y))
+
+static func set_global_rotation(n:Node,a:float,v:Vector3=Vector3.UP)->void:
+	a*=MathExtension.k_deg_to_rad
+	if n!=null:
+		if n is Node3D:
+			if is_nan(a):n.global_basis=MathExtension.aiming_at(v)
+			else:n.global_basis=Basis(v,a)
+		else:
+			if is_nan(a):a=MathExtension.clocking_at(Vector2(v.x,v.y))
+			if n is Node2D:n.global_rotation=a
+			else:n.set(&"rotation",a)
+
+static func get_global_transform(n:Node)->Transform3D:
+	if n!=null:
+		if n is Node3D:return n.global_transform
+		else:
+			var t:Transform2D=n.get(&"global_transform");var v:Vector2=t.get_origin();var s:Vector2=t.get_scale()
+			return Transform3D(Basis(Vector3.FORWARD,t.get_rotation()),Vector3(v.x,v.y,0.0)).scaled_local(Vector3(s.x,s.y,0.0))
+	return Transform3D.IDENTITY
 
 # Rendering APIs
 

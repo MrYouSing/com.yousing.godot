@@ -26,7 +26,7 @@ func _on_plane(n:Vector3)->void:
 		node.basis=Quaternion.IDENTITY
 	else:
 		if n.is_zero_approx():n=-_direction
-		node.global_basis=MathExtension.reflecting_to(_direction,n,normal,_rotation)
+		node.global_basis=MathExtension.reflecting_at(_direction,n,normal,_rotation)
 
 func _ready()->void:
 	if node==null:node=get_parent().get_child(get_index()+1)

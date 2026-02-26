@@ -3,7 +3,7 @@ class_name FsmGesture extends FsmAction
 
 @export_group("Main","main_")
 @export var main_layer:int=0
-@export var main_anim:StringName=&"Idle"
+@export var main_anim:Array[StringName]=[&"Idle",&"Move"]
 @export var main_speed:Vector4=Vector4(0.25,0.25,1.0,1.0)
 @export_group("Gesture","gest_")
 @export var gest_layer:int=1
@@ -29,18 +29,19 @@ func _on_enter()->void:
 	var c:CharacterController=get_character()
 	if c!=null:
 		_on_motor(c,c.motor,true)
-		if c.animator!=null:
-			Tweenable.kill_tween(c.animator)
+		var a:Animator=c.animator;if a!=null:
+			Tweenable.kill_tween(a)
 			#
-			if c.animator.has_layer(main_layer):
-				c.animator.play(main_anim,main_layer)
+			if a.has_layer(main_layer):
+				if not main_anim.has(a.get_current(main_layer).name):
+					a.play(main_anim[0],main_layer)
 			else:
-				c.play_animation(main_anim)
+				c.play_animation(main_anim[0])
 			if main_speed.z!=main_speed.w:
-				_on_layer_speed(c.animator,c.animator.get_layer(main_layer%32),main_speed.z,main_speed.x)
-			if c.animator.has_layer(gest_layer):
-				c.animator.play(gest_anim,gest_layer)
-				_on_layer_weight(c.animator,c.animator.get_layer(gest_layer),1.0,gest_weight.x)
+				_on_layer_speed(a,a.get_layer(main_layer%32),main_speed.z,main_speed.x)
+			if a.has_layer(gest_layer):
+				a.play(gest_anim,gest_layer)
+				_on_layer_weight(a,a.get_layer(gest_layer),1.0,gest_weight.x)
 	#
 	GodotExtension.set_enabled(actor,true)
 
@@ -48,13 +49,13 @@ func _on_exit()->void:
 	var c:CharacterController=get_character()
 	if c!=null:
 		_on_motor(c,c.motor,false)
-		if c.animator!=null:
-			Tweenable.kill_tween(c.animator)
+		var a:Animator=c.animator;if a!=null:
+			Tweenable.kill_tween(a)
 			#
-			c.animator.stop(0xF000|(1<<main_layer)|(1<<gest_layer))
+			a.stop(0xF000|(1<<main_layer)|(1<<gest_layer))
 			if main_speed.z!=main_speed.w:
-				_on_layer_speed(c.animator,c.animator.get_layer(main_layer%32),main_speed.w,main_speed.y)
-			if c.animator.has_layer(gest_layer):
-				_on_layer_weight(c.animator,c.animator.get_layer(gest_layer),0.0,gest_weight.y)
+				_on_layer_speed(a,a.get_layer(main_layer%32),main_speed.w,main_speed.y)
+			if a.has_layer(gest_layer):
+				_on_layer_weight(a,a.get_layer(gest_layer),0.0,gest_weight.y)
 	#
 	GodotExtension.set_enabled(actor,false)

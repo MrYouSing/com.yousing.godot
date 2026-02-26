@@ -159,8 +159,8 @@ func _ready()->void:
 	if Singleton.init_instance(k_keyword,self):
 		#
 		if root==null:
-			if GodotExtension.s_root==null:root=get_tree().root
-			else:root=GodotExtension.s_root
+			root=GodotExtension.s_root
+			if root==null:root=get_tree().root
 		GodotExtension.s_root=root
 		#
 		if hidden==null:

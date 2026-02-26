@@ -142,7 +142,7 @@ func emit(o:Variant)->void:
 		TYPE_INT:s=album.clips[o]
 		TYPE_ARRAY:volume=o[1];emit(o[0]);return
 		TYPE_OBJECT:
-			if o is Album:s=o.random
+			if o is Album:s=o.random()
 			else:s=o
 	set_stream(s);play()
 

@@ -35,7 +35,7 @@ func init_root()->void:
 		for it in self.get_node(^"./States").get_children():
 			if it is FsmNode:states.append(it)
 
-func get_state(k:String)->FsmState:
+func get_state(k:StringName)->FsmState:
 	for it in states:
 		if it!=null and it.name==k:return it
 	return null

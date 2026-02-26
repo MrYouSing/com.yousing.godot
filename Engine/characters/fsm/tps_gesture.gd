@@ -39,5 +39,5 @@ func _on_layer_speed(a:Animator,l:AnimatorLayer,s:float,t:float)->void:
 	#
 	if l.index==(main_layer%32) and footstep!=null:
 		var tmp:Tween=Tweenable.make_tween(footstep)
-		if t<0.0:t=absf(s-footstep.speed)/-t
+		t=MathExtension.time_fade(footstep.speed,s,t)
 		tmp.tween_property(footstep,^"speed",s,t)

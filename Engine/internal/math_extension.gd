@@ -162,9 +162,16 @@ static func rotate_between(a:Vector3,b:Vector3,n:Vector3=Vector3.UP)->Basis:
 	return Quaternion(a,b)
 
 ## Another [method Basis.looking_at] for ray-casting.
-static func reflecting_to(a:Vector3,b:Vector3,n:Vector3=Vector3.UP,q:Basis=Basis.IDENTITY)->Basis:
+static func reflecting_at(a:Vector3,b:Vector3,n:Vector3=Vector3.UP,q:Basis=Basis.IDENTITY)->Basis:
 	match vec3_parallel(b,n):
 		1:return looking_at((-a).slide(n),n)*q
 		-1:return looking_at((-a).slide(n),n)*q.inverse()
 		0:return looking_at(b,n)
 		_:return q
+
+## Another [method Basis.looking_at] for ray-aiming.
+static func aiming_at(v)->Basis:
+	match vec3_parallel(v,Vector3.UP):
+		-1:return Basis(Vector3.LEFT,MathExtension.k_half_pi)
+		1:return Basis(Vector3.RIGHT,MathExtension.k_half_pi)
+		_:return looking_at(v)
