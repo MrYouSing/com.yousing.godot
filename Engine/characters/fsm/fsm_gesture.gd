@@ -59,3 +59,4 @@ func _on_exit()->void:
 				_on_layer_weight(a,a.get_layer(gest_layer),0.0,gest_weight.y)
 	#
 	GodotExtension.set_enabled(actor,false)
+	if duration>0.0 and root.time.x>=duration:finished.emit()

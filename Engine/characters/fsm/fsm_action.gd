@@ -4,6 +4,8 @@ class_name FsmAction extends FsmState
 @export var view:NodePath
 @export var trigger:BaseTrigger
 
+signal finished()
+
 var character:CharacterController
 var actor:Node
 

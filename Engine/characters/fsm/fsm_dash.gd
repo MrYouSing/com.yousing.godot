@@ -61,3 +61,4 @@ func _on_exit()->void:
 	velocity=Vector3.ZERO
 	#
 	if trigger!=null:trigger._on_exit()
+	finished.emit()

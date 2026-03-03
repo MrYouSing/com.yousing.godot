@@ -2,6 +2,12 @@
 @tool
 class_name BaseBone extends SkeletonModifier3D
 
+static func show_bone(b:Object)->void:
+	if b!=null:b.active=true
+
+static func hide_bone(b:Object)->void:
+	if b!=null:b.active=false
+
 @export_group("Bone")
 @export var bone_index:int=-1
 @export_enum(" ") var bone_name:String:

@@ -9,7 +9,7 @@ static var instance:UIDatabase
 
 var is_inited:bool
 var query_map:Dictionary[int,Resource]
-var find_map:Dictionary[StringName,Resource]
+var find_map:Dictionary[String,Resource]
 
 func init()->void:
 	if is_inited:return
@@ -18,6 +18,7 @@ func init()->void:
 	var i:int=-1;for it in models:
 		i+=1;if it==null:continue
 		if it.dbid<0:it.dbid=i
+		if it.resource_name.is_empty():it.resource_name=IOExtension.file_name_only(it.resource_path)
 	if i>get_meta(&"capacity",32):
 		query_map.clear()
 		find_map.clear()
@@ -38,7 +39,7 @@ func query(i:int)->Resource:
 		for it in models:if it!=null and it.dbid==i:return it
 	return null
 
-func find(k:StringName)->Resource:
+func find(k:String)->Resource:
 	if not is_inited:init()
 	#
 	if not find_map.is_empty():

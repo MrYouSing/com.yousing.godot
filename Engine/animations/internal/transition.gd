@@ -34,7 +34,7 @@ func do_tween(t:Tween,o:Object,c:Callable,a:Variant,b:Variant)->void:
 	on_tween(t,o)
 	t.tween_method(c,a,b,duration).set_trans(trans).set_ease(ease)
 
-func to_skeleton_modifier_3d(t:Tween,o:SkeletonModifier3D,b:bool,d:float=0.1)->void:
+func to_skeleton_modifier_3d(t:Tween,o:Object,b:bool,d:float=0.1)->void:
 	if t==null or o==null:return
 	#
 	var f:float=1.0 if b else 0.0
@@ -45,7 +45,7 @@ func to_skeleton_modifier_3d(t:Tween,o:SkeletonModifier3D,b:bool,d:float=0.1)->v
 		t.finished.connect(a)
 	duration=tmp
 
-func tr_skeleton_modifier_3d(t:Tween,a:SkeletonModifier3D,b:SkeletonModifier3D,c:Callable,d:float=0.1)->void:
+func tr_skeleton_modifier_3d(t:Tween,a:Object,b:Object,c:Callable,d:float=0.1)->void:
 	if t==null:return
 	#
 	current=a;to_skeleton_modifier_3d(t,a,false,d)

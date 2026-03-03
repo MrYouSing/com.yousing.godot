@@ -5,6 +5,7 @@ class_name TpsCamera extends Node3D
 @export var camera:Node3D
 @export var head:Node3D
 @export var arm:Vector3=Vector3(0.0,0.0,10)
+@export var mixer:Node
 @export_range(0.0,1.0,0.001,"or_greater","or_less")var side:float=0.5
 @export_group("Input")
 @export var input:PlayerInput
@@ -53,6 +54,7 @@ func _physics_process(delta:float)->void:
 	if head!=null:to=head.global_position
 	from=ray_cast(to,from)
 	camera.global_position=MathExtension.vec3_lerp(camera.global_position,from,smooth,delta)
+	if mixer!=null:mixer.set(&"distance",(camera.global_position-to).length())
 
 func ray_cast(a:Vector3,b:Vector3)->Vector3:
 	var rids:Array[RID];

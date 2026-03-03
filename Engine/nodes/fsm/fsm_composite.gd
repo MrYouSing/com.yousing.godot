@@ -21,3 +21,8 @@ func _on_check()->bool:
 func _on_enter()->void:for it in states:if it!=null:it.root=root;it._on_enter()
 func _on_tick()->void:for it in states:if it!=null:it.root=root;it._on_tick()
 func _on_exit()->void:for it in states:if it!=null:it.root=root;it._on_exit()
+
+func _on_duration(f:float)->void:for it in states:if it!=null:it.duration=f
+
+func _ready()->void:
+	_on_duration(duration)

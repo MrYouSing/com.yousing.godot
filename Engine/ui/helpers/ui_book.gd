@@ -2,21 +2,22 @@
 class_name UIBook extends Node
 
 @export_group("Book")
-@export var book:Resource
 @export var content:Node
 @export var property:StringName
+@export var book:Resource
 @export var pages:Array[Node]
 
 var index:int
 
 func set_enabled(b:bool)->void:
-	GodotExtension.set_enabled(content,b)
+	if content==self:set(&"visible",b)
+	else:GodotExtension.set_enabled(content,b)
 
 func show()->void:set_enabled(true)
 func hide()->void:set_enabled(false)
 
 func count()->int:
-	if content!=null:return content.count()
+	if book!=null:return book.count()
 	else:return pages.size()
 
 func display(v:Variant)->void:
