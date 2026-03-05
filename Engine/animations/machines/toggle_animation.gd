@@ -2,7 +2,7 @@
 class_name ToggleAnimation extends ToggleMachine
 
 @export_group("Animation")
-@export var keywords:Array[StringName]
+@export var keywords:PackedStringArray
 @export var fade:float=0.0
 @export var transitions:TransitionLibrary
 

@@ -13,7 +13,7 @@ var velocity:Vector3
 func get_direction(c:CharacterController)->Vector3:
 	var v:Vector2=c.get_move();var d:Vector3
 	if v.is_zero_approx():d=c.get_rotation()*direction
-	else:d=c.input_to_world(v)
+	else:d=c.input_to_world(v.normalized())
 	return d
 
 func update_animation(c:CharacterController,d:Vector3)->void:

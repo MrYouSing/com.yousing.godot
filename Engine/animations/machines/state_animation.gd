@@ -2,7 +2,7 @@
 class_name StateAnimation extends StateMachine
 
 @export_group("Animation")
-@export var exits:Array[StringName]
+@export var exits:PackedStringArray
 
 func exit()->void:stop_tween();set_state(idle)
 

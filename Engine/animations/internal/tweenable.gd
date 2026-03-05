@@ -4,6 +4,9 @@ class_name Tweenable extends Node
 const k_interface:Array[StringName]=[&"play_tween",&"stop_tween"]
 static var s_tweens:Dictionary[Node,Tween]
 
+static func is_valid(t:Tween)->bool:
+	return t!=null and t.is_valid()
+
 ## See [method Tween.kill].
 static func kill_tween(n:Node)->void:
 	if n==null:return

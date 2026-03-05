@@ -1,9 +1,8 @@
-class_name InteractTrigger extends BaseTrigger
+class_name InteractTrigger extends CompositeTrigger
 
 @export_group("Interact")
 @export var interact:Interact
 @export var time:Vector3## [x,y] for range,z for lifetime.
-@export var triggers:Array[BaseTrigger]
 
 var _mask:int
 var _count:int
@@ -28,6 +27,8 @@ func do_update(d:float)->void:
 		if it.is_trigger():m|=(1<<i)
 	#
 	match interact:
+		InteractTrigger.Interact.Inverse:
+			set_done(m==0);return
 		InteractTrigger.Interact.Tap:
 			if is_tap(m,d)==3:set_done(t)
 		InteractTrigger.Interact.Hold:
@@ -110,6 +111,7 @@ func _process(delta:float)->void:
 
 enum Interact {
 	None,
+	Inverse,
 	Tap,
 	Hold,
 	Repeat,

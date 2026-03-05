@@ -5,7 +5,7 @@ class_name SplineBone extends ArrowBone
 @export_group("Spline")
 @export var spline:Quaternion=Quaternion.IDENTITY
 @export var offset:Quaternion=Quaternion.IDENTITY
-@export var names:Array[String]
+@export var names:PackedStringArray
 @export var indexes:Array[int]
 @export_range(0.0,1.0,0.001,"or_greater") var weights:Array[float]
 

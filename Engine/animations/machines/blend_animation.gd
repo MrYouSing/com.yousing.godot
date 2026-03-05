@@ -2,7 +2,7 @@
 class_name BlendAnimation extends BlendMachine
 
 @export_group("Animation")
-@export var keywords:Array[StringName]
+@export var keywords:PackedStringArray
 @export var fade:float=1.0
 @export var transitions:TransitionLibrary
 

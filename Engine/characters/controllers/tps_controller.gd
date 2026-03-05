@@ -6,8 +6,8 @@ class_name TpsController extends CharacterController
 @export var speed:float=5.0
 @export var smooth:Vector2=Vector2(-1,60)
 @export var blend:StringName
-@export var anims:Array[StringName]
-@export var shots:Array[StringName]
+@export var anims:PackedStringArray
+@export var shots:PackedStringArray
 
 var moving:bool
 

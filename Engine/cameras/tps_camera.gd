@@ -72,6 +72,9 @@ func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 		l.direct_to_camera_3d(cam)
 		if l.settings.has(&"pos"):position=l.settings.pos
 		if l.settings.has(&"arm"):arm=l.settings.arm
+		#
+		var s:Vector2=smooth;smooth=Vector2(-1.0,60.0)
+		_physics_process(1.0/smooth.y);smooth=s
 	else:#Tween
 		var tmp=Tweenable.cast_tween(c)
 		l.tween_to_camera_3d(cam,tmp,t);Transition.current=self

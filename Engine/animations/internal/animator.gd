@@ -135,7 +135,8 @@ func apply(i:int,v:Variant)->void:
 # Methods
 
 func setup(n:Node)->void:
-	if n==null:n=self
+	if n==null:n=context
+	else:context=n
 	if player==null:player=get_node_or_null(^"../AnimationPlayer")
 	if tree==null:tree=get_node_or_null(^"../AnimationTree")
 	#

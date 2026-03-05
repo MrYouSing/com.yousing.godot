@@ -16,8 +16,8 @@ func combine_path(a:String,b:String)->String:
 	elif x or y:return a+b
 	else:return a+"/"+b
 
-func get_scripts(p:String,e:String)->Array[String]:
-	var l:Array[String];
+func get_scripts(p:String,e:String)->PackedStringArray:
+	var l:PackedStringArray
 	var d:DirAccess=DirAccess.open(p);if d!=null:
 		for it in d.get_files():
 			if e.is_empty() or it.ends_with(e):
@@ -26,7 +26,7 @@ func get_scripts(p:String,e:String)->Array[String]:
 			l.append_array(get_scripts(combine_path(p,it),e))
 	return l
 
-func set_types(r:String,l:Array[String],b:bool)->void:
+func set_types(r:String,l:PackedStringArray,b:bool)->void:
 	for it in l:
 		var s:Script=load(r+it);if s==null:continue
 		var c:StringName=s.get_global_name()

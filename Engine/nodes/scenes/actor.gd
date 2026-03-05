@@ -2,7 +2,9 @@
 class_name Actor extends Node
 
 @export var components:Array[Node]
+
 var tween:Tween
+var dictionary:Dictionary[StringName,Object]
 
 func set_enabled(b:bool)->void:
 	if get_meta(&"self_enabled",true):
@@ -16,8 +18,11 @@ func show()->void:set_enabled(true)
 func hide()->void:set_enabled(false)
 
 func get_component(s:StringName)->Node:
+	if dictionary.has(s):
+		return dictionary[s]
 	for it in components:
-		if it!=null and it.name==s:return it
+		if it!=null and it.name==s:
+			dictionary[s]=it;return it
 	return null
 
 func get_components(s:String,l:Array[Node])->Array[Node]:

@@ -1,8 +1,7 @@
-## A helper class for playing gestures with movements.
-class_name TpsGesture extends FsmGesture
+## A helper class for motor state control.
+class_name FsmGearbox extends FsmAction
 
-@export_group("TPS")
-@export var footstep:Footstep
+@export_group("Gearbox")
 @export var speed:float
 @export var smooth:Vector2
 @export var blend:StringName
@@ -10,10 +9,6 @@ class_name TpsGesture extends FsmGesture
 var _speed:float
 var _smooth:Vector2
 var _blend:StringName
-
-func _on_init()->void:
-	super._on_init()
-	if footstep==null:footstep=actor
 
 func _on_motor(c:Node,m:Node,b:bool)->void:
 	if m!=null:
@@ -34,10 +29,13 @@ func _on_motor(c:Node,m:Node,b:bool)->void:
 			c.smooth=_smooth
 			c.blend=_blend
 
-func _on_layer_speed(a:Animator,l:AnimatorLayer,s:float,t:float)->void:
-	super._on_layer_speed(a,l,s,t)
-	#
-	if l.index==(main_layer%32) and footstep!=null:
-		var tmp:Tween=Tweenable.make_tween(footstep)
-		t=MathExtension.time_fade(footstep.speed,s,t)
-		tmp.tween_property(footstep,^"speed",s,t)
+func _on_enter()->void:
+	var c:CharacterController=get_character()
+	if c!=null:
+		c.play_animation(name)
+		_on_motor(c,c.motor,true)
+
+func _on_exit()->void:
+	var c:CharacterController=get_character()
+	if c!=null:
+		_on_motor(c,c.motor,false)

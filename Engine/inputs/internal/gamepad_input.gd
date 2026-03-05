@@ -43,7 +43,11 @@ static var current:GamepadInput
 static var instances:Array[GamepadInput]=LangExtension.alloc_array(GamepadInput,JOY_AXIS_MAX)
 
 @export_group("Gamepad")
-@export var device:int=-1
+@export var index:int=-1
+@export var device:int=-1:
+	set(x):
+		if x>=0:name=Input.get_joy_name(x)
+		device=x
 @export_flags(
 	"Virtual","Vibrate","Unhandled","Handled",
 )var features:int:
@@ -111,15 +115,18 @@ func _featured()->void:
 func _ready()->void:
 	_featured()
 	#
-	if device>=0:
-		if instances[device]==null:instances[device]=self
+	if index>=0:
+		if instances[index]==null:instances[index]=self
+		if device<0:
+			var a:Array[int]=Input.get_connected_joypads()
+			if index<a.size():device=a[index]
 		return
 	if current==null:current=self
 
 func _exit_tree()->void:
-	device=instances.find(self)
-	if device>=0:
-		if self==instances[device]:instances[device]=null
+	index=instances.find(self)
+	if index>=0:
+		if self==instances[index]:instances[index]=null
 		return
 	if self==current:current=null
 

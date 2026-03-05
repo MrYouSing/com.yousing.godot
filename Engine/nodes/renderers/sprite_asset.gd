@@ -4,7 +4,7 @@ class_name SpriteAsset extends Resource
 @export_group("Sprite")
 @export var fps:float=24.0
 @export var pivot:Vector2=MathExtension.k_vec2_half
-@export var paths:Array[String]
+@export var paths:PackedStringArray
 @export var textures:Array[Texture2D]
 
 var is_inited:bool

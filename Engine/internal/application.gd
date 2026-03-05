@@ -14,8 +14,8 @@ static var s_app_delta:float=-1.0
 static var s_app_resolution:Vector2=Vector2.ZERO
 static var s_app_config:ConfigFile
 static var s_app_plugins:Dictionary[StringName,Dictionary]
-static var s_bm_names:Array[String]
-static var s_bm_times:Array[float]
+static var s_bm_names:PackedStringArray
+static var s_bm_times:PackedFloat32Array
 # Events
 static var on_locale:Signal=LangExtension.new_signal(Application,&"on_locale")
 static var on_flush:Signal=LangExtension.new_signal(Application,&"on_flush")
@@ -121,8 +121,9 @@ static func begin_benchmark(c:String)->void:
 	s_bm_times.push_back(get_time())
 
 static func end_benchmark()->void:
-	var c:String=s_bm_names.pop_back()
-	var t:float=s_bm_times.pop_back()
+	var i:int=s_bm_names.size()-1
+	var c:String=s_bm_names[i];s_bm_names.remove_at(i)
+	var t:float=s_bm_times[i];s_bm_times.remove_at(i)
 	var d:float=get_time()
 	debug(c.format([t,d-t,d]))
 

@@ -6,9 +6,10 @@ static var current:PlayerInput
 @export var axes:Array[StringName]
 @export var buttons:Array[StringName]
 
-var m_axes:Array[Vector2]
+var m_axes:PackedVector2Array
 var m_previous:int
 var m_buttons:int
+var m_times:PackedFloat32Array
 
 func set_enabled(b:bool)->void:
 	if not b:
@@ -71,13 +72,23 @@ func hold(i:int)->bool:
 
 func trigger(i:int)->bool:
 	try_update()
+	#
+	var t:float=m_times[i]
+	if t>=0.0:
+		t-=Application.get_time()
+		if t<deadzone.z:return true
 	return false
+
+func erase(i:int)->void:
+	try_update()
+	#
+	if i<0:for j in m_times.size():m_times[j]=-1.0
+	else:m_times[i]=-1.0
 
 #
 func _ready()->void:
 	var n:int=axes.size()/4;if n<=0:n=4
-	if m_axes==null:m_axes=[];m_axes.resize(n)
-	elif m_axes.size()<n:m_axes.resize(n)
+	if m_axes.size()<n:m_axes.resize(n)
 	#
 	if current==null:current=self
 

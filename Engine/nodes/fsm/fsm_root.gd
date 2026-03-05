@@ -5,6 +5,7 @@ class_name FsmRoot extends FsmNode
 @export var input:PlayerInput
 @export var states:Array[FsmState]
 var state:FsmState
+var other:FsmState
 var time:Vector2
 
 signal on_change(a:FsmState,b:FsmState)
@@ -47,9 +48,11 @@ func set_state(v:FsmState,e:bool=true)->void:
 		on_change.emit(o,v)
 		if state!=o:return
 	#
+	other=v
 	if state!=null:state._on_exit()
-	time.x=0.0;state=v;
+	other=state;time.x=0.0;state=v;
 	if state!=null:state._on_enter()
+	other=null
 
 func check_transition(s:FsmState,t:FsmTransition)->bool:
 	if s!=null and t!=null:

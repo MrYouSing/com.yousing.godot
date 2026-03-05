@@ -49,7 +49,7 @@ static func add_node(n:Node,p:Node=null,b:bool=true)->void:
 	if p==null:p=s_root
 	#
 	if n.get_parent()!=null:
-		n.reparent(p,b);return
+		n.reparent(p,b)
 	elif b and (n is Node3D or n is Node2D):
 		var t=n.global_transform
 		p.add_child(n)

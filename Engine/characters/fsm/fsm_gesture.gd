@@ -9,30 +9,26 @@ class_name FsmGesture extends FsmAction
 @export var gest_layer:int=1
 @export var gest_anim:StringName=&"Hello"
 @export var gest_weight:Vector2=Vector2(0.25,0.25)
-
-func _on_motor(c:Node,m:Node,b:bool)->void:
-	if c==null or m==null:return
-	#
-	m.velocity=Vector3.ZERO
+@export_group("Misc")
+@export var gearbox:FsmGearbox
 
 func _on_layer_weight(a:Animator,l:AnimatorLayer,w:float,t:float)->void:
 	if a==null or l==null:return
-	if t<0.0:t=absf(w-l.get_weight(a))/-t
-	l.tween_weight(a,w,null,t,null)
+	l.tween_weight(a,w,null,MathExtension.time_fade(l.get_weight(a),w,t),null)
 
 func _on_layer_speed(a:Animator,l:AnimatorLayer,s:float,t:float)->void:
 	if a==null or l==null:return
-	if t<0.0:t=absf(s-l.get_speed(a))/-t
-	l.tween_speed(a,s,null,t,null)
+	l.tween_speed(a,s,null,MathExtension.time_fade(l.get_speed(a),s,t),null)
 
 func _on_enter()->void:
 	var c:CharacterController=get_character()
 	if c!=null:
-		_on_motor(c,c.motor,true)
+		if gearbox!=null:gearbox._on_motor(c,c.motor,true)
 		var a:Animator=c.animator;if a!=null:
 			Tweenable.kill_tween(a)
 			#
 			if a.has_layer(main_layer):
+				a.context.set(&"state",-1)
 				if not main_anim.has(a.get_current(main_layer).name):
 					a.play(main_anim[0],main_layer)
 			else:
@@ -48,7 +44,7 @@ func _on_enter()->void:
 func _on_exit()->void:
 	var c:CharacterController=get_character()
 	if c!=null:
-		_on_motor(c,c.motor,false)
+		if gearbox!=null:gearbox._on_motor(c,c.motor,false)
 		var a:Animator=c.animator;if a!=null:
 			Tweenable.kill_tween(a)
 			#
@@ -59,4 +55,4 @@ func _on_exit()->void:
 				_on_layer_weight(a,a.get_layer(gest_layer),0.0,gest_weight.y)
 	#
 	GodotExtension.set_enabled(actor,false)
-	if duration>0.0 and root.time.x>=duration:finished.emit()
+	if duration>0.0:FsmEvent.invoke_signal(self,finished,LangExtension.k_empty_array)

@@ -3,6 +3,18 @@ class_name FsmEvent extends FsmState
 
 static var current:Object
 
+static func invoke_callable(o:Object,c:Callable,a:Array)->void:
+	if not c.is_valid():return
+	var tmp:Object=current;current=o
+	c.callv(a)
+	current=tmp
+
+static func invoke_signal(o:Object,s:Signal,a:Array)->void:
+	if s.is_null():return
+	var tmp:Object=current;current=o
+	LangExtension.call_signal(s,a)
+	current=tmp
+
 @export_group("Event")
 @export var targets:Array[Node]
 

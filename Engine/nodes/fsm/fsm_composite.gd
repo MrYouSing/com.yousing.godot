@@ -4,7 +4,7 @@ class_name FsmComposite extends FsmState
 @export var lowers:Array[FsmState]
 @export var highers:Array[FsmState]
 @export var states:Array[FsmState]
-@export var blacklist:Array[StringName]
+@export var blacklist:PackedStringArray
 
 func do_check(l:Array[FsmState])->bool:
 	for it in l:
