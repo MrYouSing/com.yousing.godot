@@ -16,6 +16,8 @@ class_name TpsCamera extends Node3D
 @export var target:Node3D
 @export var exclude:Array[CollisionObject3D]
 @export var ball:float=0.5
+@export_flags_3d_physics var mask:int=-1
+@export var flags:int=-1
 @export var smooth:Vector2=Vector2(-1.0,60.0)
 
 var rot:=Vector3.ZERO
@@ -60,8 +62,8 @@ func ray_cast(a:Vector3,b:Vector3)->Vector3:
 	var rids:Array[RID];
 	for it in exclude:rids.append(it.get_rid())
 	var res:Dictionary;
-	if ball>0.0:res=Physics.sphere_cast(get_world_3d().direct_space_state,a,b,ball,-1,rids,-1)
-	else:res=Physics.ray_cast(get_world_3d().direct_space_state,a,b,-1,rids,-1)
+	if ball>0.0:res=Physics.sphere_cast(get_world_3d().direct_space_state,a,b,ball,mask,rids,flags)
+	else:res=Physics.ray_cast(get_world_3d().direct_space_state,a,b,mask,rids,flags)
 	if res:b=res.position+res.normal*ball
 	return b
 

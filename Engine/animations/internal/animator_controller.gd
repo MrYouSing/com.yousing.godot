@@ -70,6 +70,11 @@ func get_layer(l:int)->AnimatorLayer:
 		a=layers[l];if a!=null:a.index=l
 	return a
 
+func sync_read(c:Animator,k:StringName)->StringName:
+	if c!=null and sync_parameters.has(k):
+		return sync_parameters[k][0]
+	return LangExtension.k_empty_name
+
 func sync_write(c:Animator,k:StringName,v:Variant)->bool:
 	if c!=null and sync_parameters.has(k):
 		var tmp:AnimatorController=c.controller;c.controller=null

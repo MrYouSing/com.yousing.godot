@@ -2,6 +2,7 @@ class_name FsmAnimation extends FsmAction
 
 @export_group("Animation")
 @export var sleep:bool=true
+@export var animation:StringName
 
 func _on_enter()->void:
 	var c:CharacterController=get_character()
@@ -11,13 +12,10 @@ func _on_enter()->void:
 			c.set_enabled(false)
 		else:
 			c.set_enabled(true)
-		c.play_animation(name)
-	#
-	GodotExtension.set_enabled(actor,true)
+		if animation.is_empty():animation=name
+		c.play_animation(animation)
 
 func _on_exit()->void:
 	if sleep:
 		var c:CharacterController=get_character()
 		if c!=null:c.set_enabled(true)
-	#
-	GodotExtension.set_enabled(actor,false)

@@ -4,7 +4,7 @@ class_name BaseDetector extends Node
 @export_group("Detection")
 @export var root:Node
 @export var forward:Vector3=Vector3.MODEL_FRONT
-@export_flags_3d_physics var mask:int=1
+@export_flags_3d_physics var mask:int=-1
 @export var flags:int=-1
 @export var exclusion:Array[Node]
 

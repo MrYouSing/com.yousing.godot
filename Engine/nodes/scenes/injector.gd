@@ -3,7 +3,7 @@ class_name Injector extends Node
 
 @export_group("Injector")
 @export var auto:bool=true
-@export_enum("Property","Signal","Global","Event")
+@export_enum("Property","Signal","Global","Event","Append","Attach")
 var types:Array[int]
 @export_group("Source","src_")
 @export var src_resources:Array[Resource]
@@ -72,5 +72,7 @@ func inject_object(t:int,s:Object,i:StringName,d:Object,j:StringName)->void:
 			3:
 				var g:Script=find_script(src_obj)
 				if g!=null:g.connect(i,Callable(dst_obj,j))
+			4:GodotExtension.add_node(src_obj,dst_obj,false)
+			5:GodotExtension.add_node(src_obj,dst_obj,true)
 	else:
 		src_obj=null;dst_obj=null

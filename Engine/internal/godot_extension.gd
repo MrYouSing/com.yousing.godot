@@ -122,12 +122,26 @@ static func get_global_transform(n:Node)->Transform3D:
 			return Transform3D(Basis(Vector3.FORWARD,t.get_rotation()),Vector3(v.x,v.y,0.0)).scaled_local(Vector3(s.x,s.y,0.0))
 	return Transform3D.IDENTITY
 
+# Resource APIs
+
+static func scale_shape_3d(s:Shape3D,f:float)->void:
+	if s==null:pass
+	elif s is SphereShape3D:s.radius*=f
+	elif s is CapsuleShape3D:s.radius*=f;s.height*=f
+	elif s is BoxShape3D:s.size*=f
+
 # Rendering APIs
+
+static var k_class_particles:PackedStringArray=["CPUParticles2D","GPUParticles2D","CPUParticles3D","GPUParticles3D"]
 
 static func get_blend_shape_names(r:MeshInstance3D,a:Array[StringName])->void:
 	if r==null:return
 	var m:ArrayMesh=r.mesh;if m==null:return
 	for i in m.get_blend_shape_count():a.append(m.get_blend_shape_name(i))
+
+static func stop_particles(n:Node)->void:
+	if n!=null and k_class_particles.has(n.get_class()):
+		n.restart();n.emitting=false
 
 # Animation APIs
 

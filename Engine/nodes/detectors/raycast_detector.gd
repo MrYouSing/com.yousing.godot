@@ -10,15 +10,20 @@ var _direction:Vector3
 func detect()->bool:
 	if dirty:_on_dirty()
 	#
-	var n:Node3D=root;var m:Transform3D=n.global_transform
-	var c:PhysicsDirectSpaceState3D=n.get_world_3d().direct_space_state
-	_origin=m.origin;_direction=m.basis.get_rotation_quaternion()*forward
-	var r:Dictionary=Physics.ray_cast(c,_origin,_origin+_direction*distance.y,mask,exclude,flags)
+	var n:Node3D=root;var c:PhysicsDirectSpaceState3D=n.get_world_3d().direct_space_state
+	var d:float=distance.y-distance.x;var m:Transform3D=n.global_transform
+	_direction=m.basis.get_rotation_quaternion()*forward
+	_origin=m.origin+_direction*distance.x
+	var r:Dictionary=Physics.ray_cast(c,_origin,_origin+_direction*d,mask,exclude,flags)
 	if not r.is_empty():
 		clear()
-		if (r.position-_origin).length_squared()>=distance.x*distance.x:
-			target=r.collider;_on_find_hit(r)
-			return true
-		else:
-			_on_miss_hit(r)
+		target=r.collider;_on_find_hit(r)
+		return true
 	return false
+
+func _on_find_hit(d:Dictionary)->void:
+	if not d.is_empty():
+		if d.normal.is_zero_approx():d.normal=-_direction
+		#
+		apply(Physics.HitInfo.from_dict(d))
+		_on_find(d.collider)

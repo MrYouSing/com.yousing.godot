@@ -110,6 +110,11 @@ static func str_to_rect(s:String,d:String=",",e:bool=true)->Rect2:
 	var a:PackedFloat64Array=s.split_floats(d,e)
 	return Rect2(a[0],a[1],a[2],a[3])
 
+static func float_lerp(a:float,b:float,t:Vector2,d:float)->float:
+	if t.x>0.0:return clampf(a+t.x*d,a,b)
+	elif t.x>=-1.0:return lerpf(a,b,-t.x*t.y*d)
+	return b
+
 static func vec2_lerp(a:Vector2,b:Vector2,t:Vector2,d:float)->Vector2:
 	if t.x>0.0:return a.move_toward(b,t.x*d)
 	elif t.x>=-1.0:return a.lerp(b,-t.x*t.y*d)
@@ -124,6 +129,13 @@ static func quat_lerp(a:Quaternion,b:Quaternion,t:Vector2,d:float)->Quaternion:
 	if t.x>0.0:return a.slerp(b,clampf((t.x*d)/rad_to_deg(a.angle_to(b)),0.0,1.0))
 	elif t.x>=-1.0:return a.slerp(b,-t.x*t.y*d)
 	return b
+
+static func vec2_fade(a:Vector2,b:Vector2,c:float)->Vector2:
+	var d:float=c*c
+	if a.length_squared()<d:
+		if b.length_squared()>=d:a=b
+		a=a.normalized()*c
+	return a
 
 static func vec3_parallel(a:Vector3,b:Vector3)->int:
 	var f:float=a.normalized().dot(b.normalized())

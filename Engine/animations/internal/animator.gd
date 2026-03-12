@@ -113,6 +113,10 @@ func _get(k:StringName)->Variant:
 	return v
 
 func read(k:StringName)->Variant:
+	if controller!=null:
+		var n:StringName=controller.sync_read(self,k)
+		if not n.is_empty():k=n
+	#
 	if tree!=null:return tree.get(k)
 	else:return super.get(k)
 

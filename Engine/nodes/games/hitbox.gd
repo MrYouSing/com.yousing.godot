@@ -10,7 +10,7 @@ signal on_damage(f:float)
 
 var context:Object
 var player:Player:
-	get():return unit.player
+	get():return null if unit==null else unit.player
 
 func _on_damage(f:float)->void:
 	var tmp:Hitbox=current;current=self

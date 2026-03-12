@@ -33,7 +33,7 @@ func set_state(s:StringName)->void:
 	var v:Variant=states.get(s)
 	if v==null:
 		if idle.is_empty():return
-		else:v=states.get(s);if v==null:return
+		else:v=states.get(idle);if v==null:return
 	# Find a transition.
 	var t:Transition=null
 	if transitions!=null:t=transitions.eval(state,s)

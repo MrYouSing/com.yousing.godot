@@ -72,6 +72,10 @@ func set_progress(f:float)->void:
 		var p:float=get_progress()
 		if not is_zero_approx(f-p):position=l*f
 
+func set_enabled(b:bool)->void:
+	if b:emit(url if album==null else album)
+	else:stop()
+
 func _ready()->void:
 	if not url.is_empty() and not is_playing():
 		open(url);play()

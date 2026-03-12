@@ -14,29 +14,29 @@ func set_enabled(b:bool)->void:
 	else:stop()
 
 func play()->void:
-	for it in nodes:
-		if it!=null:_set_enabled(it,true)
-	#
-	if _call!=Juggler.k_invalid_id:
-		Juggler.instance.kill_call(_call)
+	for it in nodes:if it!=null:_set_enabled(it,true)
 	if duration>0.0:
 		_call=Juggler.instance.delay_call(kill,LangExtension.k_empty_array,duration)
 
 func stop()->void:
-	for it in nodes:
-		if it!=null:_set_enabled(it,false)
+	for it in nodes:if it!=null:_set_enabled(it,false)
+	if _call!=Juggler.k_invalid_id:
+		Juggler.instance.kill_call(_call)
+	_call=Juggler.k_invalid_id
 
 func kill()->void:
 	if Stage.exists:Stage.instance.despawn(self)
 
 func _set_enabled(n:Node,b:bool)->void:
-	n.set(&"emitting",b);GodotExtension.set_enabled(n,b)
+	if b:n.set(&"emitting",b)
+	else:GodotExtension.stop_particles(n)
+	GodotExtension.set_enabled(n,b)
 
 func _on_spawn()->void:
 	if is_node_ready():play()
 
 func _on_despawn()->void:
-	stop();_call=Juggler.k_invalid_id
+	stop()
 
 func _ready()->void:
 	_on_spawn()

@@ -20,6 +20,7 @@ func _on_find_hit(d:Dictionary)->void:
 func _on_miss_hit(d:Dictionary)->void:
 	if not d.is_empty():
 		_done=true;_position=_origin+_direction*distance.x
+		_on_plane(Vector3.ZERO)
 
 func _on_plane(n:Vector3)->void:
 	if normal.is_zero_approx():
@@ -27,6 +28,22 @@ func _on_plane(n:Vector3)->void:
 	else:
 		if n.is_zero_approx():n=-_direction
 		node.global_basis=MathExtension.reflecting_at(_direction,n,normal,_rotation)
+
+func detect()->bool:
+	if dirty:_on_dirty()
+	#
+	var n:Node3D=root;var c:PhysicsDirectSpaceState3D=n.get_world_3d().direct_space_state
+	var m:Transform3D=n.global_transform
+	_direction=m.basis.get_rotation_quaternion()*forward;_origin=m.origin
+	var r:Dictionary=Physics.ray_cast(c,_origin,_origin+_direction*distance.y,mask,exclude,flags)
+	if not r.is_empty():
+		clear()
+		if (r.position-_origin).length_squared()>=distance.x*distance.x:
+			target=r.collider;_on_find_hit(r)
+			return true
+		else:
+			_on_miss_hit(r)
+	return false
 
 func _ready()->void:
 	if node==null:node=get_parent().get_child(get_index()+1)

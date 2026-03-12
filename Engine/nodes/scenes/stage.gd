@@ -12,7 +12,7 @@ static var instance:Stage:
 @export_group("Stage")
 @export var root:Node
 @export var hidden:Node
-@export var paths:Dictionary[StringName,StringName]
+@export var paths:Dictionary[StringName,String]
 
 var assets:Dictionary[StringName,Resource]
 var pools:Dictionary[StringName,Collections.Pool]
@@ -56,10 +56,16 @@ func prefab(k:StringName)->Node:
 		pool(k,v);return v
 	return null
 
+func unpack(r:Resource)->Node:
+	if r==null:return null
+	var k:StringName=IOExtension.file_name_only(r.resource_path)
+	if not pools.has(k):pool(k,r.instantiate())
+	return pools[k].source
+
 func spawn(o:Node,p:Node,m:Variant,w:bool=false)->Node:
 	if o!=null:
-		o=pool(o.name,o).obtain()
-		GodotExtension.add_node(o,p,false)
+		var k:StringName=o.name;o=pool(k,o).obtain()
+		GodotExtension.add_node(o,p,false);o.name=k
 		if w:o.global_transform=m
 		else:o.transform=m
 		#

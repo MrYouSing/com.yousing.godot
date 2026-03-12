@@ -12,6 +12,17 @@ class_name FsmGesture extends FsmAction
 @export_group("Misc")
 @export var gearbox:FsmGearbox
 
+func _set(k:StringName,v:Variant)->bool:
+	match k:
+		&"animation":
+			var s:String=v
+			if not s.is_empty():
+				if s.find(",")>=0:
+					var p:PackedStringArray=s.split(",")
+					main_anim[0]=p[0];s=p[1]
+				gest_anim=s;return true
+	return false
+
 func _on_layer_weight(a:Animator,l:AnimatorLayer,w:float,t:float)->void:
 	if a==null or l==null:return
 	l.tween_weight(a,w,null,MathExtension.time_fade(l.get_weight(a),w,t),null)
@@ -38,8 +49,6 @@ func _on_enter()->void:
 			if a.has_layer(gest_layer):
 				a.play(gest_anim,gest_layer)
 				_on_layer_weight(a,a.get_layer(gest_layer),1.0,gest_weight.x)
-	#
-	GodotExtension.set_enabled(actor,true)
 
 func _on_exit()->void:
 	var c:CharacterController=get_character()
@@ -54,5 +63,4 @@ func _on_exit()->void:
 			if a.has_layer(gest_layer):
 				_on_layer_weight(a,a.get_layer(gest_layer),0.0,gest_weight.y)
 	#
-	GodotExtension.set_enabled(actor,false)
 	if duration>0.0:FsmEvent.invoke_signal(self,finished,LangExtension.k_empty_array)

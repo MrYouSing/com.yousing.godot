@@ -1,9 +1,13 @@
 ## A procedural audio for footsteps.
 class_name Footstep extends Audio
 
-@export_group("Footstep")
-@export var material:StringName
+@export_group("Motor")
+@export var motor:Node
+@export var velocity:StringName
+@export var threshold:float
 @export var speed:float=1.0
+@export_group("Footstep")
+@export var material:String
 @export var start:Vector2=Vector2(0.5,0.0)
 @export var next:Vector2=Vector2(0.5,0.0)
 @export var scale:Vector2=Vector2.ZERO
@@ -43,13 +47,15 @@ func get_foot()->Node:
 			else:return bones[2]
 	return null
 
-func _ready()->void:
-	set_enabled(false)
-
-func _process(delta:float)->void:
-	if time<0.0:return
-	time-=delta*speed
-	if time<=0.0:_footstep()
+func _moving()->bool:
+	if motor!=null:
+		var f:float=motor.get(velocity).length_squared()
+		if f>=threshold*threshold:
+			if time<0.0:time=interval(start)
+		else:
+			if time>=0.0:pass
+			time=-1.0;return false
+	return true
 
 func _material(x:StringName)->void:
 	material=x
@@ -60,3 +66,26 @@ func _footstep()->void:
 	if on_footstep.has_connections():on_footstep.emit(get_foot())
 	# Next
 	time+=interval(next)
+
+func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
+	match typeof(v):
+		TYPE_NIL:
+			set_enabled(false)
+		TYPE_STRING,TYPE_STRING_NAME:
+			set_enabled(false)
+			var s:String=v
+			open(s%material);play()
+		TYPE_DICTIONARY:
+			var d:Dictionary=v
+			if d.has(&"start"):start=d.start
+			if d.has(&"next"):next=d.next
+			if d.has(&"scale"):scale=d.scale
+			set_process(false);set_enabled(true)
+
+func _ready()->void:
+	if motor==null:set_enabled(false)
+
+func _process(delta:float)->void:
+	if not _moving():return
+	time-=delta*speed
+	if time<=0.0:_footstep()

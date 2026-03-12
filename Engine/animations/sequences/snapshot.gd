@@ -4,8 +4,8 @@ class_name Snapshot extends Resource
 @export_group("Snapshot")
 @export var paths:Array[NodePath]
 @export var names:Array[StringName]
-@export var floats:Array[float]
-@export var variants:Array[Variant]
+@export var floats:PackedFloat32Array
+@export var variants:Array
 @export var samples:Dictionary[StringName,float]
 
 func save(n:Node)->void:
@@ -19,7 +19,7 @@ func save(n:Node)->void:
 			v=it.get(names[i]);match typeof(v):
 				TYPE_NIL:floats[i]=NAN;variants[i]=null
 				TYPE_FLOAT:floats[i]=v;variants[i]=null
-				_:variants[i]=v;floats[i]=NAN
+				_:floats[i]=NAN;variants[i]=v
 
 func load(n:Node)->void:
 	if n==null:return

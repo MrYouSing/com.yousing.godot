@@ -1,5 +1,15 @@
 class_name FsmComposite extends FsmState
 
+static func try_set(s:Object,k:StringName,v:Variant)->void:
+	if s==null:pass
+	elif s is FsmComposite:for it in s.states:try_set(it,k,v)
+	else:s.set(k,v)
+
+static func try_call(s:Object,m:StringName,a:Array)->void:
+	if s==null:pass
+	elif s is FsmComposite:for it in s.states:try_call(it,m,a)
+	elif s.has_method(m):s.callv(m,a)
+
 @export_group("Composite")
 @export var lowers:Array[FsmState]
 @export var highers:Array[FsmState]

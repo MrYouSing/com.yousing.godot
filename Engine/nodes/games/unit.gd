@@ -62,7 +62,7 @@ func find_attack(k:StringName)->Attack:
 
 func invoke_event(s:Signal,e:StringName,...a:Array)->void:
 	var tmp:Unit=current;current=self
-	s.emit(a)# Engine
+	LangExtension.call_signal(s,a)# Engine
 	if events!=null:events._on_event(self,e)# User
 	current=tmp
 
@@ -78,7 +78,7 @@ func _on_damage(f:float)->void:
 	if f<=0.0:return
 	#
 	var old:float=health
-	health=clampf(health+f,0.0,max_health)
+	health=clampf(health-f,0.0,max_health)
 	amount=health-old
 	#
 	invoke_event(on_damage,&"on_damage",amount)
@@ -97,7 +97,7 @@ func _on_death()->void:
 	invoke_event(on_death,&"on_death")
 	health=0.0
 	#
-	player.teardown(self)
+	if player!=null:player.teardown(self)
 
 func _on_spawn()->void:
 	if health<0.0:_on_born()

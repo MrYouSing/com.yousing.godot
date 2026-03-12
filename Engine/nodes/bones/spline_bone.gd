@@ -6,9 +6,9 @@ class_name SplineBone extends ArrowBone
 @export var spline:Quaternion=Quaternion.IDENTITY
 @export var offset:Quaternion=Quaternion.IDENTITY
 @export var names:PackedStringArray
-@export var indexes:Array[int]
 @export_range(0.0,1.0,0.001,"or_greater") var weights:Array[float]
 
+var indexes:PackedInt32Array
 var poses:Array[Transform3D]
 
 func _on_update(c:Skeleton3D,b:int,d:float)->void:

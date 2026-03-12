@@ -36,7 +36,6 @@ func _on_enter()->void:
 	# Apply the dash.
 	if motor!=null:motor.velocity=Vector3.ZERO
 	velocity=d*speed
-	GodotExtension.set_enabled(actor,true)# One-Shot
 	#
 	if trigger!=null:trigger._on_enter()
 

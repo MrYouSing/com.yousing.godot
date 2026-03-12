@@ -5,7 +5,10 @@ class_name TpsController extends CharacterController
 @export var target:Node3D
 @export var speed:float=5.0
 @export var smooth:Vector2=Vector2(-1,60)
-@export var blend:StringName
+@export_group("Animations")
+@export var move:StringName=&"Move"
+@export var blend:Vector2=Vector2(-1,60)
+@export var threshold:Vector2=Vector2(0.1,5.0)
 @export var anims:PackedStringArray
 @export var shots:PackedStringArray
 
@@ -30,14 +33,19 @@ func get_facing(v:Vector3)->Vector3:
 	elif not v.is_zero_approx():return v.normalized()
 	else:return get_rotation()*Vector3.BACK
 
-func sync_animation(v:Vector3)->void:
+func sync_animation(v:Vector3,d:float)->void:
 	if animator==null or motor==null:return
-	if v.is_zero_approx() or blend.is_empty():return
+	if v.is_zero_approx() or move.is_empty():return
 	#
-	var u:Vector2;
-	if lock:u=world_to_animation(v)
-	else:u=Vector2.DOWN
-	animator.write(blend,u)
+	var u:Vector2=Vector2.DOWN
+	if lock:u=world_to_animation(v)/threshold.y
+	if d>=0.0:
+		var w:Vector2=animator.read(move)
+		w=MathExtension.vec2_lerp(w,u,blend,d)
+		u=MathExtension.vec2_fade(w,u,threshold.x)
+	else:
+		u=MathExtension.vec2_fade(u,Vector2.ZERO,threshold.x)
+	animator.write(move,u)
 
 func play_animation(k:StringName)->void:
 	var i:int;var b:bool=true
@@ -58,6 +66,6 @@ func _process(delta:float)->void:
 	# Apply
 	motor.direction=get_facing(v)
 	motor.velocity=MathExtension.vec3_lerp(motor.velocity,v,smooth,delta)
-	if not moving and b:sync_animation(v)
-	else:sync_animation(motor.velocity)
+	if not moving and b:sync_animation(v,-1.0)
+	else:sync_animation(motor.velocity,delta)
 	moving=b
