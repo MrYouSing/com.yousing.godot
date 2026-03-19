@@ -74,3 +74,7 @@ func _ready()->void:
 	if Singleton.init_instance(k_keyword,self):
 		for it in players:if it!=null and it!=player:setup(it)
 		setup(player);if player==null:player=players[0]
+
+func _exit_tree()->void:
+	if Singleton.exit_instance(k_keyword,self):
+		pass

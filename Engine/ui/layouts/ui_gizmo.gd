@@ -12,6 +12,10 @@ class_name UIGizmo extends Node
 @export var scale_remap:Vector4=Vector4.ZERO
 @export var scale_curve:Curve
 
+func set_enabled(b:bool)->void:
+	set_process(b)
+	if control!=null:control.visible=b
+
 func _ready()->void:
 	if camera==null:camera=UIManager.instance.camera
 	if control==null:control=GodotExtension.assign_node(self,"Control")

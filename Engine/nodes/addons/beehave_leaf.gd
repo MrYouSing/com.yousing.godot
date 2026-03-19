@@ -16,7 +16,7 @@ func invoke(a:Node,b:Blackboard)->bool:
 	return false
 
 func before_run(a:Node,b:Blackboard)->void:
-	if duration>0.0:time=-1.0
+	if duration>=0.0:time=-1.0
 
 func tick(a:Node,b:Blackboard)->int:
 	if Engine.is_editor_hint():return FAILURE

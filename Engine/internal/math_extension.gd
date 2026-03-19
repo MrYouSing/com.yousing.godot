@@ -21,6 +21,13 @@ static func int_to_shorts(i:int)->Vector2i:
 	var a:int=i&0xFFFF;var b:int=(i>>16)&0xFFFF
 	return Vector2i(mini(a,b),maxi(a,b))
 
+static func var_to_float(v:Variant,f:float=0.0)->float:
+	match typeof(v):
+		TYPE_BOOL,TYPE_INT,TYPE_FLOAT,\
+		TYPE_STRING,TYPE_STRING_NAME:f=float(v)
+		TYPE_VECTOR2:var r:Vector2=v;f=randf_range(r.x,r.y)
+	return f
+
 static func int_repeat(i:int,a:int,z:int=0)->int:
 	if a<z:return wrapi(i,a,z)
 	else:return (i+a)%a#wrapi(i,z,a)
@@ -129,6 +136,13 @@ static func quat_lerp(a:Quaternion,b:Quaternion,t:Vector2,d:float)->Quaternion:
 	if t.x>0.0:return a.slerp(b,clampf((t.x*d)/rad_to_deg(a.angle_to(b)),0.0,1.0))
 	elif t.x>=-1.0:return a.slerp(b,-t.x*t.y*d)
 	return b
+
+static func float_fade(a:float,b:float,c:float)->float:
+	var d:float=c*c
+	if a*a<d:
+		if b*b>=d:a=b
+		a=signf(a)*c
+	return a
 
 static func vec2_fade(a:Vector2,b:Vector2,c:float)->Vector2:
 	var d:float=c*c

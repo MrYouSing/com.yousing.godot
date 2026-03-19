@@ -9,6 +9,7 @@ static var current:Player
 
 func setup(u:Unit)->void:
 	if u==null:return
+	if unit==null:unit=u
 	#
 	u.player=self
 
@@ -27,5 +28,6 @@ func add(u:Unit)->void:
 	units.append(u);setup(u)
 
 func _ready()->void:
+	var u:Unit=unit
 	for it in units:if it!=null and it!=unit:setup(it)
-	setup(unit);if unit==null:unit=units[0]
+	setup(u)

@@ -37,7 +37,7 @@ func do_tween(t:Tween,o:Object,c:Callable,a:Variant,b:Variant)->void:
 func to_skeleton_modifier_3d(t:Tween,o:Object,b:bool,d:float=0.1)->void:
 	if t==null or o==null:return
 	#
-	var f:float=1.0 if b else 0.0
+	var f:float=float(b)
 	var tmp:float=duration;duration=time(o.influence,f)
 	o.active=true;to_tween(t,o,^"influence",f)
 	if d>=0.0:# Has deadzone.

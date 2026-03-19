@@ -7,9 +7,7 @@ class_name BeehaveFunc extends BeehaveLeaf
 @export var arguments:Array
 
 func invoke(a:Node,b:Blackboard)->bool:
-	var t:Node
-	if target==null:t=a
-	else:t=target
+	var t:Node=a if target==null else target
 	#
 	if t.has_method(method):
 		return result(a,b,t.callv(method,arguments))

@@ -9,7 +9,7 @@ static var current:Attack
 
 var context:Object
 var player:Player:
-	get():return unit.player
+	get():return null if unit==null else unit.player
 
 func fire()->void:
 	if detector!=null and detector.detect():

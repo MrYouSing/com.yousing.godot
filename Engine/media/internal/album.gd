@@ -48,12 +48,17 @@ func count()->int:
 	#
 	return clips.size()
 
+func exist(k:String)->bool:
+	if not is_inited:init()
+	#
+	return library.has(k)
+
 func load(k:String)->Resource:
 	if not is_inited:init()
 	#
 	var tmp:Resource=library.get(k,null)
 	if tmp!=null and tmp is Album:
-		tmp=tmp.random()
+		if tmp.names.is_empty():tmp=tmp.random()
 	return tmp
 
 func random()->Resource:

@@ -6,7 +6,7 @@ class_name BeehaveCall extends BeehaveLeaf
 var call:Callable
 
 func before_run(a:Node,b:Blackboard)->void:
-	super.before_run(a,b)
+	if duration>=0.0:time=-1.0
 	if call.is_null() and a.has_method(name):call=Callable(a,name)
 
 func invoke(a:Node,b:Blackboard)->bool:

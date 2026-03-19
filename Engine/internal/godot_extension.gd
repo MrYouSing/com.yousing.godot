@@ -9,6 +9,7 @@ static var s_dimension:int=3
 static func destroy(o:Object)->void:
 	if o==null:return
 	if o is Node:o.queue_free()
+	elif o is RefCounted:pass
 	else:o.free()
 
 static func create(c:Object,b:Variant,s:Script=null)->Object:

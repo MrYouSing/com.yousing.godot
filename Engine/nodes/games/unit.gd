@@ -66,6 +66,18 @@ func invoke_event(s:Signal,e:StringName,...a:Array)->void:
 	if events!=null:events._on_event(self,e)# User
 	current=tmp
 
+func connect_health(a:Callable,b:Callable,c:Callable,d:Callable)->void:
+	if a.is_valid():on_born.connect(a)
+	if b.is_valid():on_damage.connect(b)
+	if c.is_valid():on_heal.connect(c)
+	if d.is_valid():on_death.connect(d)
+
+func disconnect_health(a:Callable,b:Callable,c:Callable,d:Callable)->void:
+	if a.is_valid():on_born.disconnect(a)
+	if b.is_valid():on_damage.disconnect(b)
+	if c.is_valid():on_heal.disconnect(c)
+	if d.is_valid():on_death.disconnect(d)
+
 func _on_born()->void:
 	var f:float=max_health
 	if def_health>0.0:f=def_health
@@ -75,7 +87,7 @@ func _on_born()->void:
 	invoke_event(on_born,&"on_born")
 
 func _on_damage(f:float)->void:
-	if f<=0.0:return
+	if f<=0.0 or health<=0.0:return
 	#
 	var old:float=health
 	health=clampf(health-f,0.0,max_health)
@@ -85,7 +97,7 @@ func _on_damage(f:float)->void:
 	if health<=0.0:_on_death()
 
 func _on_heal(f:float)->void:
-	if f<=0.0:return
+	if f<=0.0 or health<=0.0:return
 	#
 	var old:float=health
 	health=clampf(health+f,0.0,max_health)

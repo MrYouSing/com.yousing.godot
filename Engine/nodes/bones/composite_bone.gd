@@ -6,6 +6,7 @@ class_name CompositeBone extends Node
 @export var active:bool=true:
 	set(x):
 		active=x
+		if scale<0.0:return
 		var i:int=-1;for it in bones:
 			i+=1;if (mask&(1<<i))==0:continue
 			if it==null:continue
@@ -14,6 +15,7 @@ class_name CompositeBone extends Node
 @export_range(0.0,1.0,0.001)var influence:float=1.0:
 	set(x):
 		influence=x;
+		if scale<0.0:return
 		var f:float=scale*x
 		var i:int=-1;for it in bones:
 			i+=1;if (mask&(1<<i))==0:continue
@@ -30,6 +32,19 @@ class_name CompositeBone extends Node
 func set_enabled(b:bool)->void:active=b
 func show()->void:active=true
 func hide()->void:active=false
+
+func find(k:StringName)->Node:
+	for it in bones:
+		if it!=null and it.name==k:return it
+	return null
+
+func _set(k:StringName,v:Variant)->bool:
+	var i:int=-1;for it in bones:
+		i+=1;if (mask&(1<<i))==0:continue
+		if it==null:continue
+		#
+		it.set(k,v)#;print([it,k,v])
+	return true
 
 func _ready()->void:
 	active=active;influence=influence

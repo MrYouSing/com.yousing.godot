@@ -48,7 +48,7 @@ func _on_dirty()->void:
 func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 	if dirty:_on_dirty()
 	#
-	on_execute.emit(self,state,v,t)
+	on_execute.emit(self,k,v,t)
 	broadcast(k)
 
 # For other systems.

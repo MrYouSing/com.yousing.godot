@@ -17,6 +17,7 @@ func init()->void:
 	#
 	var i:int=-1;for it in models:
 		i+=1;if it==null:continue
+		if it.has_method(&"_on_init"):it._on_init()
 		if it.dbid<0:it.dbid=i
 		if it.resource_name.is_empty():it.resource_name=IOExtension.file_name_only(it.resource_path)
 	if i>get_meta(&"capacity",32):
