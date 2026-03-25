@@ -53,11 +53,8 @@ static func combine_path(a:String,b:String)->String:
 static func create_directory(d:String)->DirAccess:
 	var a:DirAccess=DirAccess.open(d)
 	if a==null:
-		# 
-		if d.ends_with("/"):d.remove_char(d.length()-1)
-		a=create_directory(directory_name(d)+"/")
-		#
-		a.make_dir(file_name(d));a.change_dir(d)
+		a.make_dir_recursive(d)
+		a.change_dir(d)
 	return a
 
 static func copy_file(s:String,d:String,w:bool=false)->void:
@@ -67,6 +64,38 @@ static func copy_file(s:String,d:String,w:bool=false)->void:
 		create_directory(directory_name(d))
 		var a:FileAccess=FileAccess.open(d,FileAccess.WRITE)
 		a.store_buffer(FileAccess.get_file_as_bytes(s));a.close()
+
+static func save_text(f:String,s:String)->void:
+	create_directory(directory_name(f))
+	var a:FileAccess=FileAccess.open(f,FileAccess.WRITE)
+	a.store_string(s);a.close()
+
+static func save_lines(f:String,p:PackedStringArray)->void:
+	create_directory(directory_name(f))
+	var a:FileAccess=FileAccess.open(f,FileAccess.WRITE)
+	for s in p:a.store_line(s)
+	a.close()
+
+static func save_bytes(f:String,p:PackedByteArray)->void:
+	create_directory(directory_name(f))
+	var a:FileAccess=FileAccess.open(f,FileAccess.WRITE)
+	a.store_buffer(p);a.close()
+
+static func load_text(f:String)->String:
+	if not FileAccess.file_exists(f):return LangExtension.k_empty_string
+	var a:FileAccess=FileAccess.open(f,FileAccess.READ)
+	var s:String=a.get_as_text();a.close();return s
+
+static func load_lines(f:String)->PackedStringArray:
+	if not FileAccess.file_exists(f):return LangExtension.k_empty_lines
+	var a:FileAccess=FileAccess.open(f,FileAccess.READ)
+	var p:PackedStringArray;while not a.eof_reached():p.append(a.get_line())
+	a.close();return p
+
+static func load_bytes(f:String)->PackedByteArray:
+	if not FileAccess.file_exists(f):return LangExtension.k_empty_bytes
+	var a:FileAccess=FileAccess.open(f,FileAccess.READ)
+	var p:PackedByteArray=a.get_buffer(a.get_length());a.close();return p
 
 static func get_config(f:String,k:PackedStringArray)->void:
 	if FileAccess.file_exists(f):
@@ -82,6 +111,7 @@ static func set_config(f:String,k:PackedStringArray,v:bool)->void:
 		c.save(f)
 
 static func save_json(j:Variant,f:String,t:String="\t")->void:
+	create_directory(directory_name(f))
 	var a:FileAccess=FileAccess.open(f,FileAccess.WRITE)
 	a.store_string(JSON.stringify(j,t,false))
 	a.close()

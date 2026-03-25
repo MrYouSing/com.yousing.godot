@@ -52,11 +52,11 @@ func apply(h:Physics.HitInfo)->void:
 	infos[h.rid]=h
 
 func erase(o:Object)->void:
-	if o==null and not o.has_method("get_rid"):return
+	if o==null and not o.has_method(&"get_rid"):return
 	infos.erase(o.get_rid())
 
 func fetch(o:Object)->Physics.HitInfo:
-	if o==null and not o.has_method("get_rid"):return null
+	if o==null and not o.has_method(&"get_rid"):return null
 	return infos.get(o.get_rid(),null)
 
 func detect()->bool:

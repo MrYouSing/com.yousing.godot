@@ -117,6 +117,28 @@ static func str_to_rect(s:String,d:String=",",e:bool=true)->Rect2:
 	var a:PackedFloat64Array=s.split_floats(d,e)
 	return Rect2(a[0],a[1],a[2],a[3])
 
+static func vec2_compare(a:Vector2,b:Vector2,t:float=k_epsilon)->int:
+	var f:float=a.length_squared()
+	var g:float=b.length_squared()
+	if f<g:
+		f=sqrt(f)-sqrt(g)
+		if f*f>t*t:return -1
+	elif f>g:
+		f=sqrt(f)-sqrt(g)
+		if f*f>t*t:return 1
+	return 0
+
+static func vec3_compare(a:Vector3,b:Vector3,t:float=k_epsilon)->int:
+	var f:float=a.length_squared()
+	var g:float=b.length_squared()
+	if f<g:
+		f=sqrt(f)-sqrt(g)
+		if f*f>t*t:return -1
+	elif f>g:
+		f=sqrt(f)-sqrt(g)
+		if f*f>t*t:return 1
+	return 0
+
 static func float_lerp(a:float,b:float,t:Vector2,d:float)->float:
 	if t.x>0.0:return clampf(a+t.x*d,a,b)
 	elif t.x>=-1.0:return lerpf(a,b,-t.x*t.y*d)

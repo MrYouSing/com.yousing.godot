@@ -3,6 +3,11 @@ class_name FsmEvent extends FsmState
 
 static var current:Object
 
+static func in_transition()->bool:
+	if current!=null:if current is FsmState:
+		if current.root.other!=null:return true
+	return false
+
 static func invoke_callable(o:Object,c:Callable,a:Array)->void:
 	if not c.is_valid():return
 	var tmp:Object=current;current=o

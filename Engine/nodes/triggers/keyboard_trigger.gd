@@ -12,5 +12,5 @@ func is_trigger()->bool:
 			InputTrigger.Action.Down:return input.down(key)
 			InputTrigger.Action.Up:return input.up(key)
 	elif action==InputTrigger.Action.On:
-		return true
+		return Input.is_key_pressed(key)
 	return false

@@ -16,7 +16,7 @@ class HitInfo:
 
 	static func from_points(c:Object,a:Vector3,b:Vector3)->HitInfo:
 		var tmp:HitInfo=HitInfo.new()
-		tmp.collider=c;if c.has_method("get_rid"):tmp.rid=tmp.get_rid()
+		tmp.collider=c;if c.has_method(&"get_rid"):tmp.rid=c.get_rid()
 		tmp.point=a;tmp.normal=(b-a).normalized()
 		return tmp
 

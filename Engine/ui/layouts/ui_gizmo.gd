@@ -7,6 +7,7 @@ class_name UIGizmo extends Node
 @export var offset:Vector3
 @export var range:Vector2
 @export var control:Control
+@export var layer:int
 @export var pivot:Vector2
 @export var rotated:bool
 @export var scale_remap:Vector4=Vector4.ZERO
@@ -17,10 +18,13 @@ func set_enabled(b:bool)->void:
 	if control!=null:control.visible=b
 
 func _ready()->void:
+	_start.call_deferred()
+
+func _start()->void:
 	if camera==null:camera=UIManager.instance.camera
 	if control==null:control=GodotExtension.assign_node(self,"Control")
 
-func _process(delta:float)->void:
+func _process(d:float)->void:
 	if camera==null or actor==null or control==null:return
 	#
 	var m:Transform3D=actor.global_transform
@@ -30,7 +34,11 @@ func _process(delta:float)->void:
 	if z<0.0:u=camera.unproject_position(v);z*=-1.0
 	else:u=UITransform.k_hidden_pos;z=-1.0
 	#
+	var p:Vector2=pivot
+	var c:UICanvas=UICanvas.instances[layer]
+	if c!=null:pivot*=c.ui_to_screen
 	update_control(u,z,s)
+	pivot=p
 
 func update_visible(v:int)->bool:
 	if control!=null:control.visible=v>=0

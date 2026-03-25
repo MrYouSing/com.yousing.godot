@@ -51,16 +51,15 @@ func get_state(k:StringName)->FsmState:
 
 func set_state(v:FsmState,e:bool=true)->void:
 	#
+	var o:FsmState=state
 	if e and on_change.has_connections():
-		var o:FsmState=state
-		on_change.emit(o,v)
-		if state!=o:return
+		on_change.emit(o,v);if state!=o:return
 	#
 	other=v
-	if state!=null:state._on_exit()
-	other=state;time.x=-MathExtension.k_epsilon;state=v
+	if state!=null:state._on_exit();if state!=o:return
+	other=state;time.x=-1.0;state=v
 	if state!=null:state._on_enter()
-	time.x=0.0;other=null
+	other=null;if time.x<0.0:time.x=0.0
 
 func check_transition(s:FsmState,t:FsmTransition)->bool:
 	if s!=null and t!=null:

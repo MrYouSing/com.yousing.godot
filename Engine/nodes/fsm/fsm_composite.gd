@@ -10,6 +10,12 @@ static func try_call(s:Object,m:StringName,a:Array)->void:
 	elif s is FsmComposite:for it in s.states:try_call(it,m,a)
 	elif s.has_method(m):s.callv(m,a)
 
+static func try_signal(s:Object,e:StringName,c:Callable,b:bool)->void:
+	if s==null:pass
+	elif s is FsmComposite:for it in s.states:try_signal(it,e,c,b)
+	elif b:LangExtension.try_signal(s,e,c)
+	else:LangExtension.remove_signal(s,e,c)
+
 @export_group("Composite")
 @export var lowers:Array[FsmState]
 @export var highers:Array[FsmState]

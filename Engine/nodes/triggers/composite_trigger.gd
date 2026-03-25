@@ -12,7 +12,7 @@ func is_trigger()->bool:
 		var i:int=0
 		for it in triggers:
 			if it==null:continue
-			if it.is_trigger():return false
+			if not it.is_trigger():return false
 			else:i+=1
 		return i>0
 	return false

@@ -60,4 +60,4 @@ func _on_exit()->void:
 	velocity=Vector3.ZERO
 	#
 	if trigger!=null:trigger._on_exit()
-	finished.emit()
+	FsmEvent.invoke_signal(self,finished,LangExtension.k_empty_array)

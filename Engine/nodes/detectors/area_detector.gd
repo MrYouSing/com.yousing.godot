@@ -41,6 +41,7 @@ func _on_exit(o:Object)->void:
 	infos.erase(r)
 
 func _ready()->void:
+	if root==null:root=GodotExtension.assign_node(self,"Area3D")
 	setup(root)
 
 func _exit_tree()->void:

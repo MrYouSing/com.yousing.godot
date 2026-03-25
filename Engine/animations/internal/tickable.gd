@@ -25,7 +25,7 @@ func _stop()->void:
 
 func _rate()->void:
 	_step=MathExtension.time_delta(rate)
-	set_enabled(is_zero_approx(_step))
+	set_enabled(not is_zero_approx(_step))
 
 func _ready()->void:
 	_step=0.0;_rate()
