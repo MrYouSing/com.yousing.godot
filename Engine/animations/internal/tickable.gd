@@ -31,5 +31,5 @@ func _ready()->void:
 	_step=0.0;_rate()
 
 func _process(d:float)->void:
-	_time-=d;if _time<=0.0:
+	_time-=d;if is_zero_approx(_time) or _time<0.0:
 		_time+=_step;_tick()

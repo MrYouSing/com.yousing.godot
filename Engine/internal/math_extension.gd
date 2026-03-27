@@ -218,7 +218,7 @@ static func reflecting_at(a:Vector3,b:Vector3,n:Vector3=Vector3.UP,q:Basis=Basis
 		_:return q
 
 ## Another [method Basis.looking_at] for ray-aiming.
-static func aiming_at(v)->Basis:
+static func aiming_at(v:Vector3)->Basis:
 	match vec3_parallel(v,Vector3.UP):
 		-1:return Basis(Vector3.LEFT,MathExtension.k_half_pi)
 		1:return Basis(Vector3.RIGHT,MathExtension.k_half_pi)

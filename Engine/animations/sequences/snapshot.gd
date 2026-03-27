@@ -24,10 +24,10 @@ func save(n:Node)->void:
 func load(n:Node)->void:
 	if n==null:return
 	var it:Node=n;var b:int=paths.size();var c:int=names.size()
-	var p:NodePath;var f:float
+	var p:NodePath;var f:float=NAN;var j:int=floats.size()
 	for i in c:
 		if i<b:p=paths[i];if not p.is_empty():it=n.get_node_or_null(p)
 		if it!=null:
-			f=floats[i]
+			if i<j:f=floats[i]
 			if not is_nan(f):it.set(names[i],f)
 			else:it.set(names[i],variants[i])

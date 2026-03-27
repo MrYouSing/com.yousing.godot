@@ -5,6 +5,7 @@ class_name GodotExtension
 static var s_root:Node=Engine.get_main_loop().root
 static var s_hide:Node
 static var s_dimension:int=3
+static var s_reparenting:bool
 
 static func destroy(o:Object)->void:
 	if o==null:return
@@ -49,14 +50,16 @@ static func add_node(n:Node,p:Node=null,b:bool=true)->void:
 	if n==null:return
 	if p==null:p=s_root
 	#
+	var r:bool=s_reparenting;s_reparenting=true
 	if n.get_parent()!=null:
 		n.reparent(p,b)
 	elif b and (n is Node3D or n is Node2D):
-		var t=n.global_transform
+		var t:Variant=n.global_transform
 		p.add_child(n)
 		n.global_transform=t
 	else:
 		p.add_child(n)
+	s_reparenting=r
 
 static func remove_node(n:Node)->void:
 	if n==null:return
@@ -105,13 +108,13 @@ static func set_global_position(n:Node,p:Vector3)->void:
 		else:n.set(&"global_position",Vector2(p.x,p.y))
 
 static func set_global_rotation(n:Node,a:float,v:Vector3=Vector3.UP)->void:
-	a*=MathExtension.k_deg_to_rad
 	if n!=null:
 		if n is Node3D:
 			if is_nan(a):n.global_basis=MathExtension.aiming_at(v)
-			else:n.global_basis=Basis(v,a)
+			else:n.global_basis=Basis(v,a*MathExtension.k_deg_to_rad)
 		else:
 			if is_nan(a):a=MathExtension.clocking_at(Vector2(v.x,v.y))
+			else:a*=MathExtension.k_deg_to_rad
 			if n is Node2D:n.global_rotation=a
 			else:n.set(&"rotation",a)
 

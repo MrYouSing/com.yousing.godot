@@ -53,6 +53,13 @@ func create_unit(p:Player,k:StringName,c:Node,m:Variant)->Unit:
 			p.add(u);return u
 	return null
 
+func _on_init()->void:
+	for it in players:if it!=null and it!=player:setup(it)
+	setup(player);if player==null:player=players[0]
+
+func _on_exit()->void:
+	pass
+
 func _on_attack(a:Attack,b:Hitbox)->void:
 	if a==null or b==null:return
 	# TODO: Override for attack bonuses.
@@ -72,9 +79,8 @@ func _on_mistake(a:Attack,b:Hitbox)->void:
 
 func _ready()->void:
 	if Singleton.init_instance(k_keyword,self):
-		for it in players:if it!=null and it!=player:setup(it)
-		setup(player);if player==null:player=players[0]
+		_on_init()
 
 func _exit_tree()->void:
 	if Singleton.exit_instance(k_keyword,self):
-		pass
+		_on_exit()

@@ -10,10 +10,11 @@ static var timestamp:int=-1
 @export var duration:float=1.0
 @export_group("Tween")
 @export var trans:Tween.TransitionType
-@export var ease:Tween.EaseType
+@export var ease:Tween.EaseType=Tween.EaseType.EASE_IN_OUT
 @export var curve:Curve
 
 func instant()->bool:return delay==0.0 and duration==0.0
+func sample(f:float)->float:return curve.sample_baked(f)
 func time(a:float,b:float)->float:return duration if duration>=0.0 else (absf(b-a)/-duration)
 
 func on_tween(t:Tween,o:Object)->void:
@@ -27,11 +28,15 @@ func on_tween(t:Tween,o:Object)->void:
 func to_tween(t:Tween,o:Object,k:NodePath,v:Variant)->void:
 	if t==null or o==null:return
 	on_tween(t,o)
-	t.tween_property(o,k,v,duration).set_trans(trans).set_ease(ease)
+	var p:PropertyTweener=t.tween_property(o,k,v,duration).set_trans(trans).set_ease(ease)
+	if curve!=null:p.set_custom_interpolator(sample)
 
 func do_tween(t:Tween,o:Object,c:Callable,a:Variant,b:Variant)->void:
 	if t==null or o==null:return
 	on_tween(t,o)
+	if curve!=null:
+		var m:Callable=func(f:float)->void:c.call(lerp(a,b,sample(f)))
+		t.tween_method(m,0.0,1.0,duration).set_trans(trans).set_ease(ease);return
 	t.tween_method(c,a,b,duration).set_trans(trans).set_ease(ease)
 
 func to_skeleton_modifier_3d(t:Tween,o:Object,b:bool,d:float=0.1)->void:

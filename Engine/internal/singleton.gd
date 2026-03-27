@@ -43,6 +43,7 @@ static func init_instance(k:StringName,v:Object)->bool:
 	return false
 
 static func exit_instance(k:StringName,v:Object)->bool:
+	if GodotExtension.s_reparenting:return false
 	var i:Object=get_instance(k)
 	if i==v:set_instance(k,null);return true
 	else:return false
