@@ -9,7 +9,7 @@ static var s_time_long:float=3.5
 @export var view:Node
 @export var label:Node
 
-var _call:int=-1
+var _call:int=Juggler.k_invalid_id
 var _kill:Callable
 
 func _ready()->void:
@@ -23,8 +23,7 @@ func _exit_tree()->void:
 		LangExtension.remove_signal(UIManager.instance,event,make_text)
 
 func stop_call()->void:
-	Juggler.instance.kill_call(_call)
-	_call=Juggler.k_invalid_id
+	Juggler.try_kill(self)
 
 func make_text(s:String,t:float,c:Callable)->void:
 	stop_call()

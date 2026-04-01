@@ -20,9 +20,7 @@ func play()->void:
 
 func stop()->void:
 	for it in nodes:if it!=null:_set_enabled(it,false)
-	if _call!=Juggler.k_invalid_id:
-		Juggler.instance.kill_call(_call)
-	_call=Juggler.k_invalid_id
+	Juggler.try_kill(self)
 
 func kill()->void:
 	if Stage.exists:Stage.instance.despawn(self)

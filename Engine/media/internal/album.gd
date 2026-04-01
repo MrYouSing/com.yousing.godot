@@ -5,7 +5,7 @@ class_name Album extends Resource
 @export var names:PackedStringArray
 @export var clips:Array[Resource]
 @export var paths:PackedStringArray
-@export var rates:Array[float]
+@export var rates:PackedFloat32Array
 
 var is_inited:bool
 var sum:float

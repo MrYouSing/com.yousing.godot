@@ -12,8 +12,7 @@ signal drawn()
 var _call:int=Juggler.k_invalid_id
 
 func draw()->void:
-	Juggler.instance.kill_call(_call)
-	_call=Juggler.k_invalid_id
+	Juggler.try_kill(self)
 	self.set(&"visible",true)
 	#
 	var it:Node;var n:Node

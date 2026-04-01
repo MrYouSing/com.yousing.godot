@@ -96,10 +96,10 @@ func render(i:int,c:int,f:float)->void:
 func shoot(t:Vector2,s:String)->void:
 	t.y=MathExtension.time_fade(0.0,s.length(),t.y)
 	#
-	var j:Juggler=Juggler.instance;j.kill_call(_call)
+	Juggler.try_kill(self)
 	clear();set_process(false)# Pause
 	set_item(0,0.0,t.y,s)# Inject
-	_call=j.update_call(update_shoot,LangExtension.k_empty_array,t.x,t.y)
+	_call=Juggler.instance.update_call(update_shoot,LangExtension.k_empty_array,t.x,t.y)
 
 func update_shoot()->void:
 	var f:float=Juggler.current.progress()
@@ -107,12 +107,11 @@ func update_shoot()->void:
 		if is_zero_approx(offset):
 			clear_shoot()
 		else:
-			var j:Juggler=Juggler.instance;j.kill_call(_call)
-			_call=j.delay_call(clear_shoot,LangExtension.k_empty_array,-offset)
+			Juggler.try_kill(self)
+			_call=Juggler.instance.delay_call(clear_shoot,LangExtension.k_empty_array,-offset)
 
 func clear_shoot()->void:
-	var j:Juggler=Juggler.instance;j.kill_call(_call)
-	_call=Juggler.k_invalid_id
+	Juggler.try_kill(self)
 	render(-1,0,0.0);set_process(media!=null)# Resume
 	var u:String=url;if not u.is_empty():self.load(u)# Revert
 

@@ -31,8 +31,8 @@ func get_direction()->Variant:
 	else:return _direction
 
 func sleep()->void:
-	if _type<=2:_on_2d(Vector2.ZERO)
-	else:_on_3d(Vector3.ZERO)
+	if _type<=2:super._on_2d(Vector2.ZERO)
+	else:super._on_3d(Vector3.ZERO)
 
 func stop()->void:
 	_enabled=false

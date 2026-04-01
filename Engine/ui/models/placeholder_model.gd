@@ -13,9 +13,7 @@ var _call:int=Juggler.k_invalid_id
 
 func _bind(s:ViewModel.Stub)->void:
 	if _stub!=null:
-		if _call!=Juggler.k_invalid_id:
-			if Juggler.exists:Juggler.instance.kill_call(_call)
-			_call=Juggler.k_invalid_id
+		Juggler.try_kill(self)
 	_stub=s
 	if _stub!=null:
 		var f:float=MathExtension.time_delta(rate);

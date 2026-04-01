@@ -113,6 +113,15 @@ func draw_view(i:int,j:int)->void:
 	var m:Resource=null;if j>=0:m=get_model(j)
 	set_view(get_view(i),m)
 
+func set_item(i:int,s:String,b:bool)->void:
+	var n:Node=get_view(i)
+	if n!=null:
+		if s.is_empty():
+			GodotExtension.set_enabled(n,false)
+		else:
+			GodotExtension.set_enabled(n,true)
+			n.set(&"text",s);n.set(&"interactable",b)
+
 func focus(i:int)->void:
 	if i>=0:
 		_view=_views[i];_model=_view.get(&"model")

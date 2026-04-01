@@ -12,6 +12,19 @@ static var instance:Juggler:
 const k_invalid_id:int=-1
 static var current:Call=null
 
+static func try_kill(o:Object,k:StringName=&"_call")->bool:
+	if o!=null and Engine.has_singleton(k_keyword):
+		var v:Variant=o.get(k)
+		if v==null:
+			push_error("{0} has no {1}!!!!".format([o,k]))
+		else:
+			var i:int=v
+			if i>k_invalid_id:
+				instance.kill_call(i)
+				o.set(k,k_invalid_id)
+				return true
+	return false
+
 @export_group("Juggler")
 
 var workers:Array[Worker]

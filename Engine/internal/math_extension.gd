@@ -80,7 +80,7 @@ static func random_index(a:Array[int],i:int,c:int)->int:
 	n-=1;i=a[n];a.remove_at(n)
 	return i
 
-static func random_level(f:float,a:Array[float])->int:
+static func random_level(f:float,a:PackedFloat32Array)->int:
 	f*=randf()
 	var i:int=-1;for it in a:
 		i+=1;if f<it:return i# [,)

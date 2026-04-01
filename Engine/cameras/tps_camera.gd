@@ -20,7 +20,7 @@ class_name TpsCamera extends Node3D
 @export var flags:int=-1
 @export var smooth:Vector2=Vector2(-1.0,60.0)
 
-var rot:=Vector3.ZERO
+var rot:Vector2=Vector2.ZERO
 var cam:Camera3D
 
 func _ready()->void:
@@ -33,7 +33,7 @@ func _ready()->void:
 func _process(delta:float)->void:
 	if pivot==null:return
 	#
-	var v:Vector2;
+	var v:Vector2
 	if input!=null:v=input.stick(1)*delta
 	else: v=Input.get_last_mouse_velocity()*(delta*InputExtension.s_mouse_to_stick)
 	v.x*=-1.0# Fix the Y-Axis.

@@ -181,6 +181,10 @@ func draw_button(b:Node,e:Entry)->void:
 	b.set(&"text",t);b.set(&"icon",i)
 	if not e.tooltip.is_empty():b.set(&"tooltip_text",get_text(e.tooltip))
 
+func rebuild()->void:
+	if not is_created:return
+	is_created=false;create()
+
 func create()->void:
 	if is_created:return
 	is_created=true
@@ -238,6 +242,23 @@ func set_item_checked(i:int,b:bool)->void:
 	if not is_created:create()
 	if popup!=null:popup.set_item_checked(i,b);return
 	if rid.is_valid():NativeMenu.set_item_checked(rid,i,b);return
+
+func set_item(i:int,s:String,b:bool)->void:
+	if not is_created:create()
+	if popup!=null:
+		if s.is_empty():
+			popup.remove_item(i)
+		else:
+			popup.set_item_text(i,s)
+			popup.set_item_disabled(i,not b)
+		return
+	if rid.is_valid():
+		if s.is_empty():
+			NativeMenu.remove_item(rid,i)
+		else:
+			NativeMenu.set_item_text(rid,i,s)
+			NativeMenu.set_item_disabled(rid,i,not b)
+		return
 
 class Entry:
 	var text:StringName

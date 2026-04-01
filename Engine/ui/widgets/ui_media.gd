@@ -17,6 +17,7 @@ func _ready()->void:
 			_calls[it]=c;control.connect(it,c)
 
 func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
 	if control!=null:
 		for it in clips:control.disconnect(it,_calls[it])
 		_calls.clear()

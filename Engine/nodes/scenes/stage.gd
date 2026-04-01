@@ -123,6 +123,34 @@ func unload(k:StringName)->void:
 				GodotExtension.remove_node(it)
 				scenes.remove_at(i);break;
 
+func load_level(l:Variant,h:bool=false,a:bool=false,c:Callable=LangExtension.k_empty_callable)->void:
+	var k:StringName=LangExtension.k_empty_name;var s:bool=true
+	match typeof(l):
+		TYPE_NIL:
+			return
+		TYPE_STRING:
+			k=IOExtension.file_name_only(l)
+			paths[k]=l
+		TYPE_STRING_NAME:
+			k=l
+		TYPE_OBJECT:
+			k=IOExtension.file_name_only(l.resource_path)
+			assets[k]=l;s=false
+	if h and scenes.has(k):show(k)
+	elif s and c.is_valid():load_async(k,c,a);return
+	else:self.load(k,a)
+	if c.is_valid():c.call(find(k))
+
+func unload_level(l:Variant,h:bool=false)->void:
+	var k:StringName=LangExtension.k_empty_name
+	match typeof(l):
+		TYPE_NIL:return
+		TYPE_STRING:k=IOExtension.file_name_only(l)
+		TYPE_STRING_NAME:k=l
+		TYPE_OBJECT:k=IOExtension.file_name_only(l.resource_path)
+	if h and scenes.has(k):hide(k)
+	else:self.unload(k)
+
 # Async Management
 
 func get_loader(k:StringName)->Loader:

@@ -110,6 +110,14 @@ func tree(c:Tree,i:int,e:Element)->TreeItem:
 			v.add_button(i,icons[j],h|j,false,tr(tooltips[j],category),buttons[j])
 	return v
 
+func set_item(i:int,s:String,b:bool)->void:
+	if container is ItemList:
+		if s.is_empty():
+			container.remove_item(i)
+		else:
+			container.set_item_text(i,s)
+			container.set_item_disabled(not b)
+
 func _selected()->void:
 	selection.clear();_waiting=false
 	for it in elements:if it!=null and it.selected():selection.append(it)

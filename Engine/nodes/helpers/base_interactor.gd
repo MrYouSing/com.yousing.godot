@@ -1,6 +1,8 @@
 ## The godot-version [url=https://docs.unity3d.com/Packages/com.unity.xr.interaction.toolkit@3.5/api/UnityEngine.XR.Interaction.Toolkit.Interactors.XRBaseInteractor.html]XRBaseInteractor[url].
 class_name BaseInteractor extends Node
 
+static var current:BaseInteractor
+
 @export_group("Interact")
 @export var root:Node
 @export var radius:float=0.5
