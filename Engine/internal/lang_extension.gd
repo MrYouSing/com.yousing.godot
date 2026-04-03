@@ -36,7 +36,7 @@ static func class_of(o:Object,a:PackedStringArray,b:Array[Resource])->int:
 
 static func class_is(o:Object,c:Variant,t:int=-1)->bool:
 	if o!=null:
-		if t<0:typeof(c)
+		if t<0:t=typeof(c)
 		match t:
 			TYPE_STRING,TYPE_STRING_NAME:
 				var a:StringName=o.get_class()
@@ -54,13 +54,13 @@ static func class_is(o:Object,c:Variant,t:int=-1)->bool:
 	return false
 
 static func class_has(c:Variant,m:StringName,k:StringName,b:bool=false)->bool:
-	var d:Array=k_empty_array;match typeof(c):
+	var a:Array=k_empty_array;match typeof(c):
 		TYPE_STRING,TYPE_STRING_NAME:
-			if ClassDB.class_exists(c):d=ClassDB.call(&"class_get_%s_list"%m,c,not b)
+			if ClassDB.class_exists(c):a=ClassDB.call(&"class_get_%s_list"%m,c,not b)
 		TYPE_OBJECT:
-			if c is Script:d=c.call(&"get_script_%s_list"%m)
-			else:d=c.call(&"get_%s_list"%m)
-	for it in d:if it.name==k:return true
+			if c is Script:a=c.call(&"get_script_%s_list"%m)
+			else:a=c.call(&"get_%s_list"%m)
+	for it in a:if it.name==k:return true
 	return false
 
 static func class_cast(o:Object,c:Variant)->Object:

@@ -50,5 +50,6 @@ func _ready()->void:
 		value=value
 
 func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
 	if share!=null:
 		share.disconnect(&"value_changed",set_value)

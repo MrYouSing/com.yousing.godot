@@ -24,4 +24,5 @@ func _ready()->void:
 	if dirty:render()
 
 func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
 	dispose()

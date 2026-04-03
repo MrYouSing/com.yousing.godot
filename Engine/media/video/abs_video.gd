@@ -22,4 +22,5 @@ func _ready()->void:
 	UICanvas.register(self,0,_size_changed)
 
 func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
 	UICanvas.unregister(self,0,_size_changed)

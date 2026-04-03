@@ -45,4 +45,5 @@ func _ready()->void:
 	setup(root)
 
 func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
 	teardown(root)

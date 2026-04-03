@@ -19,6 +19,7 @@ func _ready()->void:
 		LangExtension.add_signal(UIManager.instance,event,make_text)
 
 func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
 	if not event.is_empty() and UIManager.exists:
 		LangExtension.remove_signal(UIManager.instance,event,make_text)
 

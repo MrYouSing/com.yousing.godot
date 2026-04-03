@@ -30,5 +30,6 @@ func _ready()->void:
 	for it in nodes:if it!=null:setup(it)
 
 func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
 	for it in nodes:if it!=null:teardown(it)
 	nodes.clear()

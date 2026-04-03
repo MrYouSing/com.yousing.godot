@@ -140,6 +140,7 @@ func _enter_tree()->void:
 	if instances[layer]==null:instances[layer]=self
 
 func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
 	# Cleanup
 	get_viewport().size_changed.disconnect(_on_dirty)
 	ui_to_screen=Vector2.ZERO;screen_to_ui=Vector2.ZERO;dirty=false

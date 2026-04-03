@@ -54,6 +54,7 @@ func _ready()->void:
 	alpha=alpha
 
 func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
 	if not path.is_empty():UIManager.register(path,null)
 
 func do_fade(t:Tween,m:BaseMixer,v:float,w:float=0.0,d:float=1.0)->Tween:

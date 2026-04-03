@@ -31,6 +31,7 @@ func _process(d:float)->void:
 		if it!=null and keyboard.shortcut(it.key):_on_press(it.id)
 
 func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
 	if rid.is_valid():NativeMenu.clear(rid)
 	is_created=false;rid=LangExtension.k_empty_rid
 

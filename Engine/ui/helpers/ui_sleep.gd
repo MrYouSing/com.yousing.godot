@@ -60,6 +60,7 @@ func _ready()->void:
 	for it in windows:LangExtension.try_signal(it,&"visibility_changed",_windowed)
 
 func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
 	for it in windows:LangExtension.remove_signal(it,&"visibility_changed",_windowed)
 
 func _process(d:float)->void:

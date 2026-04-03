@@ -13,14 +13,6 @@ func set_enabled(b:bool)->void:
 	if b:show()
 	else:hide()
 
-func set_active(o:Object,b:bool)->void:
-	if o==null:return
-	if b:
-		if o.has_method(&"show"):o.show();return
-	else:
-		if o.has_method(&"hide"):o.hide();return
-	GodotExtension.set_enabled(o,b)
-
 func show()->void:
 	if _shown:return
 	_shown=true
@@ -29,13 +21,13 @@ func show()->void:
 	SaveData.set_int(&"Room",index)
 	SaveData.set_int(&"Door",i)
 	#
-	for it in actors:set_active(it,true)
+	for it in actors:GodotExtension.set_enabled(it,true)
 	_on_show()
 
 func hide()->void:
 	if not _shown:return
 	_shown=false
-	for it in actors:set_active(it,false)
+	for it in actors:GodotExtension.set_enabled(it,false)
 	_on_hide()
 
 func _on_show()->void:

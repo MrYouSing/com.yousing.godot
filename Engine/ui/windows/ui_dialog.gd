@@ -119,4 +119,5 @@ func _ready()->void:
 	if fallback==null:fallback=GodotExtension.assign_node(self,"Window")
 
 func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
 	if type==4:get_window().files_dropped.disconnect(_dropped)

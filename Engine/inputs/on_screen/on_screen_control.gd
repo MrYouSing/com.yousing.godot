@@ -63,6 +63,7 @@ func _ready()->void:
 	set_enabled(is_processing())
 
 func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
 	register(false)
 	UICanvas.unregister(self,layer,refresh)
 

@@ -93,6 +93,7 @@ func _ready()->void:
 	if current==null:current=self
 
 func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
 	if self==current:current=null
 
 func _process(d:float)->void:

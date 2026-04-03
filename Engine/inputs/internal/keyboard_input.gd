@@ -312,6 +312,7 @@ func _ready()->void:
 	reload()
 
 func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
 	if self==current:current=null
 
 func _process(delta: float)->void:

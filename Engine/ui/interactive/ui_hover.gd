@@ -64,7 +64,8 @@ func _ready()->void:
 		LangExtension.try_signal(it,&"mouse_exited",_exits[i])
 
 func _exit_tree()->void:
-	var n:int=nodes.size();
+	if GodotExtension.s_reparenting:return
+	var n:int=nodes.size()
 	var it:Node;for i in n:
 		it=nodes[i];if it==null:continue
 		LangExtension.remove_signal(it,&"mouse_entered",_enters[i])
