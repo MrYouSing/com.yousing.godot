@@ -24,6 +24,8 @@ func _started(k:StringName)->void:
 		set_state(k)
 		_custom=true;_position=0.0
 		_length=tree.get_animation(k).length
+	else:
+		_finished(_state)
 
 func _finished(k:StringName)->void:
 	if whitelist.has(k):

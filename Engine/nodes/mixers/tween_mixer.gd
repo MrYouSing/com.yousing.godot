@@ -20,12 +20,13 @@ signal finished(b:bool)
 var _direction:int=0
 
 func set_enabled(b:bool)->void:
-	if b and _direction==1:return
-	elif not b and _direction==-1:return
+	var d:int=MathExtension.bool_to_sign(b)
+	if d==_direction:return
+	_direction=d
 	#
 	var t:Tween=Tweenable.make_tween(target)
-	if b:_on_tween(t,in_delay,in_duration,1.0,in_trans,in_ease,in_curve);_direction=1
-	else:_on_tween(t,out_delay,out_duration,0.0,out_trans,out_ease,out_curve);_direction=-1
+	if b:_on_tween(t,in_delay,in_duration,1.0,in_trans,in_ease,in_curve)
+	else:_on_tween(t,out_delay,out_duration,0.0,out_trans,out_ease,out_curve)
 	_started();t.finished.connect(_finished)
 
 func _on_tween(t:Tween,w:float,d:float,v:float,x:Tween.TransitionType,e:Tween.EaseType,c:Curve)->void:

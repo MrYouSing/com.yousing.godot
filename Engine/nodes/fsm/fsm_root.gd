@@ -1,5 +1,7 @@
 class_name FsmRoot extends FsmNode
 
+static var current:FsmRoot
+
 @export_group("Root")
 @export var context:Node
 @export var input:PlayerInput
@@ -21,15 +23,23 @@ func _ready()->void:
 	set_state(states[0])
 
 func _process(delta:float)->void:
+	var tmp:FsmRoot=current;current=self
 	time.x+=delta;time.y=delta;
 	if state!=null&&state._on_check():
 		state._on_tick()
+	current=tmp
 
 func init_input()->void:
 	var kb:KeyboardInput=input.get_node_or_null(^"./Keyboard")
 	for it in self.get_node(^"./Triggers").get_children():
-		if it is InputTrigger and it.input==null:it.input=input
-		elif it is KeyboardTrigger and it.input==null:it.input=kb
+		_set_input(it,input,kb)
+
+func _set_input(t:BaseTrigger,i:PlayerInput,k:KeyboardInput)->void:
+	if t==null:pass
+	elif t is CompositeTrigger:for it in t.triggers:_set_input(it,i,k)
+	elif t is ToggleTrigger:_set_input(t.trigger,i,k)
+	elif t is InputTrigger:t.set_input(i)
+	elif t is KeyboardTrigger:t.set_input(k)
 
 func init_root()->void:
 	for it in self.get_node(^"./States").get_children():
@@ -51,11 +61,10 @@ func get_state(k:StringName)->FsmState:
 
 func set_state(v:FsmState,e:bool=true)->void:
 	#
-	var o:FsmState=state
+	other=v;var o:FsmState=state
 	if e and on_change.has_connections():
 		on_change.emit(o,v);if state!=o:return
 	#
-	other=v
 	if state!=null:state._on_exit();if state!=o:return
 	other=state;time.x=-1.0;state=v
 	if state!=null:state._on_enter()

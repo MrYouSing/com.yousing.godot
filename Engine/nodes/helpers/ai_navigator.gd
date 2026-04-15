@@ -16,6 +16,12 @@ class_name AINavigator extends Rigidbody
 var _enabled:bool
 var _direction:Variant
 
+func get_velocity()->Variant:
+	if not _enabled:
+		if _type<=k_type_2d:return Vector2.ZERO
+		else:return Vector3.ZERO
+	return _velocity
+
 func set_velocity(v:Variant)->void:
 	# Interrupt.
 	if _enabled:

@@ -10,6 +10,9 @@ class_name MotionMachine extends Node
 @export var snapshot:Snapshot
 @export var album:Album
 
+signal refreshed()
+
+var _rotation:Quaternion
 var _velocity:Vector3
 # Custom
 var _time:float
@@ -38,6 +41,7 @@ func sample_float(r:Vector4,c:Curve,t:float)->float:
 
 func load_snapshot(s:Snapshot)->void:
 	_time=0.0;snapshot=s
+	_rotation=Quaternion(0.0,0.0,0.0,0.0)
 	if s!=null:
 		s.load(self)
 	else:
@@ -46,9 +50,9 @@ func load_snapshot(s:Snapshot)->void:
 		_range_z=Vector4.ZERO;_curve_z=null
 		_range_r=Vector4.ZERO;_curve_r=null
 
-func get_rotation()->Basis:
-	var n:Node=root
-	if n==null:n=rigidbody.root
+func get_rotation()->Quaternion:
+	if not is_zero_approx(_rotation.length_squared()):return _rotation
+	var n:Node=root;if n==null:n=rigidbody.root
 	return n.global_basis.get_rotation_quaternion()
 
 func update_velocity(d:float)->void:
@@ -56,7 +60,7 @@ func update_velocity(d:float)->void:
 	if rigidbody==null:return
 	#
 	var r:float=0.0
-	var q:Basis=get_rotation()
+	var q:Quaternion=get_rotation()
 	if snapshot!=null:
 		_time+=d
 		_velocity=q*Vector3(
@@ -80,8 +84,7 @@ func _on_toggle(c:Object,b:bool)->void:
 
 func _on_blend(c:Object,f:float)->void:
 	if snapshot==null:return
-	var d:float=Application.get_delta()
-	_time=f;update_velocity(0.0)
+	var d:float=f-_time;update_velocity(d)
 	if not physics:update_motion(d)
 
 func _on_event(c:Object,e:StringName)->void:
@@ -93,6 +96,7 @@ func _on_event(c:Object,e:StringName)->void:
 				load_snapshot(s)
 				set_process(false)
 				set_physics_process(physics)
+				refreshed.emit()
 			else:
 				set_enabled(false)
 

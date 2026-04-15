@@ -24,7 +24,7 @@ func direct_to_camera_3d(c:Camera3D)->void:
 
 func tween_to_camera_3d(c:Camera3D,p:Tween,t:Transition)->void:
 	if c==null:return
-	if p==null or t==null:direct_to_camera_3d(c)
+	if p==null or t==null or t.instant():direct_to_camera_3d(c)
 	var b:bool=c.projection==Camera3D.PROJECTION_ORTHOGONAL
 	if ortho!=b:printerr("Different projections!");return
 	#

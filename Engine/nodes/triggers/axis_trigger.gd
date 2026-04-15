@@ -37,6 +37,9 @@ func do_update()->void:
 		b=MathExtension.radian_inside(d,r.x,r.y)
 	value=b
 
+func set_input(i:PlayerInput)->void:
+	if input==null and axis>=0:input=i
+
 func is_trigger()->bool:
 	try_update()
 	match action:

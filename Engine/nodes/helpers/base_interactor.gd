@@ -41,8 +41,8 @@ func contain(i:BaseInteractable)->bool:
 	return false
 
 func compare(a:BaseInteractable,b:BaseInteractable)->bool:
-	var u:Vector3=a.get_point()-_origin
-	var v:Vector3=b.get_point()-_origin
+	var u:Vector3=Vector3.INF;if a!=null:u=a.get_origin()-_origin
+	var v:Vector3=Vector3.INF;if b!=null:v=b.get_origin()-_origin
 	u.y=0.0;v.y=0.0
 	match MathExtension.vec3_compare(u,v,margin):
 		-1:return true

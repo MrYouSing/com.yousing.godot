@@ -3,6 +3,8 @@ class_name StateTrigger extends ToggleTrigger
 @export_group("State")
 @export var time:Vector3=Vector3.FORWARD## [x,y] for range,z for lifetime.
 
+signal triggered()
+
 var _time:float=-1.0
 var _done:float=-1.0
 
@@ -23,6 +25,7 @@ func _on_tick(d:float)->void:
 	#
 	if trigger.is_trigger():
 		is_on=true;_done=_time
+		triggered.emit()
 
 func _on_exit()->void:
 	if trigger==null:return

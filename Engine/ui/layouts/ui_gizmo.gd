@@ -17,28 +17,8 @@ func set_enabled(b:bool)->void:
 	set_process(b)
 	if control!=null:control.visible=b
 
-func _ready()->void:
-	_start.call_deferred()
-
-func _start()->void:
-	if camera==null:camera=UIManager.instance.camera
-	if control==null:control=GodotExtension.assign_node(self,"Control")
-
-func _process(d:float)->void:
-	if camera==null or actor==null or control==null:return
-	#
-	var m:Transform3D=actor.global_transform
-	var v:Vector3=m*offset;var u:Vector2
-	var s:Vector2=Application.get_resolution()
-	var z:float=(camera.get_camera_transform().inverse()*v).z
-	if z<0.0:u=camera.unproject_position(v);z*=-1.0
-	else:u=UITransform.k_hidden_pos;z=-1.0
-	#
-	var p:Vector2=pivot
-	var c:UICanvas=UICanvas.instances[layer]
-	if c!=null:pivot*=c.ui_to_screen
-	update_control(u,z,s)
-	pivot=p
+func is_visible(p:Vector3,z:float)->bool:
+	return z<0.0
 
 func update_visible(v:int)->bool:
 	if control!=null:control.visible=v>=0
@@ -81,3 +61,26 @@ func update_scale(z:float)->void:
 		z=MathExtension.float_remap(z,scale_remap)
 		if scale_curve!=null:z=scale_curve.sample_baked(z)
 	control.scale=Vector2.ONE*z
+
+func _ready()->void:
+	_start.call_deferred()
+
+func _start()->void:
+	if camera==null:camera=UIManager.instance.camera
+	if control==null:control=GodotExtension.assign_node(self,"Control")
+
+func _process(d:float)->void:
+	if camera==null or actor==null or control==null:return
+	#
+	var m:Transform3D=actor.global_transform
+	var v:Vector3=m*offset;var u:Vector2
+	var s:Vector2=Application.get_resolution()
+	var z:float=(camera.get_camera_transform().inverse()*v).z
+	if is_visible(v,z):u=camera.unproject_position(v);z*=-1.0
+	else:u=UITransform.k_hidden_pos;z=-1.0
+	#
+	var p:Vector2=pivot
+	var c:UICanvas=UICanvas.instances[layer]
+	if c!=null:pivot*=c.ui_to_screen
+	update_control(u,z,s)
+	pivot=p

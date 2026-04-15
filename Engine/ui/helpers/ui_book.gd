@@ -7,7 +7,22 @@ class_name UIBook extends Node
 @export var book:Resource
 @export var pages:Array[Node]
 
-var index:int
+var index:int=-1
+var key:StringName
+
+var value:Variant:
+	get():
+		if index>=0:
+			if book!=null:return book.get_page(index)
+			return pages[index]
+		return null
+	set(x):
+		match typeof(x):
+			TYPE_INT:seek(x)
+			TYPE_STRING,TYPE_STRING_NAME:open(x)
+			TYPE_OBJECT:
+				if book!=null:seek(book.find_page(x))
+				else:seek(pages.find(x))
 
 func set_enabled(b:bool)->void:
 	if content==self:set(&"visible",b)
@@ -24,15 +39,24 @@ func display(v:Variant)->void:
 	if content!=null:content.set(property,v)
 
 func seek(p:int)->void:
+	#
+	if p==index:return
 	index=p
+	#
 	if book!=null:
 		display(book.get_page(p))
 	else:
+		key=LangExtension.k_empty_name;var b:bool
 		var i:int=-1;for it in pages:
 			i+=1;if it==null:continue
-			GodotExtension.set_enabled(it,i==p)
+			b=i==p;if b:key=it.name
+			GodotExtension.set_enabled(it,b)
 
 func open(p:StringName)->void:
+	#
+	if p==key:return
+	key=p
+	#
 	if book!=null:
 		index=book.index_of(p)
 		display(book.get_page(index))

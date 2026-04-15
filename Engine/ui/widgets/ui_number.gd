@@ -3,7 +3,7 @@ class_name UINumber extends AbsRange
 
 @export_group("Number")
 @export var label:Node
-@export_enum("Value","Value/Count","Percent","Time","Time/Duration") 
+@export_enum("Value","Value/Count","Percent","Time","Time/Duration","Auto") 
 var type:int
 @export var format:String="%.2f"
 

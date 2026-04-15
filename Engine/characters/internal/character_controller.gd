@@ -1,30 +1,30 @@
 class_name CharacterController extends Node
 
 @export_group("Character")
-@export var root:Node3D
+@export var root:Node
 @export var normal:Vector3=Vector3.UP
-@export var viewer:Node3D
+@export var viewer:Node
 @export var model:Node
 @export var input:PlayerInput
 @export var motor:CharacterMotor
 @export var animator:Animator
 
-func set_model(m:Node3D)->void:
-	if m==null:
-		if model!=null:
-			pass
-		# Clean up.
-		model=null
+func set_model(m:Node)->void:
+	if m==model:return
+	# Clean up.
+	if model!=null:
 		animator=null
-	else:
-		if m!=model:
-			m.set_parent(root);m.transform=Transform3D.IDENTITY
-		model=m
-		#
-		animator=model.get_node_or_null(^"./Animator")
-		if animator!=null:
-			var n:Node=motor;if n==null:n=self
-			animator.setup(n)
+		GodotExtension.remove_node(model)
+	# Install.
+	model=m;if m==null:return
+	if not root.is_ancestor_of(m):
+		GodotExtension.add_node(m,root)
+		GodotExtension.set_local_transform(m,Transform3D.IDENTITY)
+	# Animation.
+	animator=m.get_node_or_null(^"./Animator")
+	if animator!=null:
+		var n:Node=motor;if n==null:n=self
+		animator.setup(n)
 
 func set_enabled(b:bool)->void:
 	set_process(b)
@@ -58,4 +58,4 @@ func play_animation(k:StringName)->void:
 	if motor!=null:motor.anim=k
 
 func _ready()->void:
-	set_model(model)
+	var m:Node=model;model=null;set_model(m)

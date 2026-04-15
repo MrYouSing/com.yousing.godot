@@ -1,5 +1,7 @@
 class_name TpsCamera extends Node3D
 
+static var current:TpsCamera
+
 @export_group("Camera")
 @export var pivot:Node3D
 @export var camera:Node3D
@@ -9,7 +11,7 @@ class_name TpsCamera extends Node3D
 @export_range(0.0,1.0,0.001,"or_greater","or_less")var side:float=0.5
 @export_group("Input")
 @export var input:PlayerInput
-@export var speed:Vector2=Vector2(10.0,10.0)
+@export var speed:Vector3=Vector3(10.0,10.0,1.0)
 @export var range:Vector4=Vector4(-90.0,0.0,90.0,0.0)
 @export_group("Scene")
 @export var lock:bool=false
@@ -29,13 +31,18 @@ func _ready()->void:
 		if camera is Camera3D:cam=camera
 		else:cam=camera.get_node_or_null(^"./Camera")
 	#if input==null:input=PlayerInput.current
+	if current==null:current=self
 
-func _process(delta:float)->void:
+func _exit_tree()->void:
+	if GodotExtension.s_reparenting:return
+	if self==current:current=null
+
+func _process(d:float)->void:
 	if pivot==null:return
 	#
-	var v:Vector2
-	if input!=null:v=input.stick(1)*delta
-	else: v=Input.get_last_mouse_velocity()*(delta*InputExtension.s_mouse_to_stick)
+	var v:Vector2=Vector2.ZERO;d*=speed.z
+	if input!=null:v=input.stick(1)*d
+	else: v=Input.get_last_mouse_velocity()*(d*InputExtension.s_mouse_to_stick)
 	v.x*=-1.0# Fix the Y-Axis.
 	rot.y=MathExtension.float_clamp(rot.y+v.x*speed.x,range.y,range.w)
 	rot.x=MathExtension.float_clamp(rot.x+v.y*speed.y,range.x,range.z)

@@ -14,6 +14,10 @@ const k_vec4_nan:Vector4=Vector4(NAN,NAN,NAN,NAN)
 
 # Math APIs
 
+static func bool_to_sign(b:bool)->int:
+	if b:return 1
+	else:return -1
+
 static func shorts_to_int(a:int,b:int)->int:
 	return (mini(a,b)&0xFFFF)|((maxi(a,b)<<16)&0xFFFF0000)
 

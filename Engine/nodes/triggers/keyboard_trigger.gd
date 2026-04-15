@@ -4,6 +4,9 @@ class_name KeyboardTrigger extends BaseTrigger
 @export var key:Key
 @export var action:InputTrigger.Action
 
+func set_input(i:KeyboardInput)->void:
+	if input==null:input=i
+
 func is_trigger()->bool:
 	if input!=null:
 		match action:

@@ -1,6 +1,10 @@
 class_name ButtonTrigger extends InputTrigger
 
+@export_group("Button")
 @export var button:int
+
+func set_input(i:PlayerInput)->void:
+	if input==null and button>=0:input=i
 
 func is_trigger()->bool:
 	if input!=null:

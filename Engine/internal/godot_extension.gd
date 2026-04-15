@@ -126,6 +126,30 @@ static func get_global_transform(n:Node)->Transform3D:
 			return Transform3D(Basis(Vector3.FORWARD,t.get_rotation()),Vector3(v.x,v.y,0.0)).scaled_local(Vector3(s.x,s.y,0.0))
 	return Transform3D.IDENTITY
 
+static func set_global_transform(n:Node,t:Transform3D)->void:
+	if n!=null:
+		if n is Node3D:n.global_transform=t
+		else:
+			var b:Basis=t.basis;var f:Vector3=Vector3.FORWARD
+			var v:Vector3=t.origin;var s:Vector3=b.get_scale()
+			n.set(&"global_transform",Transform2D(f.angle_to(b*f),Vector2(s.x,s.y),0.0,Vector2(v.x,v.y)))
+
+static func get_local_transform(n:Node)->Transform3D:
+	if n!=null:
+		if n is Node3D:return n.transform
+		else:
+			var t:Transform2D=n.get(&"transform");var v:Vector2=t.get_origin();var s:Vector2=t.get_scale()
+			return Transform3D(Basis(Vector3.FORWARD,t.get_rotation()),Vector3(v.x,v.y,0.0)).scaled_local(Vector3(s.x,s.y,0.0))
+	return Transform3D.IDENTITY
+
+static func set_local_transform(n:Node,t:Transform3D)->void:
+	if n!=null:
+		if n is Node3D:n.transform=t
+		else:
+			var b:Basis=t.basis;var f:Vector3=Vector3.FORWARD
+			var v:Vector3=t.origin;var s:Vector3=b.get_scale()
+			n.set(&"transform",Transform2D(f.angle_to(b*f),Vector2(s.x,s.y),0.0,Vector2(v.x,v.y)))
+
 # Resource APIs
 
 static func scale_shape_3d(s:Shape3D,f:float)->void:

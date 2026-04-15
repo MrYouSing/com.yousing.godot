@@ -11,7 +11,7 @@ static var current:BaseInteractable
 var items:Array[BaseInteractor]
 var cancel:int
 
-func get_point()->Vector3:
+func get_origin()->Vector3:
 	if shape!=null:return GodotExtension.get_global_position(shape)
 	else:return GodotExtension.get_global_position(self)
 

@@ -2,7 +2,7 @@ class_name TpsController extends CharacterController
 
 @export_group("Arguments")
 @export var lock:bool
-@export var target:Node3D
+@export var target:Node
 @export var speed:float=5.0
 @export var smooth:Vector2=Vector2(-1,60)
 @export_group("Animations")
@@ -13,19 +13,23 @@ class_name TpsController extends CharacterController
 @export var shots:PackedStringArray
 
 var moving:bool
+var request:RequestMachine
 
 func set_enabled(b:bool)->void:
 	super.set_enabled(b)
 	moving=false
 
-func set_model(m:Node3D)->void:
+func set_model(m:Node)->void:
+	if m==model:return
 	var a:Actor=model as Actor;if a!=null:
 		var t:Node3D=a.get_component(&"LookAt")
-		if t!=null:t.reparent(model,true);
+		if t!=null:t.reparent(model,true)
+		request=null
 	super.set_model(m)
 	a=model as Actor;if a!=null and target!=null:
 		var t:Node3D=a.get_component(&"LookAt")
 		if t!=null:t.reparent(target,false);t.transform=Transform3D.IDENTITY
+		if animator!=null:request=animator.get_node_or_null(^"RequestMachine")
 
 func get_facing(v:Vector3)->Vector3:
 	if motor!=null:motor.direction=Vector3.ZERO# Reset for realtime.
@@ -50,11 +54,15 @@ func sync_animation(v:Vector3,d:float)->void:
 func play_animation(k:StringName)->void:
 	var i:int;var b:bool=true
 	if motor!=null:
+		motor.anim=LangExtension.k_empty_string
 		motor.state=-1
 		i=anims.find(k)
 		if i>=0:motor.state=i;b=false
 	i=shots.find(k)
-	if i>=0:animator.play(k,0)
+	if i>=0:
+		if request!=null and request.play(k):pass
+		else:animator.play(k,0)
+		b=false
 	#
 	if b:super.play_animation(k)
 

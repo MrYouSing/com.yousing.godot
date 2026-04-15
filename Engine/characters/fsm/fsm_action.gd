@@ -1,7 +1,6 @@
 class_name FsmAction extends FsmState
 
 @export_group("Action")
-@export var trigger:BaseTrigger
 
 signal finished()
 

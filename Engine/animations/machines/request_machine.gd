@@ -55,6 +55,22 @@ func _on_request(r:Request)->void:
 
 func _do_request(r:Request,p:StringName)->bool:
 	match r.type:
+		# Object
+		Type.Set:
+			match r.args.size():
+				1:
+					context.set(p,r.args[0])
+				2:
+					var n:Node=context.get_node_or_null(r.args[0])
+					if n!=null:n.set(p,r.args[1])
+		Type.Call:
+			match r.args.size():
+				1:
+					context.callv(p,r.args[0])
+				2:
+					var n:Node=context.get_node_or_null(r.args[0])
+					if n!=null:n.callv(p,r.args[1])
+		# Animation
 		Type.Play:
 			#
 			var o:Object=r.thiz
@@ -75,6 +91,7 @@ func _do_request(r:Request,p:StringName)->bool:
 				1:var a:Variant=r.args[0];r=_doc.dict.get(a[randi()%a.size()],null)
 				2:r=_doc.dict.get(r.args[0][MathExtension.random_level(1.0,r.args[1])],null)
 			_on_request(r);return false
+		# Sync
 		Type.Shoot:
 			match r.args.size():
 				1:# Stop
@@ -90,6 +107,12 @@ func _do_request(r:Request,p:StringName)->bool:
 					context.set(p,r.args[0])
 				1:
 					context.set(p,r.args[0])
+		# Misc
+		Type.Wait:
+			if not p.is_empty():
+				var f:float=get_meta(&"request_wait",0.1)
+				_call=Juggler.instance.repeat_call(_on_wait,[r,p],f,f)
+			return false
 		Type.Custom:
 			if r.send.is_valid():
 				return r.send.call(context,r,p)
@@ -98,6 +121,11 @@ func _do_request(r:Request,p:StringName)->bool:
 		_:
 			return false
 	return true
+
+func _on_wait(r:Request,p:StringName)->void:
+	if context.get(p)==r.args[0]:
+		Juggler.try_kill(self)
+		_on_request(_doc.dict.get(r.next,null))
 
 func _on_toggle(c:Object,b:bool)->void:
 	_on_event(c,&"On" if b else &"Off")
@@ -113,10 +141,13 @@ func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 
 enum Type {
 	None=-1,
+	Set,
+	Call,
 	Play,
 	Random,
 	Shoot,
 	Trans,
+	Wait,
 	Count,
 	Custom=-2,
 }

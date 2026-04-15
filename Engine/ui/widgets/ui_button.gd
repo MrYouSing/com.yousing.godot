@@ -34,6 +34,6 @@ func _clicked()->void:
 	if callback.is_valid():callback.call()
 
 func _ready()->void:
-	if button==null:button=GodotExtension.assign_node(self,"Button")
+	if button==null:button=GodotExtension.assign_node(self,"Button") as Button
 	if button!=null:button.pressed.connect(_clicked)
 	super._ready()

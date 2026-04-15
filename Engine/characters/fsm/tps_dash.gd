@@ -13,6 +13,7 @@ func _on_init()->void:
 		if head==null:head=c.model.get_node_or_null(^"Anchors/Head")
 		_camera=c.viewer.get_node_or_null(^"../../") as TpsCamera
 		if _camera!=null:_head=_camera.head
+		if _head==null:_camera=null
 
 func _on_enter()->void:
 	#
