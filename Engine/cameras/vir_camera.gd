@@ -14,15 +14,20 @@ static var instances:Array[VirCamera]=LangExtension.alloc_array(VirCamera,32)
 func set_enabled(b:bool)->void:
 	var o:VirCamera=instances[index]
 	if b:
-		_on_show()
+		if o==self:return
+		#
 		if o!=null:o.set_enabled(false)
+		instances[index]=o
+		#
+		_on_show()
 		instances[index]=self
 	else:
 		if o!=self:return
+		#
 		_on_hide()
 		instances[index]=null
 
-func _on_show()->void:
+func get_nodes(a:Array)->bool:
 	var c:Node;var n:Node
 	if camera!=null:
 		c=camera;n=camera
@@ -31,30 +36,53 @@ func _on_show()->void:
 		c=s.camera
 		if s.root!=null:n=s.root
 		else:n=c
-	if c==null:return
-	#
-	var m:Transform3D=GodotExtension.get_global_transform(self)
+	if c==null:return false
+	a.append(c);a.append(n)
+	return true
+
+func _on_show()->void:
 	var x:Transition=null;if transitions!=null:
 		var o:VirCamera=instances[index]
 		if o!=null:x=transitions.eval(o.name,name)
 		else:x=transitions.eval(&"*",name)
 	#
 	if x==null or x.instant():
+		_on_jump()
+	elif x.duration==0.0:
+		var a:Array;if not get_nodes(a):return
+		var c:Node=a[0];var n:Node=a[1]
+		var f:float=MathExtension.time_fade(0.0,(GodotExtension.get_global_position(self)-GodotExtension.get_global_position(n)).length(),x.delay)
+		#
 		Tweenable.kill_tween(c)
-		GodotExtension.set_global_transform(n,m)
-		if lens!=null:lens.direct_to_camera_3d(c)
-		_on_done()
+		Juggler.instance.delay_call(_on_jump,LangExtension.k_empty_array,f,1)
 	else:
-		var t:Tween=Tweenable.make_tween(c)
-		x.to_tween(t,n,^"global_position",m.origin)
-		x.to_tween(t,n,^"global_basis",m.basis)
+		var a:Array;if not get_nodes(a):return
+		var c:Node=a[0];var n:Node=a[1]
+		var m:Transform3D=GodotExtension.get_global_transform(self)
+		var t:Tween=Tweenable.make_tween(c);var d:float=x.duration
+		#
+		x.duration=MathExtension.time_fade(0.0,(m.origin-GodotExtension.get_global_position(n)).length(),d)
+		x.to_tween(t,n,^"global_position",m.origin);x.to_tween(t,n,^"global_basis",m.basis)
 		if lens!=null:Transition.current=c;lens.tween_to_camera_3d(c,t,x)
-		t.finished.connect(_on_done)
+		x.duration=d;t.finished.connect(_on_enter)
 
-func _on_done()->void:
+func _on_jump()->void:
+	var a:Array;if not get_nodes(a):return
+	var c:Node=a[0];var n:Node=a[1]
+	var m:Transform3D=GodotExtension.get_global_transform(self)
+	#
+	Tweenable.kill_tween(c)
+	GodotExtension.set_global_transform(n,m)
+	if lens!=null:lens.direct_to_camera_3d(c)
+	_on_enter()
+
+func _on_enter()->void:
 	pass
 
 func _on_hide()->void:
+	pass
+
+func _on_exit()->void:
 	pass
 
 func _ready()->void:

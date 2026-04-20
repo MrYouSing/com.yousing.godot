@@ -3,6 +3,7 @@ class_name UIStyle extends Resource
 
 @export_group("Layout","layout_")
 @export var layout_mask:Vector2i=Vector2i.ONE
+## [x,y] for jump range,(z,w) for runtime factor.
 @export var layout_jump:Vector4=Vector4(0.5,0.5,NAN,NAN)
 @export var layout_padding:Vector4
 @export var layout_cell:Vector2

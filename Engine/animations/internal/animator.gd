@@ -145,8 +145,8 @@ func setup(n:Node)->void:
 	if tree==null:tree=get_node_or_null(^"../AnimationTree")
 	#
 	if tree!=null:
-		GodotExtension.set_anim_player(tree,player)
-		GodotExtension.set_expression_node(tree,n)
+		AnimationExtension.set_anim_player(tree,player)
+		AnimationExtension.set_expression_node(tree,n)
 		if controller!=null:
 			machines.clear()
 			for it in controller.layers:

@@ -23,6 +23,9 @@ func set_busy(b:bool)->void:
 	busy=b;if not b:stop_tween()
 	if get_meta(&"global_busy",false):UIManager.instance.set_busy(b)
 
+func get_enabled()->bool:
+	return _shown
+
 func set_enabled(b:bool)->void:
 	_shown=b;if busy:return
 	#
@@ -58,7 +61,7 @@ func _exit_tree()->void:
 	if not path.is_empty():UIManager.register(path,null)
 
 func do_fade(t:Tween,m:BaseMixer,v:float,w:float=0.0,d:float=1.0)->Tween:
-	busy=true;t.set_ignore_time_scale(true)
+	busy=true;Tweenable.set_always(t)
 	if w>0.0:t.tween_interval(w)
 	if m!=null:t.tween_property(m,^"weight",v,MathExtension.time_fade(m.weight,v,d))
 	elif canvas!=null:t.tween_property(self,^"alpha",v,MathExtension.time_fade(alpha,v,d))

@@ -77,6 +77,15 @@ static func time_delta(f:float)->float:
 	if f<0.0:f=-f/Application.get_fps()
 	return f
 
+static func time_tick(i:int,t:int=-1)->bool:
+	if i==0:
+		return true
+	elif i>0:
+		if t<0:t=Application.get_frames()
+		return i%t==0
+	else:
+		return false
+
 static func random_index(a:Array[int],i:int,c:int)->int:
 	var n:int=a.size();if n<=0:
 		n=0;for it in c:if it!=i:a.append(it);n+=1

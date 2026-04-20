@@ -19,6 +19,7 @@ class_name CollectionView extends Node
 
 signal on_focus()
 signal on_blur()
+signal on_execute(m:Resource,v:Node,c:int)
 
 var _start:int=-1
 var _model:Resource
@@ -123,6 +124,10 @@ func set_item(i:int,s:String,b:bool)->void:
 			n.set(&"text",s);n.set(&"interactable",b)
 
 func focus(i:int)->void:
+	# Clean up.
+	if _view!=null:
+		if _view.has_method(&"_on_deselect"):_view._on_deselect()
+	#
 	if i>=0:
 		_view=_views[i];_model=_view.get(&"model")
 		if arrow!=null:
@@ -136,8 +141,18 @@ func focus(i:int)->void:
 			GodotExtension.add_node(arrow,self,false)
 			GodotExtension.set_enabled(arrow,false)
 		on_blur.emit()
+	# Refresh it.
+	if _view!=null:
+		if _view.has_method(&"_on_select"):_view._on_select()
+
+func select(i:int)->void:
+	if i<_start or i>=_start+capacity:
+		_start=mini(i,num_models()-capacity)
+		render();i-=_start
+	focus(i)
 
 func clear()->void:
+	focus(-1)
 	for it in _views:set_view(it,null)
 
 func render()->void:
@@ -147,18 +162,15 @@ func listen()->void:
 	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
 
 func execute(i:int)->void:
-	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
+	on_execute.emit(_model,_view,i)
 
 func _ready()->void:
 	if container==null:container=self
 	if capacity<=0:capacity=num_models()
-	render()
+	render.call_deferred()# Deferred render at least once.
 
 func _process(d:float)->void:
-	if rate<0:
-		pass
-	elif rate==0 or Application.get_frames()%rate==0:
-		listen()
+	if MathExtension.time_tick(rate):listen()
 
 enum LoopMode {
 	None,

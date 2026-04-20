@@ -25,7 +25,7 @@ func setup(c:Animator)->void:
 	#
 	register(c.player,c)
 	#
-	var n:Node=GodotExtension.get_expression_node(c.tree)
+	var n:Node=AnimationExtension.get_expression_node(c.tree)
 	if n!=null and c!=n:
 		if (c.features&0x01)!=0:return
 		var f:Callable;
@@ -39,7 +39,7 @@ func teardown(c:Animator)->void:
 	if c.tree!=null and c.tree.tree_root==asset:
 		c.tree.tree_root=null
 	#
-	var n:Node=GodotExtension.get_expression_node(c.tree)
+	var n:Node=AnimationExtension.get_expression_node(c.tree)
 	if n!=null and c!=n:
 		if (c.features&0x01)!=0:return
 		n.set(&"exit_time",null)

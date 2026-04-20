@@ -14,7 +14,7 @@ var dirty:bool
 func setup()->void:
 	if shapes.is_empty():
 		if targets.is_empty():return
-		GodotExtension.get_blend_shape_names(targets[0],shapes)
+		AnimationExtension.get_blend_shape_names(targets[0],shapes)
 	if mixers.is_empty():
 		var m:MorphMixer;for it in shapes:
 			m=MorphMixer.new();

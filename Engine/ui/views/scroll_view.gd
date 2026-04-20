@@ -38,23 +38,26 @@ func _focus()->void:
 	fit_child_in_rect(content,Rect2(p,content.size))
 
 func _ready()->void:
+	if style==null:return
+	match style.layout_mask.length_squared():
+		0,2:Application.debug(name+" has no layout direction!",2)
+	#
 	if view==null:view=get_parent()
 	if scroll==null:scroll=view
 	if content==null:content=get_child(0)
 	#
-	if style==null:return
 	if scroll==null or view==null or content==null:
 		style=null;return
 	if not LangExtension.class_is(content,k_interface):
 		Application.debug(content.name+" is not ScrollView.Content!",3);content=null
 		style=null;return
+	#
 	style.layout_apply(content)
 	var c:Control=content.get(&"prefab");if c!=null:style.layout_apply(c)
 	LangExtension.add_signal(content,&"on_focus",_focus)
 
 func _process(d:float)->void:
-	if rate<=0 or Application.get_frames()%rate==0:
-		refresh()
+	if MathExtension.time_tick(rate):refresh()
 
 func _notification(i:int)->void:
 	match i:

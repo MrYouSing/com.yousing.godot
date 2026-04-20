@@ -40,6 +40,15 @@ func focus(i:int)->void:
 			index.x=w*y+x
 	super.focus(i)
 
+func select(i:int)->void:
+	var w:int=full_cols()
+	var j:int=i/w*w
+	var n:int=w*clip_rows()
+	if j<_start or j>=_start+n:
+		_start=mini(j,w*full_rows()-n)
+		render();i-=_start
+	focus(i)
+
 func clear()->void:
 	super.clear()
 	_start=-1

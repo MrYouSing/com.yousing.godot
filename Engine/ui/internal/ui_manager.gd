@@ -157,6 +157,11 @@ func hide_view(k:StringName,b:bool=true)->void:
 	if b:active_view(v,false)
 	else:GodotExtension.set_enabled(v,false)
 
+func toggle_view(k:StringName,b:bool=true)->void:
+	var v:Object=find_view(k,b);if v==null:return
+	if GodotExtension.get_enabled(v):hide_view(k,b)
+	else:show_view(k,b)
+
 # Misc
 
 func is_hold(i:int)->bool:

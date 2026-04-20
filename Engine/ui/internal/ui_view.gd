@@ -4,8 +4,10 @@ class_name UIView extends Node
 @export_group("View")
 @export var path:StringName
 @export var model:Resource:
-	set(x):if x!=model:
-		model=x;dirty=true
+	set=set_model
+func set_model(m:Resource)->void:
+	if m!=model:
+		model=m;dirty=true
 		if is_node_ready():render()
 
 var dirty:bool

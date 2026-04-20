@@ -9,15 +9,23 @@ class_name UIButton extends UIView
 
 var callback:Callable
 
+func get_enabled()->bool:
+	if button!=null:return button.visible
+	return false
+
+func set_enabled(b:bool)->void:
+	if button!=null:button.visible=b
+
 func render()->void:
 	if not dirty:return
 	if button==null:return
 	dirty=false
 	#
 	if model==null:
-		button.visible=false;return
+		if get_enabled():set_enabled(false)
+		return
 	else:
-		button.visible=true
+		if not get_enabled():set_enabled(true)
 	#
 	var d:StringName=model.name
 	var i:Texture2D=model.icon

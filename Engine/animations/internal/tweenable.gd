@@ -7,6 +7,16 @@ static var s_tweens:Dictionary[Node,Tween]
 static func is_valid(t:Tween)->bool:
 	return t!=null and t.is_valid()
 
+static func set_always(t:Tween,i:int=PROCESS_MODE_ALWAYS)->void:
+	if t==null:return
+	match i:
+		PROCESS_MODE_ALWAYS:pass
+		PROCESS_MODE_PAUSABLE:if Application.get_tree().paused:return
+		PROCESS_MODE_WHEN_PAUSED:if not Application.get_tree().paused:return
+		_:return
+	t.set_ignore_time_scale()
+	t.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+
 ## See [method Tween.kill].
 static func kill_tween(n:Node)->void:
 	if n==null:return

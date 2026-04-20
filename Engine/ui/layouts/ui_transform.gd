@@ -86,7 +86,7 @@ Control.LayoutPreset.PRESET_FULL_RECT:15,
 # Macro.Patch -->
 @export_tool_button("Refresh") var do_refresh:Callable=func()->void:dirty=true;refresh()
 
-var dirty:bool
+var dirty:bool=true# Born from dirty.
 
 func begin()->void:dirty=true
 func end()->void:refresh()

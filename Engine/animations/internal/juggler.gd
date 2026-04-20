@@ -56,6 +56,7 @@ func repeat_call(c:Callable,a:Array,d:float=0.0,t:float=1.0,n:int=-1,w:int=0)->i
 
 func _ready()->void:
 	if Singleton.init_instance(k_keyword,self):
+		process_mode=PROCESS_MODE_ALWAYS
 		for i in 4:workers.append(Juggler.Worker.new(self))
 
 func _exit_tree()->void:

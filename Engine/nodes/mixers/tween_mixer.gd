@@ -24,7 +24,7 @@ func set_enabled(b:bool)->void:
 	if d==_direction:return
 	_direction=d
 	#
-	var t:Tween=Tweenable.make_tween(target)
+	var t:Tween=Tweenable.make_tween(target);Tweenable.set_always(t,process_mode)
 	if b:_on_tween(t,in_delay,in_duration,1.0,in_trans,in_ease,in_curve)
 	else:_on_tween(t,out_delay,out_duration,0.0,out_trans,out_ease,out_curve)
 	_started();t.finished.connect(_finished)

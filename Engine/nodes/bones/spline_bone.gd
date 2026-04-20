@@ -26,7 +26,7 @@ func _on_update(c:Skeleton3D,b:int,d:float)->void:
 	b=names.size();if indexes.size()!=b:
 		indexes.clear()
 		for it in names:indexes.append(c.find_bone(it))
-	GodotExtension.get_bone_global_poses(c,indexes,poses)
+	AnimationExtension.get_bone_global_poses(c,indexes,poses)
 	#
 	var p:Quaternion;
 	if not offset.is_equal_approx(Quaternion.IDENTITY):
@@ -35,4 +35,4 @@ func _on_update(c:Skeleton3D,b:int,d:float)->void:
 		b=indexes[i];if b<0:continue
 		p=poses[i].basis
 		p=p*Quaternion.IDENTITY.slerp(q,weights[i])
-		GodotExtension.set_bone_global_rotation(c,b,p)
+		AnimationExtension.set_bone_global_rotation(c,b,p)

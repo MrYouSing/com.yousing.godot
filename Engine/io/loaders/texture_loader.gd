@@ -20,7 +20,13 @@ static func support(e:String)->bool:
 	return s_extensions.has(e)
 
 static func clear()->void:
-	s_textures.clear()
+	var d:Dictionary[String,Texture]
+	for it in s_textures:if it.begins_with("$"):d[it]=s_textures[it]
+	s_textures.assign(d)
+
+static func create_from_color(c:Color,s:Vector2i=Vector2i.ONE)->Texture:
+	var i:Image=Image.create_empty(s.x,s.y,false,Image.FORMAT_RGBA8)
+	i.fill(c);return ImageTexture.create_from_image(i)
 
 static func create_from_file(f:String)->Texture:
 	#return IOExtension.import_asset(f,"ImageTexture")
@@ -31,6 +37,14 @@ static func init()->void:
 	if s_is_inited:return
 	s_is_inited=true
 	Asset.on_clear.connect(clear)
+	#
+	s_textures["$white"]=create_from_color(Color.WHITE)
+
+static func load_from_cache(f:String)->Texture:
+	if not s_is_inited:init()
+	#
+	var k:String=IOExtension.check_path(f).to_lower()
+	return s_textures.get(k,null)
 
 static func load_from_file(f:String,c:bool=true)->Texture:
 	if not FileAccess.file_exists(f):return null
