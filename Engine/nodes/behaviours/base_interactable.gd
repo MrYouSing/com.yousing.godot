@@ -1,4 +1,4 @@
-## The godot-version [url=https://docs.unity3d.com/Packages/com.unity.xr.interaction.toolkit@3.5/api/UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable.html]XRBaseInteractable[url].
+## The Godot version of [url=https://docs.unity3d.com/Packages/com.unity.xr.interaction.toolkit@3.5/api/UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable.html]XRBaseInteractable[/url].
 class_name BaseInteractable extends Tickable
 
 static var current:BaseInteractable

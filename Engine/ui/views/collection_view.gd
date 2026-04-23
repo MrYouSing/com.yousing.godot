@@ -73,7 +73,9 @@ func is_input(i:int)->bool:
 			if it!=null:return it.is_trigger()
 		if i<buttons.size():
 			var it:StringName=buttons[i]
-			if not it.is_empty():return Input.is_action_just_pressed(it)
+			if not it.is_empty():
+				if it==&"null":return false
+				else:return Input.is_action_just_pressed(it)
 		if UIManager.exists:
 			return UIManager.instance.is_tap(i)
 	return false
@@ -95,7 +97,7 @@ func new_view()->Node:
 	var v:Node=prefab.duplicate()
 	if v is Control:# Managed focus.
 		v.focus_mode=Control.FOCUS_NONE
-		v.connect(&"button_down",focus.bind(_views.size()))
+		v.connect(&"button_down",_clicked.bind(_views.size()))
 	container.add_child(v)
 	return v
 
@@ -125,8 +127,7 @@ func set_item(i:int,s:String,b:bool)->void:
 
 func focus(i:int)->void:
 	# Clean up.
-	if _view!=null:
-		if _view.has_method(&"_on_deselect"):_view._on_deselect()
+	UIExtension.deselect_node(_view)
 	#
 	if i>=0:
 		_view=_views[i];_model=_view.get(&"model")
@@ -142,8 +143,7 @@ func focus(i:int)->void:
 			GodotExtension.set_enabled(arrow,false)
 		on_blur.emit()
 	# Refresh it.
-	if _view!=null:
-		if _view.has_method(&"_on_select"):_view._on_select()
+	UIExtension.select_node(_view)
 
 func select(i:int)->void:
 	if i<_start or i>=_start+capacity:
@@ -163,6 +163,11 @@ func listen()->void:
 
 func execute(i:int)->void:
 	on_execute.emit(_model,_view,i)
+
+func _clicked(i:int)->void:
+	var tmp:bool=UIExtension.s_clicking;UIExtension.s_clicking=true
+	focus(i)
+	UIExtension.s_clicking=tmp
 
 func _ready()->void:
 	if container==null:container=self

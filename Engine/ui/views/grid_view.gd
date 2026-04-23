@@ -27,7 +27,7 @@ func to_index(i:Vector2i)->int:
 	return clip_cols()*i.y+i.x
 
 func focus(i:int)->void:
-	if _start>=0:
+	if i>=0 and _start>=0:
 		if cache.length_squared()==0:
 			index.x=MathExtension.int_repeat(_start+i,num_models())
 		else:

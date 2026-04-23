@@ -63,6 +63,7 @@ func update_scale(z:float)->void:
 	control.scale=Vector2.ONE*z
 
 func _ready()->void:
+	if GodotExtension.is_prefab(self):return
 	_start.call_deferred()
 
 func _start()->void:

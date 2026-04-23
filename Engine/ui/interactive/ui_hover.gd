@@ -12,19 +12,27 @@ var _hover:bool
 var _node:Node
 var _time:float=-1.0
 
+func set_enabled(b:bool)->void:
+	if view==null:return
+	if b:
+		if view.has_method(&"_on_enter"):view._on_enter();return
+	else:
+		if view.has_method(&"_on_exit"):view._on_exit();return
+	GodotExtension.set_enabled(view,b)
+
 func get_hover()->Node:
 	return _node
 
 func set_hover(n:Node)->void:
 	if n!=null:
 		if _time<0.0:# Down
-			GodotExtension.set_enabled(view,true)
+			set_enabled(true)
 		if n!=_node:# Change
 			if view!=null:view.set(&"model",n)
 		_time=Application.get_time()
 	else:
 		if _time>=0.0:# Up
-			GodotExtension.set_enabled(view,false)
+			set_enabled(false)
 		_time=-1.0
 	_node=n
 

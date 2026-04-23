@@ -85,6 +85,7 @@ static func refresh_node(n:Node)->void:
 	if n!=null:
 		if n.has_method(&"_on_dirty"):n._on_dirty()
 		elif n.has_method(&"refresh"):n.refresh()
+		else:set_enabled(n,true)
 
 static func input_node(n:Node,i:int)->void:
 	if n!=null:
@@ -151,6 +152,18 @@ static func set_local_transform(n:Node,t:Transform3D)->void:
 			n.set(&"transform",Transform2D(f.angle_to(b*f),Vector2(s.x,s.y),0.0,Vector2(v.x,v.y)))
 
 # Resource APIs
+
+static func is_prefab(o:Object)->bool:
+	if o==null:
+		pass
+	elif o is Node:
+		var n:Node=o.get_parent()
+		while n!=null:
+			if n.name==&"Hidden":return true
+			n=n.get_parent()
+	elif o is PackedScene:
+		return true
+	return false
 
 static func scale_shape_3d(s:Shape3D,f:float)->void:
 	if s==null:pass

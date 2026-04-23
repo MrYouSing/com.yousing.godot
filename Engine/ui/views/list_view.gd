@@ -7,7 +7,7 @@ class_name ListView extends CollectionView
 @export var cache:Vector2i
 
 func focus(i:int)->void:
-	if _start>=0:index.x=MathExtension.int_repeat(_start+i-cache.x,num_models())
+	if i>=0 and _start>=0:index.x=MathExtension.int_repeat(_start+i-cache.x,num_models())
 	super.focus(i)
 
 func clear()->void:

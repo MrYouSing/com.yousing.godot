@@ -1,4 +1,4 @@
-## The godot-version [url=https://docs.unity3d.com/Packages/com.unity.xr.interaction.toolkit@3.5/api/UnityEngine.XR.Interaction.Toolkit.Interactors.XRBaseInteractor.html]XRBaseInteractor[url].
+## The Godot version of [url=https://docs.unity3d.com/Packages/com.unity.xr.interaction.toolkit@3.5/api/UnityEngine.XR.Interaction.Toolkit.Interactors.XRBaseInteractor.html]XRBaseInteractor[/url].
 class_name BaseInteractor extends Node
 
 static var current:BaseInteractor

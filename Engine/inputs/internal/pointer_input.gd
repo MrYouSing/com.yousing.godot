@@ -22,15 +22,13 @@ static func get_mouse_position(i:int)->Vector2:
 		_:o=DisplayServer.screen_get_position(i)
 	return DisplayServer.mouse_get_position()-o
 
-static func on_lock_mouse(e:InputEvent,b:int,k:int)->bool:
+static func on_lock_mouse(e:InputEvent,b:int,k:int,h:int=Input.MOUSE_MODE_CAPTURED,s:int=Input.MOUSE_MODE_VISIBLE)->bool:
 	if e is InputEventMouseButton:
 		if e.button_index==b and e.pressed:
-			Input.mouse_mode=Input.MOUSE_MODE_CAPTURED
-			return true
+			Input.mouse_mode=h;return true
 	elif e is InputEventKey:
 		if e.physical_keycode==k:
-			Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
-			return true
+			Input.mouse_mode=s;return true
 	return false
 
 @export_group("Pointer")

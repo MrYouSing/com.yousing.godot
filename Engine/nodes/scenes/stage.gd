@@ -9,6 +9,8 @@ static var instance:Stage:
 	get:return Singleton.try_instance(k_keyword,k_class)
 	set(x):Singleton.set_instance(k_keyword,x)
 # Macro.Patch -->
+const k_meta_pool:StringName=&"META_STAGE_POOL"
+
 @export_group("Stage")
 @export var root:Node
 @export var hidden:Node
@@ -50,37 +52,41 @@ func prefab(k:StringName)->Node:
 	var p:Collections.Pool=pools.get(k)
 	if p!=null:return p.source
 	#
-	var s:PackedScene=asset(k)
-	if s!=null:
-		var v:Node=s.instantiate();
+	var r:Resource=asset(k)
+	if r!=null:
+		var v:Node=r.instantiate();_on_create(v)
 		pool(k,v);return v
 	return null
 
 func unpack(r:Resource)->Node:
 	if r==null:return null
 	var k:StringName=IOExtension.file_name_only(r.resource_path)
-	if not pools.has(k):pool(k,r.instantiate())
-	return pools[k].source
+	if pools.has(k):
+		return pools[k].source
+	else:
+		var v:Node=r.instantiate();_on_create(v)
+		pool(k,v);return v
 
 func spawn(o:Node,p:Node,m:Variant,w:bool=false)->Node:
 	if o!=null:
 		var k:StringName=o.name;o=pool(k,o).obtain()
-		GodotExtension.add_node(o,p,false);o.name=k
+		GodotExtension.add_node(o,p,false);o.set_meta(k_meta_pool,k)
 		if w:o.global_transform=m
 		else:o.transform=m
 		#
-		if o.has_method(&"_on_spawn"):o._on_spawn()
+		_on_spawn(o)
 	return o
 
 func despawn(o:Node)->void:
 	if o!=null:
-		if o.has_method(&"_on_despawn"):o._on_despawn()
+		_on_despawn(o)
 		#
-		var p:Collections.Pool=pool(o.name,null)
+		var p:Collections.Pool=pool(o.get_meta(k_meta_pool,o.name),null)
 		if p!=null:
 			GodotExtension.add_node(o,hidden,false)
 			p.recycle(o)
 		else:
+			_on_destroy(o)
 			GodotExtension.destroy(o)
 
 # Scene Management
@@ -189,6 +195,42 @@ func load_async(k:StringName,c:Callable,a:bool=false)->void:
 
 # Messages
 
+func _on_create(n:Node)->void:
+	if n!=null:
+		pass
+
+func _on_destroy(n:Node)->void:
+	if n!=null:
+		push_warning("Stage destroy {0}({1})[{2}]".format([n.name,n.get_class(),n.get_script()]))
+
+func _on_spawn(n:Node)->void:
+	if n!=null:
+		var m:Node=n.get_node_or_null(^"Main")
+		if m!=null:n=m
+		if n.has_method(&"_on_spawn"):n._on_spawn()
+		else:GodotExtension.set_enabled(n,true)
+
+func _on_despawn(n:Node)->void:
+	if n!=null:
+		var m:Node=n.get_node_or_null(^"Main")
+		if m!=null:n=m
+		if n.has_method(&"_on_despawn"):n._on_despawn()
+		else:GodotExtension.set_enabled(n,false)
+
+func _on_prefab(l:Loader)->void:
+	if l.progress==1.0:
+		var k:StringName=l.name;assets[k]=l.asset;
+		l.asset=l.asset.instantiate();pool(k,l.asset)
+	#
+	loaders.erase(l);l.path=Loader.k_recycle
+
+func _on_load(l:Loader)->void:
+	if l.progress==1.0:
+		var k:StringName=l.name;assets[k]=l.asset;
+		if not l.arguments.is_empty():self.load(k,l.arguments[0])
+	#
+	loaders.erase(l);l.path=Loader.k_recycle
+
 func _ready()->void:
 	if Singleton.init_instance(k_keyword,self):
 		#
@@ -211,17 +253,3 @@ func _ready()->void:
 func _exit_tree()->void:
 	if Singleton.exit_instance(k_keyword,self):
 		pass
-
-func _on_prefab(l:Loader)->void:
-	if l.progress==1.0:
-		var k:StringName=l.name;assets[k]=l.asset;
-		l.asset=l.asset.instantiate();pool(k,l.asset)
-	#
-	loaders.erase(l);l.path=Loader.k_recycle
-
-func _on_load(l:Loader)->void:
-	if l.progress==1.0:
-		var k:StringName=l.name;assets[k]=l.asset;
-		if not l.arguments.is_empty():self.load(k,l.arguments[0])
-	#
-	loaders.erase(l);l.path=Loader.k_recycle

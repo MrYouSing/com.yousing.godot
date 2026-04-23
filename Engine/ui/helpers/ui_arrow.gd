@@ -13,10 +13,15 @@ func set_enabled(b:bool)->void:
 	if d==_direction:return
 	_direction=d
 	#
-	if b:
+	if b:# Re-Active.
 		if root!=null:root._on_dirty()
 		if not path.is_empty():view=get_node_or_null(path)
-	GodotExtension.set_enabled(view,b)
+	if view==null:
+		set(&"visible",b)
+		if b:GodotExtension.move_node(self,-1)# Topmost.
+	else:
+		GodotExtension.set_enabled(view,b)
+		if b:GodotExtension.move_node(view,-1)# Topmost.
 
 func _ready()->void:
 	if root==null:root=GodotExtension.assign_node(self,"Control") as UITransform

@@ -126,6 +126,18 @@ static func mask_to_str(m:int,c:Variant,d:String="|")->String:
 
 # String APIs
 
+static func string_to_table(s:String)->Array[PackedStringArray]:
+	if s.is_empty():return k_empty_table
+	var a:PackedStringArray=s.split("\n");var n:int=a.size()
+	if n<=0:return k_empty_table
+	var t:Array[PackedStringArray];t.resize(n)
+	var it:PackedStringArray=a[0].split(",",false)
+	var c:int=it.size();t[0]=it;n-=1
+	for i in n:
+		it=a[1+i].split(",")
+		if it.size()>=c:t[1+i]=it
+	return t
+
 # Collection APIs
 
 ## New an array with new instances.
@@ -155,6 +167,11 @@ static func alloc_array(c:Variant,n:int)->Array:
 		if n>0:a.resize(n)
 		return a
 
+static func convert_array(a:Array,b:Array,c:Callable)->void:
+	if c.is_valid():
+		var n:int=a.size();b.resize(n)
+		for i in n:b[i]=c.call(a[i])
+
 static func get_item(a:Array,i:int,v:Variant)->Variant:
 	if i>=0 and i<a.size():return a[i]
 	return v
@@ -165,6 +182,7 @@ static func set_item(a:Array,i:int,v:Variant)->void:
 
 static func move_item(a:Array,i:int,j:int)->void:
 	if j<0:j+=a.size()
+	if i<j:j-=1
 	var v:Variant=a[i];a.remove_at(i);a.insert(j,v)
 
 static func remove_range(a:Array,o:int,c:int=-1)->void:

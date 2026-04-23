@@ -1,26 +1,20 @@
 ## A container class for ui system.
-@tool
 class_name UIPanel extends Actor
 
 @export_group("Panel")
 @export var path:StringName
-@export var canvas:CanvasItem
-@export_range(0.0,1.0,0.001)var alpha:float=1.0:
-	set(x):alpha=x;if canvas!=null:canvas.modulate=Color(canvas.modulate,x)
-@export var fade_time:Vector4=Vector4(0.0,1.0,0.0,1.0)
-@export var fade_in:BaseMixer
-@export var fade_out:BaseMixer
+@export var canvas:Node
+@export var mixer:Node
 
-var _faded:bool
 var _shown:bool
 
 var busy:bool:
 	get=is_busy,set=set_busy
 func is_busy()->bool:
-	if busy:return tween!=null and tween.is_valid()
+	if busy:return mixer!=null and Tweenable.find_tween(mixer)!=null
 	else:return false
 func set_busy(b:bool)->void:
-	busy=b;if not b:stop_tween()
+	busy=b;if not b and mixer!=null:Tweenable.kill_tween(mixer)
 	if get_meta(&"global_busy",false):UIManager.instance.set_busy(b)
 
 func get_enabled()->bool:
@@ -29,11 +23,8 @@ func get_enabled()->bool:
 func set_enabled(b:bool)->void:
 	_shown=b;if busy:return
 	#
-	if _faded:
-		if b:begin_fade_in()
-		else:begin_fade_out()
-	else:
-		super.set_enabled(_shown)
+	if mixer!=null:GodotExtension.set_enabled(mixer,b)
+	else:super.set_enabled(_shown)
 
 func get_config(k:StringName,v:Variant)->Variant:
 	return Application.get_config().get_value(name,k,v)
@@ -47,40 +38,27 @@ func render_view(v:Node,m:Variant)->void:
 			match typeof(m):
 				TYPE_BOOL,TYPE_INT,TYPE_FLOAT:
 					if v is BaseButton:v.button_pressed=bool(m);return
+				TYPE_STRING,TYPE_STRING_NAME:
+					UIExtension.set_text(v,m);return
+				TYPE_OBJECT:
+					if m is Texture:UIExtension.set_texture(v,m);return
 		v.set(&"model",m)
 
+func _mixer_started(b:bool)->void:
+	busy=true
+	if b:super.set_enabled(b);GodotExtension.set_enabled(canvas,b)
+
+func _mixer_finished(b:bool)->void:
+	busy=false
+	if b!=_shown:set_enabled(_shown)
+	elif not b:super.set_enabled(b);GodotExtension.set_enabled(canvas,b)
+
 func _ready()->void:
-	if not path.is_empty():UIManager.register(path,self)
 	if canvas==null:canvas=GodotExtension.assign_node(self,"CanvasItem")
-	#
-	_faded=canvas!=null or fade_in!=null or fade_out!=null
-	alpha=alpha
+	LangExtension.try_signal(mixer,&"started",_mixer_started)
+	LangExtension.try_signal(mixer,&"finished",_mixer_finished)
+	if not path.is_empty():UIManager.register(path,self)
 
 func _exit_tree()->void:
 	if GodotExtension.s_reparenting:return
 	if not path.is_empty():UIManager.register(path,null)
-
-func do_fade(t:Tween,m:BaseMixer,v:float,w:float=0.0,d:float=1.0)->Tween:
-	busy=true;Tweenable.set_always(t)
-	if w>0.0:t.tween_interval(w)
-	if m!=null:t.tween_property(m,^"weight",v,MathExtension.time_fade(m.weight,v,d))
-	elif canvas!=null:t.tween_property(self,^"alpha",v,MathExtension.time_fade(alpha,v,d))
-	return t
-
-func begin_fade_in()->void:
-	super.set_enabled(true)
-	var m:BaseMixer=fade_in;if m==null:m=fade_out
-	do_fade(play_tween(),m,1.0,fade_time.x,fade_time.y).finished.connect(end_fade_in)
-
-func end_fade_in()->void:
-	busy=false
-	if not _shown:set_enabled(false)
-
-func begin_fade_out()->void:
-	var m:BaseMixer=fade_out;if m==null:m=fade_in
-	do_fade(play_tween(),m,0.0,fade_time.z,fade_time.w).finished.connect(end_fade_out)
-
-func end_fade_out()->void:
-	busy=false
-	if _shown:set_enabled(true)
-	else:super.set_enabled(false)

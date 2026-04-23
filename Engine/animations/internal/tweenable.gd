@@ -17,6 +17,15 @@ static func set_always(t:Tween,i:int=PROCESS_MODE_ALWAYS)->void:
 	t.set_ignore_time_scale()
 	t.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 
+static func set_delay(n:Node,t:Tween,f:float,b:bool)->Tween:
+	if n==null or t==null or f<=0.0:return t
+	# Play
+	var p:Tween=n.create_tween()
+	p.tween_interval(f)
+	p.tween_subtween(t)
+	if b:s_tweens[n]=p
+	return p
+
 ## See [method Tween.kill].
 static func kill_tween(n:Node)->void:
 	if n==null:return
