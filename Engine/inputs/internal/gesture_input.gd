@@ -61,11 +61,7 @@ func _ready()->void:
 	set_process_input(not b)
 	set_process_unhandled_input(b)
 	#
-	if current==null:current=self
-
-func _exit_tree()->void:
-	if GodotExtension.s_reparenting:return
-	if self==current:current=null
+	InputExtension.auto_current(GestureInput,self)
 
 enum GestureType {
 	None,

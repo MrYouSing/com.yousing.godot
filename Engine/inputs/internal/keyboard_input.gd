@@ -308,12 +308,8 @@ func shortcut(k:Key)->bool:
 	return false
 
 func _ready()->void:
-	if current==null:current=self
 	reload()
-
-func _exit_tree()->void:
-	if GodotExtension.s_reparenting:return
-	if self==current:current=null
+	InputExtension.auto_current(KeyboardInput,self)
 
 func _process(delta: float)->void:
 	try_update(KEY_UNKNOWN)

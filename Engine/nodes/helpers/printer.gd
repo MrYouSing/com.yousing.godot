@@ -1,6 +1,6 @@
 ## A helper class for printing nodes.
 @tool
-class_name NodePrinter extends Node
+class_name Printer extends Node
 
 static var s_float:String="%4f"
 

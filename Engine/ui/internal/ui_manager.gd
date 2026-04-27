@@ -35,6 +35,7 @@ static func register(k:StringName,v:Object)->void:
 var _views:Dictionary[StringName,Object]
 var _stack:Array[Object]
 var _sounds:Collections.Ring
+var _main:Object
 
 func _ready()->void:
 	if Singleton.init_instance(k_keyword,self):
@@ -57,16 +58,22 @@ func _exit_tree()->void:
 	if Singleton.exit_instance(k_keyword,self):
 		pass
 
-func _process(delta:float)->void:
+func _process(d:float)->void:
+	#
+	if _main!=null:
+		var v:Variant=_main._on_tick()
+		if v==null:pass
+		elif v!=0:return
+	#
 	if features&0x02!=0 and _stack.size()>1:
 		if is_tap(5):
 			active_view(peek_view(),false);return
 	if features&0x04!=0:
 		if is_tap(8):
-			show_view(&"App.Select",true)
+			show_view(&"App_Select",true)
 	if features&0x08!=0:
 		if is_tap(9):
-			show_view(&"App.Start",true)
+			show_view(&"App_Start",true)
 
 func _notification(what:int)->void:
 	match what:
@@ -76,17 +83,17 @@ func _notification(what:int)->void:
 			Application.focus(false)
 		MainLoop.NOTIFICATION_APPLICATION_PAUSED:
 			if features&0x10!=0:
-				if get_view(&"App.Pause")!=null:_on_pause(true)
+				if get_view(&"App_Pause")!=null:_on_pause(true)
 			Application.focus(false)
 
 func _on_pause(b:bool)->void:
 	Application.pause(b)
-	var v:Object=find_view(&"App.Pause",true)
+	var v:Object=find_view(&"App_Pause",true)
 	if v!=null:active_view(v,b)
 
 func _on_quit(b:bool)->void:
 	if not b:
-		var v:Object=find_view(&"App.Quit",true)
+		var v:Object=find_view(&"App_Quit",true)
 		if v==null:b=true
 		else:active_view(v,true)
 	if b:Application.quit()
@@ -105,6 +112,15 @@ func init_ui()->void:
 		flush_view(get_view(prefabs.keys()[0]))
 
 # Get/Set
+
+func get_main()->Object:
+	if _main!=null:return _main
+	return self
+
+func set_main(o:Object)->void:
+	if _main!=null:if _main.has_method(&"_on_exit"):_main._on_exit()
+	_main=o
+	if o!=null:if o.has_method(&"_on_enter"):o._on_enter()
 
 func get_view(k:StringName,v:Object=null)->Object:
 	return _views.get(k,v)

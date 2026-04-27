@@ -1,5 +1,5 @@
 ## A wrapper class for [NavigationAgent2D] and [NavigationAgent3D].
-class_name AINavigator extends Rigidbody
+class_name Navigator extends Rigidbody
 
 @export_group("Motor")
 @export var agent:Node

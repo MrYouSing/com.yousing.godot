@@ -26,17 +26,16 @@ static func set_texture(o:Object,t:Texture,b:bool=true)->void:
 static var s_clicking:bool
 static var s_button:int=-1
 
-static func get_button()->int:
+static func get_button(n:int=3)->int:
 	if s_button>=0:return s_button
-	# TODO: Button.pressed is a deferred signal,we don't know which mouse button is pressed.
+	#
+	var m:int=DisplayServer.mouse_get_button_state()
+	var p:PointerInput=PointerInput.current;var i:int=n
+	if p!=null:# TODO: Force-update the latest buttons.
+		var e:PointerInput.PointerEvent=p.get_mouse()
+		e.buttons=m;while i>0:i-=1;if p.mouse_down(i):return i
 	# TODO: Fallback detection is based on which higher button is held.
-	var i:int=3
-	var p:PointerInput=PointerInput.current
-	if p!=null:
-		while i>0:i-=1;if p.mouse_on(i):return i
-	else:
-		var m:int=DisplayServer.mouse_get_button_state()
-		while i>0:i-=1;if m&(1<<i)!=0:return i
+	i=n;while i>0:i-=1;if m&(1<<i)!=0:return i
 	return -1
 
 static func select_node(n:Node)->void:

@@ -71,8 +71,9 @@ func spawn(o:Node,p:Node,m:Variant,w:bool=false)->Node:
 	if o!=null:
 		var k:StringName=o.name;o=pool(k,o).obtain()
 		GodotExtension.add_node(o,p,false);o.set_meta(k_meta_pool,k)
-		if w:o.global_transform=m
-		else:o.transform=m
+		if m!=null:
+			if w:o.global_transform=m
+			else:o.transform=m
 		#
 		_on_spawn(o)
 	return o

@@ -9,8 +9,11 @@ func run()->void:
 	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
 
 func _ready()->void:
+	if target==null:run();return
 	LangExtension.try_signal(target,event,run)
 
 func _exit_tree()->void:
 	if GodotExtension.s_reparenting:return
+	#
+	if target==null:return
 	LangExtension.remove_signal(target,event,run)

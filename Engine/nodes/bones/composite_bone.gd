@@ -14,7 +14,7 @@ class_name CompositeBone extends Node
 			it.active=x
 @export_range(0.0,1.0,0.001)var influence:float=1.0:
 	set(x):
-		influence=x;
+		influence=x
 		if scale<0.0:return
 		var f:float=scale*x
 		var i:int=-1;for it in bones:

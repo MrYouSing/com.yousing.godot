@@ -11,6 +11,25 @@ static func set_is_on(c:Variant,k:StringName,v:int)->void:
 	if v&0x01!=0:c.set(k,false)
 	elif v&0x02!=0:c.set(k,true)
 
+# Management APIs
+
+static func make_current(c:Script,o:Object,k:StringName=&"current")->void:
+	if c==null or o==null:return
+	if c.get(k)==null:
+		c.set(k,o);o.set(&"process_mode",Node.PROCESS_MODE_ALWAYS)
+
+static func clear_current(c:Script,o:Object,k:StringName=&"current")->void:
+	if GodotExtension.s_reparenting:return
+	if c==null or o==null:return
+	if o==c.get(k):
+		c.set(k,null)
+
+static func auto_current(c:Script,o:Object,k:StringName=&"current")->void:
+	if c==null or o==null:return
+	if c.get(k)==null:
+		c.set(k,o);o.set(&"process_mode",Node.PROCESS_MODE_ALWAYS)
+		LangExtension.try_signal(o,&"tree_exiting",clear_current.bind(c,o,k))
+
 # Input APIs
 
 static func set_axis(k:StringName,v:float)->void:

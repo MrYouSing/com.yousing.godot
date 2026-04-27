@@ -90,11 +90,7 @@ func _ready()->void:
 	var n:int=axes.size()/4;if n<=0:n=4
 	if m_axes.size()<n:m_axes.resize(n)
 	#
-	if current==null:current=self
-
-func _exit_tree()->void:
-	if GodotExtension.s_reparenting:return
-	if self==current:current=null
+	InputExtension.auto_current(PlayerInput,self)
 
 func _process(d:float)->void:
 	try_update()

@@ -27,7 +27,7 @@ func _ready()->void:
 	if root==null:root=GodotExtension.assign_node(self,"Control") as UITransform
 
 func _enter_tree()->void:
-	set_enabled(true)
+	if is_node_ready():set_enabled(true)
 
 func _exit_tree()->void:
 	set_enabled(false)

@@ -58,11 +58,7 @@ func _ready()->void:
 	_featured()
 	if features&0x80!=0:if input==null:input=PlayerInput.current
 	#
-	if current==null:current=self
-
-func _exit_tree()->void:
-	if GodotExtension.s_reparenting:return
-	if self==current:current=null
+	InputExtension.auto_current(PointerInput,self)
 
 func _process(d:float)->void:
 	get_mouse()

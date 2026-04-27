@@ -1,11 +1,10 @@
 ## A [url=https://developer.android.google.cn/reference/android/widget/Toast]Toast[/url] implementation for Godot.
-class_name UIToast extends Node
+class_name UIToast extends UIAnimation
 
 static var s_time_short:float=2.0
 static var s_time_long:float=3.5
 
 @export_group("Toast")
-@export var event:StringName
 @export var view:Node
 @export var label:Node
 
@@ -15,32 +14,30 @@ var _kill:Callable
 func _ready()->void:
 	if view==null:view=GodotExtension.assign_node(self,"Node2D")
 	if label==null:label=GodotExtension.assign_node(self,"Label")
-	if not event.is_empty():
-		LangExtension.add_signal(UIManager.instance,event,make_text)
-
-func _exit_tree()->void:
-	if GodotExtension.s_reparenting:return
-	if not event.is_empty() and UIManager.exists:
-		LangExtension.remove_signal(UIManager.instance,event,make_text)
-
-func stop_call()->void:
-	Juggler.try_kill(self)
+	super._ready()
 
 func make_text(s:String,t:float,c:Callable)->void:
-	stop_call()
-	if s.is_empty():kill_text();return
+	Juggler.try_kill(self)
+	if s.is_empty():stop();return
 	#
+	play();_kill=c
 	GodotExtension.set_enabled(view,true)
-	_kill=c
 	if label!=null:label.text=s
 	if t<0.0:
 		if is_equal_approx(t,-2.0):t=s_time_long
 		else:t=s_time_short
-	if t>0.0:_call=Juggler.instance.delay_call(kill_text,LangExtension.k_empty_array,t,1)
+	if t>0.0:_call=Juggler.instance.delay_call(stop,LangExtension.k_empty_array,t,1)
 
-func kill_text()->void:
-	stop_call()
+func stop()->void:
+	Juggler.try_kill(self)
 	#
 	GodotExtension.set_enabled(view,false)
 	if not _kill.is_null():_kill.call()
 	_kill=LangExtension.k_empty_callable
+	#
+	super.stop()
+
+func _on_animate(...a:Array)->void:
+	match a.size():
+		3:make_text(a[0],a[1],a[2])
+		_:stop()

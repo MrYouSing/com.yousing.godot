@@ -121,15 +121,13 @@ func _ready()->void:
 			var a:Array[int]=Input.get_connected_joypads()
 			if index<a.size():device=a[index]
 		return
-	if current==null:current=self
+	InputExtension.auto_current(GamepadInput,self)
 
 func _exit_tree()->void:
 	if GodotExtension.s_reparenting:return
 	index=instances.find(self)
 	if index>=0:
 		if self==instances[index]:instances[index]=null
-		return
-	if self==current:current=null
 
 func _input(e:InputEvent)->void:_on_input(e)
 func _unhandled_input(e:InputEvent)->void:_on_input(e)

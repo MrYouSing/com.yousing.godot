@@ -58,8 +58,16 @@ func fetch(a:Array[BaseInteractable],b:bool=false)->void:
 
 func _on_find(i:BaseInteractable)->void:
 	if i==null:return
-	if not items.has(i):items.append(i)
+	#
+	if not items.has(i):
+		items.append(i)
+		item=i
 
 func _on_miss(i:BaseInteractable)->void:
 	if i==null:return
+	#
 	items.erase(i)
+	if i==item:
+		var n:int=items.size()
+		if n>0:item=items[n-1]
+		else:item=null
