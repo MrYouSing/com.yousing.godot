@@ -115,7 +115,7 @@ func build()->void:
 		for i in n:LangExtension.try_signal(buttons[b+i],&"pressed",seek.bind(i));
 
 func _prepared()->void:
-	if features&0x02!=0:
+	if features&0x02==0:
 		if book==null and index>=0:
 			GodotExtension.set_enabled(pages[index],false)
 

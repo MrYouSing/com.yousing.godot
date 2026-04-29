@@ -36,6 +36,12 @@ static func int_repeat(i:int,a:int,z:int=0)->int:
 	if a<z:return wrapi(i,a,z)
 	else:return (i+a)%a#wrapi(i,z,a)
 
+static func int_wrap(i:int,n:int,b:bool)->int:
+	if b:return (i+n)%n
+	elif i<0:return 0
+	elif i>=n:return n-1
+	else:return i
+
 static func float_clamp(v:float,a:float,z:float)->float:
 	if a<z:return clampf(v,a,z)
 	else:return v
@@ -185,6 +191,21 @@ static func vec2_fade(a:Vector2,b:Vector2,c:float)->Vector2:
 		if b.length_squared()>=d:a=b
 		a=a.normalized()*c
 	return a
+
+static func vec2_inside(v:Vector2,a:Vector2,z:Vector2)->bool:
+	if a.x<z.x:
+		if v.x<a.x:return false
+		if v.x>z.x:return false
+	elif a.x>z.x:
+		if v.x>a.x:return false
+		if v.x<z.x:return false
+	if a.y<z.y:
+		if v.y<a.y:return false
+		if v.y>z.y:return false
+	elif a.y>z.y:
+		if v.y>a.y:return false
+		if v.y<z.y:return false
+	return true
 
 static func vec3_parallel(a:Vector3,b:Vector3)->int:
 	var f:float=a.normalized().dot(b.normalized())

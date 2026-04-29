@@ -26,6 +26,7 @@ static func register(k:StringName,v:Object)->void:
 	&"ui_accept",&"ui_cancel",&"ui_menu",&"ui_select",
 	&"ui_end",&"ui_home"
 ]
+@export var triggers:Array[BaseTrigger]
 @export var prefabs:Dictionary[StringName,Resource]
 @export_flags(
 	"Up Tap","Auto Back","Auto Select","Auto Start",
@@ -188,6 +189,12 @@ func is_tap(i:int)->bool:
 	if i<0||i>=buttons.size():return false
 	elif features&0x01!=0:return Input.is_action_just_released(buttons[i])
 	else:return Input.is_action_just_pressed(buttons[i])
+
+func is_trigger(i:int)->bool:
+	if i>=0 and i<triggers.size():
+		var t:BaseTrigger=triggers[i]
+		if t!=null:return t.is_trigger()
+	return is_tap(i)
 
 func set_busy(b:bool)->void:
 	if b:LangExtension.begin_busy(self)

@@ -77,7 +77,7 @@ func is_input(i:int)->bool:
 				if it==&"null":return false
 				else:return Input.is_action_just_pressed(it)
 		if UIManager.exists:
-			return UIManager.instance.is_tap(i)
+			return UIManager.instance.is_trigger(i)
 	return false
 
 func num_models()->int:
@@ -85,6 +85,8 @@ func num_models()->int:
 	else:return models.size()
 
 func get_model(i:int)->Resource:
+	#if i<0:return _model# Current
+	#
 	if database!=null:return database.models[i]
 	else:return models[i]
 
@@ -102,6 +104,8 @@ func new_view()->Node:
 	return v
 
 func get_view(i:int)->Node:
+	#if i<0:return _view# Current
+	#
 	var v:Node
 	if i<_views.size():v=_views[i]
 	else:v=new_view();_views.append(v)
@@ -144,6 +148,7 @@ func focus(i:int)->void:
 		on_blur.emit()
 	# Refresh it.
 	UIExtension.select_node(_view)
+	execute(-1)
 
 func select(i:int)->void:
 	if i<_start or i>=_start+capacity:

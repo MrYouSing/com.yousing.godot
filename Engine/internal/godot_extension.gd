@@ -165,6 +165,14 @@ static func is_prefab(o:Object)->bool:
 		return true
 	return false
 
+static func meta_data(s:Object,k:StringName,d:Object,p:StringName)->void:
+	if s!=null and d!=null:
+		if s.has_meta(k):d.set(p,s.get_meta(k))
+
+static func meta_node(s:Node,k:StringName,d:Object,p:StringName)->void:
+	if s!=null and d!=null:
+		if s.has_meta(k):d.set(p,s.get_node_or_null(s.get_meta(k)))
+
 static func scale_shape_3d(s:Shape3D,f:float)->void:
 	if s==null:pass
 	elif s is SphereShape3D:s.radius*=f

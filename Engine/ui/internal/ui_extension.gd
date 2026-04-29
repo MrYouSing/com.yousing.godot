@@ -1,5 +1,15 @@
 class_name UIExtension
 
+static func copy_transform(a:Control,b:Control)->void:
+	if a!=null and b!=null:
+		var m:Transform2D=a.get_global_transform_with_canvas()
+		b.set_global_position(m.origin)
+		b.rotation=m.get_rotation()
+		#
+		b.scale=a.scale
+		b.pivot_offset_ratio=a.pivot_offset_ratio
+		b.size=a.size
+
 static func set_content(o:Object,k:StringName,v:Variant,i:int)->void:
 	if o==null:return
 	#

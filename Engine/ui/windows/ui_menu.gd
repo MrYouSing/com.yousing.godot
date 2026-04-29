@@ -12,6 +12,8 @@ class_name UIMenu extends UIWindow
 	set(x):_value_changed(x);value_changed.emit(x);value=x
 ## See [signal Range.value_changed]
 signal value_changed(i:int)
+## See [signal PopupMenu.id_pressed]
+signal id_pressed(i:int)
 
 var is_created:bool
 var popup:PopupMenu
@@ -22,6 +24,7 @@ var items:Array[Entry]
 
 func _ready()->void:
 	_value_changed(value)
+	set_process(false)
 	# TODO:Fixed issue https://github.com/godotengine/godot/issues/112862
 	if is_popup() and Application.get_platform()!="macOS":
 		keyboard=KeyboardInput.current
@@ -46,6 +49,7 @@ func _on_press(i:int)->void:
 func _on_click(i:int)->void:
 	var e:Entry=items[i]
 	if e==null:return
+	id_pressed.emit(e.id)
 	if e.action.is_valid():
 		e.action.call()
 	else:
@@ -77,18 +81,22 @@ func _value_changed(v:int)->void:
 	if button!=null:button.set(&"text",t)
 
 func show()->void:
+	set_process(true)
+	#
 	if is_popup():
 		if button!=null&&button.has_method(&"show_popup"):button.show_popup()
 		else:show_popup(get_position())
 	else:
-		var m:Node=menu if menu!=null else self
+		var m:Node=get_parent() if is_class("Node") else self
 		m.set(&"visible",true)
 
 func hide()->void:
+	set_process(false)
+	#
 	if is_popup():
 		if popup!=null:popup.hide()
 	else:
-		var m:Node=menu if menu!=null else self
+		var m:Node=get_parent() if is_class("Node") else self
 		m.set(&"visible",false)
 
 func to_popup(n:Node)->PopupMenu:
@@ -179,7 +187,7 @@ func draw_button(b:Node,e:Entry)->void:
 	var t:String=get_text(e.text)
 	#
 	b.set(&"visible",true)
-	b.set(&"text",t);b.set(&"icon",i)
+	b.set(&"icon",i);b.set(&"text",t)
 	if not e.tooltip.is_empty():b.set(&"tooltip_text",get_text(e.tooltip))
 
 func rebuild()->void:

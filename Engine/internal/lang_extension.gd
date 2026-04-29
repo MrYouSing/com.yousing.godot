@@ -2,6 +2,7 @@ class_name LangExtension
 
 const k_empty_string:String=""
 const k_empty_name:StringName=&""
+const k_empty_path:NodePath=^""
 const k_empty_rid:RID=RID()
 const k_empty_array:Array=[]
 const k_empty_dictionary:Dictionary={}
