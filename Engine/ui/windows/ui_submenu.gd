@@ -32,6 +32,10 @@ func hide()->void:
 			if context.has_method(&"set_pause"):context.set_pause(false)
 			else:GodotExtension.set_enabled(context,true)
 
+func _on_click(i:int)->void:
+	select(i)
+	super._on_click(i)
+
 func _ready()->void:
 	super._ready()
 	if layout!=null:

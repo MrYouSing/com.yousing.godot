@@ -29,7 +29,7 @@ func _on_enter(o:Object)->void:
 	var r:RID=o.get_rid();if exclude.has(r):return
 	var i:int=targets.find(o);if i>=0:return
 	#
-	apply(Physics.HitInfo.from_points(o,GodotExtension.get_global_position(o),GodotExtension.get_global_position(self)))
+	apply(PhysicsExtension.HitInfo.from_points(o,GodotExtension.get_global_position(o),GodotExtension.get_global_position(self)))
 	_on_find(o)
 
 func _on_exit(o:Object)->void:

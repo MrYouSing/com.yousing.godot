@@ -21,7 +21,9 @@ func abort()->void:
 
 func broadcast(s:StringName)->void:
 	if s==state:return
+	set_meta(&"state",s)
 	for it in machines:if it!=null:it._on_event(self,s)
+	remove_meta(&"state")
 	state=s# Flush it.
 
 func set_state(s:StringName)->void:

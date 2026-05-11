@@ -10,7 +10,7 @@ class_name BaseDetector extends Node
 
 var target:Object
 var targets:Array[Object]
-var infos:Dictionary[RID,Physics.HitInfo]
+var infos:Dictionary[RID,PhysicsExtension.HitInfo]
 var dirty:bool=true
 var exclude:Array[RID]
 
@@ -29,7 +29,7 @@ func _on_dirty()->void:
 
 func _on_find_hit(d:Dictionary)->void:
 	if not d.is_empty():
-		apply(Physics.HitInfo.from_dict(d))
+		apply(PhysicsExtension.HitInfo.from_dict(d))
 		_on_find(d.collider)
 
 func _on_miss_hit(d:Dictionary)->void:
@@ -47,7 +47,7 @@ func clear()->void:
 	target=null;targets.clear()
 	infos.clear()
 
-func apply(h:Physics.HitInfo)->void:
+func apply(h:PhysicsExtension.HitInfo)->void:
 	if h==null||not h.rid.is_valid():return
 	infos[h.rid]=h
 
@@ -55,7 +55,7 @@ func erase(o:Object)->void:
 	if o==null and not o.has_method(&"get_rid"):return
 	infos.erase(o.get_rid())
 
-func fetch(o:Object)->Physics.HitInfo:
+func fetch(o:Object)->PhysicsExtension.HitInfo:
 	if o==null and not o.has_method(&"get_rid"):return null
 	return infos.get(o.get_rid(),null)
 

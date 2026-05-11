@@ -108,6 +108,17 @@ static func set_global_position(n:Node,p:Vector3)->void:
 		if n is Node3D:n.global_position=p
 		else:n.set(&"global_position",Vector2(p.x,p.y))
 
+static func get_global_basis(n:Node)->Basis:
+	if n!=null:
+		if n is Node3D:
+			return n.global_basis
+		else:
+			var r:float;var s:Vector2
+			if n is Node2D:r=n.global_rotation;s=n.global_scale
+			else:r=n.rotation;s=n.scale
+			return Basis.from_euler(Vector3.FORWARD,r).scaled_local(Vector3(s.x,s.y,1.0))
+	return Basis.IDENTITY
+
 static func set_global_rotation(n:Node,a:float,v:Vector3=Vector3.UP)->void:
 	if n!=null:
 		if n is Node3D:
@@ -123,8 +134,9 @@ static func get_global_transform(n:Node)->Transform3D:
 	if n!=null:
 		if n is Node3D:return n.global_transform
 		else:
-			var t:Transform2D=n.get(&"global_transform");var v:Vector2=t.get_origin();var s:Vector2=t.get_scale()
-			return Transform3D(Basis(Vector3.FORWARD,t.get_rotation()),Vector3(v.x,v.y,0.0)).scaled_local(Vector3(s.x,s.y,0.0))
+			var t:Transform2D=n.global_transform if n is Node2D else n.get_global_transform_with_canvas()
+			var v:Vector2=t.get_origin();var s:Vector2=t.get_scale()
+			return Transform3D(Basis(Vector3.FORWARD,t.get_rotation()),Vector3(v.x,v.y,0.0)).scaled_local(Vector3(s.x,s.y,1.0))
 	return Transform3D.IDENTITY
 
 static func set_global_transform(n:Node,t:Transform3D)->void:
@@ -179,6 +191,19 @@ static func scale_shape_3d(s:Shape3D,f:float)->void:
 	elif s is CapsuleShape3D:s.radius*=f;s.height*=f
 	elif s is BoxShape3D:s.size*=f
 
+static func size_shape_3d(s:Shape3D)->Vector3:
+	if s==null:pass
+	elif s is SphereShape3D:var f:float=s.radius*2.0;return Vector3(f,f,f)
+	elif s is CapsuleShape3D:var f:float=s.radius*2.0;return Vector3(f,s.height,f)
+	elif s is BoxShape3D:return s.size
+	return Vector3.ZERO
+
+static func resize_shape_3d(s:Shape3D,v:Vector3)->void:
+	if s==null:pass
+	elif s is SphereShape3D:s.radius=(v.x+v.y+v.z)/6.0
+	elif s is CapsuleShape3D:s.radius=(v.x+v.z)*0.25;s.height=v.y
+	elif s is BoxShape3D:s.size=v
+
 # Rendering APIs
 
 static var k_class_particles:PackedStringArray=["CPUParticles2D","GPUParticles2D","CPUParticles3D","GPUParticles3D"]
@@ -195,3 +220,18 @@ static func set_camera(n:Node,b:bool)->void:
 static func stop_particles(n:Node)->void:
 	if n!=null and k_class_particles.has(n.get_class()):
 		n.restart();n.emitting=false
+
+# Editor APIs
+
+static func editor_dirty(o:Object)->void:
+	if o!=null and Engine.is_editor_hint():
+		if o is Resource:o.emit_changed()
+		else:EditorInterface.mark_scene_as_unsaved()
+
+static func debug_print(k:StringName,s:String)->bool:
+	var c:StringName=&"ImGui"
+	if not ClassDB.class_exists(c):return false
+	ClassDB.class_call_static(c,&"Begin",k)
+	ClassDB.class_call_static(c,&"Text",s)
+	ClassDB.class_call_static(c,&"End")
+	return true

@@ -8,7 +8,6 @@ static var s_button_tags:Array[StringName]=[&"Off",&"On",&"Tap",&"Hold",&"Trigge
 @export var input:PlayerInput
 @export var axes:Array[StringName]
 @export var buttons:Array[StringName]
-@export var label:Label
 
 func better(a:Array[StringName],b:Array[StringName],i:int)->StringName:
 	if i<a.size():return a[i]
@@ -22,8 +21,8 @@ func get_button(i:int)->StringName:
 	return better(buttons,input.buttons,i)
 
 func to_text()->String:
-	var tab="    "
-	var tmp=name;
+	var tab:String="    "
+	var tmp:String="Timestamp:%08d"%Application.get_frames()
 	if keyboard!=null:
 		tmp+="\nKeyboard:\n"
 		tmp+=tab+keyboard.to_string()
@@ -52,19 +51,22 @@ func to_text()->String:
 func to_button(b:int)->String:
 	if input==null:return LangExtension.s_none_string
 	#
-	var tmp:String;
+	var tmp:String
 	var i:int=-1;for it in s_button_tags:
-		i+=1;
-		if input.call(s_button_keys[i],b):
+		i+=1;if input.call(s_button_keys[i],b):
 			if tmp.is_empty():tmp=it
 			else:tmp+=";"+it
-	return tmp;
+	return tmp
 
 func _ready()->void:
+	_start.call_deferred()
+
+func _start()->void:
 	if keyboard==null:keyboard=KeyboardInput.current
 	if pointer==null:pointer=PointerInput.current
 	if input==null:input=PlayerInput.current
+	if is_processing():set_process(ClassDB.class_exists(&"ImGui"))
 
-func _process(delta: float)->void:
-	if input==null:return
-	if label!=null:label.text=to_text()
+func _process(d:float)->void:
+	if GodotExtension.debug_print(name,to_text()):
+		pass

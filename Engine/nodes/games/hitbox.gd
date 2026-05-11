@@ -12,6 +12,11 @@ var context:Object
 var player:Player:
 	get():return null if unit==null else unit.player
 
+func get_center()->Vector3:
+	var n:Node=get_node_or_null(^"Shape")
+	if n==null:n=self
+	return GodotExtension.get_global_position(n)
+
 func _on_damage(f:float)->void:
 	var tmp:Hitbox=current;current=self
 	on_damage.emit(f)

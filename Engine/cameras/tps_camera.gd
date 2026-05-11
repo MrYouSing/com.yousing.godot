@@ -25,6 +25,23 @@ static var current:TpsCamera
 var rot:Vector2=Vector2.ZERO
 var cam:Camera3D
 
+func ray_cast(a:Vector3,b:Vector3)->Vector3:
+	var rids:Array[RID];
+	for it in exclude:rids.append(it.get_rid())
+	var res:Dictionary;
+	if ball>0.0:res=PhysicsExtension.sphere_cast(get_world_3d().direct_space_state,a,b,ball,mask,rids,flags)
+	else:res=PhysicsExtension.ray_cast(get_world_3d().direct_space_state,a,b,mask,rids,flags)
+	if res:b=res.position+res.normal*ball
+	return b
+
+func rotate_to(q:Quaternion)->void:
+	if pivot==null:return
+	#
+	pivot.global_basis=q
+	var e:Vector3=q.get_euler()*MathExtension.k_rad_to_deg
+	rot.y=MathExtension.float_clamp(e.y,range.y,range.w)
+	rot.x=MathExtension.float_clamp(e.x,range.x,range.z)
+
 func _ready()->void:
 	if camera!=null:
 		camera.rotation=Vector3(0.0,PI,0.0)
@@ -64,15 +81,6 @@ func _physics_process(delta:float)->void:
 	from=ray_cast(to,from)
 	camera.global_position=MathExtension.vec3_lerp(camera.global_position,from,smooth,delta)
 	if mixer!=null:mixer.set(&"distance",(camera.global_position-to).length())
-
-func ray_cast(a:Vector3,b:Vector3)->Vector3:
-	var rids:Array[RID];
-	for it in exclude:rids.append(it.get_rid())
-	var res:Dictionary;
-	if ball>0.0:res=Physics.sphere_cast(get_world_3d().direct_space_state,a,b,ball,mask,rids,flags)
-	else:res=Physics.ray_cast(get_world_3d().direct_space_state,a,b,mask,rids,flags)
-	if res:b=res.position+res.normal*ball
-	return b
 
 func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 	var l:Lens=v;if l==null:return

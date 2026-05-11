@@ -14,7 +14,7 @@ func detect()->bool:
 	var d:float=distance.y-distance.x;var m:Transform3D=n.global_transform
 	_direction=m.basis.get_rotation_quaternion()*forward
 	_origin=m.origin+_direction*distance.x
-	var r:Dictionary=Physics.ray_cast(c,_origin,_origin+_direction*d,mask,exclude,flags)
+	var r:Dictionary=PhysicsExtension.ray_cast(c,_origin,_origin+_direction*d,mask,exclude,flags)
 	if not r.is_empty():
 		clear()
 		target=r.collider;_on_find_hit(r)
@@ -25,5 +25,5 @@ func _on_find_hit(d:Dictionary)->void:
 	if not d.is_empty():
 		if d.normal.is_zero_approx():d.normal=-_direction
 		#
-		apply(Physics.HitInfo.from_dict(d))
+		apply(PhysicsExtension.HitInfo.from_dict(d))
 		_on_find(d.collider)

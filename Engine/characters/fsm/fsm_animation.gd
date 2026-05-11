@@ -19,3 +19,4 @@ func _on_exit()->void:
 	if sleep:
 		var c:CharacterController=get_character()
 		if c!=null:c.set_enabled(true)
+	FsmEvent.invoke_signal(self,finished,LangExtension.k_empty_array)

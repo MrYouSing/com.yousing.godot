@@ -1,4 +1,4 @@
-class_name Physics
+class_name PhysicsExtension
 
 class HitInfo:
 	var collider:Object

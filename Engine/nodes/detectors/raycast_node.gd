@@ -35,7 +35,7 @@ func detect()->bool:
 	var n:Node3D=root;var c:PhysicsDirectSpaceState3D=n.get_world_3d().direct_space_state
 	var m:Transform3D=n.global_transform
 	_direction=m.basis.get_rotation_quaternion()*forward;_origin=m.origin
-	var r:Dictionary=Physics.ray_cast(c,_origin,_origin+_direction*distance.y,mask,exclude,flags)
+	var r:Dictionary=PhysicsExtension.ray_cast(c,_origin,_origin+_direction*distance.y,mask,exclude,flags)
 	if not r.is_empty():
 		clear()
 		if (r.position-_origin).length_squared()>=distance.x*distance.x:

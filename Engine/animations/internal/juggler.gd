@@ -107,6 +107,10 @@ class Worker:
 		var m:int=calls.size();if m==0:return
 		var j:int=0;var it:Call;for i in m:
 			it=calls[i];if it==null:continue
+			#
+			if it.worker==null or it.id<=k_invalid_id:
+				push_error("Invalid call!");continue
+			#
 			if it.update():calls[j]=it;j+=1
 		# Cleanup.
 		LangExtension.remove_range(calls,j,m-j)

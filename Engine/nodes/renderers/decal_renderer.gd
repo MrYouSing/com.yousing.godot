@@ -54,11 +54,11 @@ func find(v:Vector3)->Node:
 
 func draw()->void:
 	var p:Vector3=GodotExtension.get_global_position(self)
-	var v:Vector3=GodotExtension.get_global_transform(self).basis*Vector3.BACK
+	var v:Vector3=GodotExtension.get_global_basis(self)*Vector3.BACK
 	var a:float=randf_range(angle.x,angle.y)*MathExtension.k_deg_to_rad
 	var s:float=randf_range(zoom.x,zoom.y)
 	if detector!=null and detector.detect():
-		var h:Physics.HitInfo=detector.fetch(detector.target)
+		var h:PhysicsExtension.HitInfo=detector.fetch(detector.target)
 		v=h.normal;p=h.point
 	# Clean and create.
 	var n:Node=find(p);if n!=null:kill(n)

@@ -29,7 +29,7 @@ func set_model(m:Node)->void:
 	a=model as Actor;if a!=null and target!=null:
 		var t:Node3D=a.get_component(&"LookAt")
 		if t!=null:t.reparent(target,false);t.transform=Transform3D.IDENTITY
-		if animator!=null:request=animator.get_node_or_null(^"RequestMachine")
+		if animator!=null:request=animator.tree.get_node_or_null(^"RequestMachine")
 
 func get_facing(v:Vector3)->Vector3:
 	if motor!=null:motor.direction=Vector3.ZERO# Reset for realtime.

@@ -24,14 +24,12 @@ var context:Object=self
 var indexes:PackedInt32Array
 
 func bake()->void:
-	var c:Skeleton3D=get_parent();var t:Transform3D
+	var c:Skeleton3D=get_parent()
 	if c!=null:
 		if from!=null:
-			from.variants.clear()
-			for it in names:
-				t=c.get_bone_pose(c.find_bone(it))
-				from.variants.append(t)
-			from.emit_changed()
+			var n:int=names.size();from.variants.resize(n)
+			for i in n:from.variants[i]=c.get_bone_pose(c.find_bone(names[i]))
+			GodotExtension.editor_dirty(from)
 		else:
 			print(c.get_concatenated_bone_names().split(","))
 

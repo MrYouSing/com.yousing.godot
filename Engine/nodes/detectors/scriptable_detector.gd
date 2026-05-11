@@ -22,7 +22,7 @@ func detect()->bool:
 	var i:int=-1;for it in s_layers:
 		i+=1;if mask&(1<<i)!=0:for a in it.agents:
 			if a!=null&&eval(a):
-				apply(Physics.HitInfo.from_points(a,GodotExtension.get_global_position(a),p))
+				apply(PhysicsExtension.HitInfo.from_points(a,GodotExtension.get_global_position(a),p))
 				_on_find(a)
 	if targets.size()>0:
 		target=targets[0]

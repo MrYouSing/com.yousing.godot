@@ -79,6 +79,7 @@ func print()->void:
 	if not s.is_empty():
 		if not view.is_empty():set(view,s)
 		elif not path.is_empty():IOExtension.save_text(path,s)
+		elif GodotExtension.debug_print(name,s):pass
 		else:print(s)
 
 func _process(d:float)->void:

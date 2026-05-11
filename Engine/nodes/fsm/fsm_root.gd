@@ -10,6 +10,7 @@ static var current:FsmRoot
 var state:FsmState
 var other:FsmState
 var time:Vector2
+var map:Dictionary[StringName,FsmState]
 
 signal on_change(a:FsmState,b:FsmState)
 
@@ -43,7 +44,7 @@ func _set_input(t:BaseTrigger,i:PlayerInput,k:KeyboardInput)->void:
 
 func init_root()->void:
 	for it in self.get_node(^"./States").get_children():
-		if it is FsmNode:states.append(it)
+		if it is FsmNode:states.append(it);map[it.name]=it
 
 func get_prev()->FsmState:
 	if other!=null and time.x<0.0:return other
@@ -55,9 +56,7 @@ func get_next()->FsmState:
 
 func get_state(k:StringName)->FsmState:
 	if states.is_empty():init_root()
-	for it in states:
-		if it!=null and it.name==k:return it
-	return null
+	return map.get(k,null)
 
 func set_state(v:FsmState,e:bool=true)->void:
 	#
@@ -79,7 +78,7 @@ func check_transition(s:FsmState,t:FsmTransition)->bool:
 	return true
 
 func check_transitions(s:FsmState,t:Array[FsmTransition])->bool:
-	if s!=null and t!=null:
+	if s!=null and not t.is_empty():
 		for it in t:
 			it.state=s
 			if it.in_time(time.x) and it.is_trigger():

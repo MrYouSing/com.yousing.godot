@@ -41,6 +41,11 @@ func play(k:StringName)->bool:
 	else:_fallback.name=k;_on_request(_fallback)
 	return true
 
+func swap_binding(a:StringName,b:StringName)->void:
+	var c:StringName=bindings.get(a,LangExtension.k_empty_name)
+	bindings.set(a,bindings.get(b,LangExtension.k_empty_name))
+	bindings.set(b,c)
+
 func _on_request(r:Request)->void:
 	if r==null or context==null:return
 	_request=r
@@ -107,12 +112,17 @@ func _do_request(r:Request,p:StringName)->bool:
 					context.set(p,r.args[0])
 				1:
 					context.set(p,r.args[0])
+				0:
+					context.set(p,String(r.name))
 		# Misc
 		Type.Wait:
 			if not p.is_empty():
 				var f:float=get_meta(&"request_wait",0.1)
 				_call=Juggler.instance.repeat_call(_on_wait,[r,p],f,f)
 			return false
+		Type.Swap:
+			for i in r.args.size()/2:
+				swap_binding(r.args[2*i],r.args[2*i+1])
 		Type.Custom:
 			if r.send.is_valid():
 				return r.send.call(context,r,p)
@@ -148,6 +158,7 @@ enum Type {
 	Shoot,
 	Trans,
 	Wait,
+	Swap,
 	Count,
 	Custom=-2,
 }
