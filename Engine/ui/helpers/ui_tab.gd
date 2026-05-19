@@ -3,10 +3,10 @@ class_name UITab extends UIBook
 
 @export_group("Tab")
 @export var arrow:Node
-@export var icons:Array[Texture]
 @export var labels:Array[Node]
 @export var images:Array[Node]
 @export var views:Array[Node]
+@export var icons:Array[Texture]
 
 func set_enabled(b:bool)->void:
 	if index>=0:GodotExtension.set_enabled(views[index],b)

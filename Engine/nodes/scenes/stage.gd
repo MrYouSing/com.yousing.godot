@@ -70,7 +70,7 @@ func unpack(r:Resource)->Node:
 func spawn(o:Node,p:Node,m:Variant,w:bool=false)->Node:
 	if o!=null:
 		var k:StringName=o.name;o=pool(k,o).obtain()
-		GodotExtension.add_node(o,p,false);o.set_meta(k_meta_pool,k)
+		o.set_meta(k_meta_pool,k);GodotExtension.add_node(o,p,false)
 		if m!=null:
 			if w:o.global_transform=m
 			else:o.transform=m

@@ -18,7 +18,9 @@ func _on_blend(c:Object,f:float)->void:
 	#
 	if not remap.is_zero_approx():
 		f=remap(f,remap.x,remap.y,remap.z,remap.w)
+	var tmp:BaseMachine=current;current=self
 	on_execute.emit(c,f)
+	current=tmp
 
 # For other systems.
 

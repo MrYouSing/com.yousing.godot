@@ -40,13 +40,16 @@ var _main:Object
 
 func _ready()->void:
 	if Singleton.init_instance(k_keyword,self):
+		process_mode=Node.PROCESS_MODE_ALWAYS
+		#
 		if root==null:
 			root=self
 		if sound==null:
 			sound=Audio.create(&"UI",1,self);sound.name=&"Sound"
 		_sounds=Collections.Ring.new(get_meta(&"num_sounds",8))
 		if database==null:
-			if UIDatabase.instance!=null:database=UIDatabase.instance
+			if UIDatabase.instance!=null:
+				database=UIDatabase.instance
 			else:
 				var s:String="res://assets/databases/"+name+".tres"
 				database=IOExtension.load_asset(s)
@@ -141,6 +144,10 @@ func pop_view()->Object:
 func push_view(v:Object)->void:
 	if v==null:return
 	_stack.push_back(v)
+
+func erase_view(v:Object)->void:
+	if v==null:_stack.clear();return
+	_stack.erase(v)
 
 func find_view(k:StringName,b:bool=true)->Object:
 	if b:for it in _stack:

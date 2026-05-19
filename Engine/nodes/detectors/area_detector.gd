@@ -3,6 +3,12 @@ class_name AreaDetector extends BaseDetector
 
 @export_group("Area")
 
+func set_enabled(b:bool)->void:
+	if root!=null:
+		root.set(&"visible",b)
+		if b:root.process_mode=PROCESS_MODE_INHERIT
+		else:root.process_mode=PROCESS_MODE_DISABLED
+
 func setup(a:Node)->void:
 	if a!=null:
 		if (flags&0x01)!=0:

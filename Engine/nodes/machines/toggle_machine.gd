@@ -18,7 +18,9 @@ func _on_toggle(c:Object,b:bool)->void:
 	if dirty:_on_dirty()
 	if threshold<0.0:b=not b
 	#
+	var tmp:BaseMachine=current;current=self
 	on_execute.emit(c,b)
+	current=tmp
 
 # For other systems.
 
@@ -46,5 +48,4 @@ var weight:float=-1.0:
 		return weight
 
 func _on_blend(c:Object,f:float)->void:
-	var b:bool=f*f>=threshold*threshold
-	_on_toggle(c,b)
+	_on_toggle(c,f*f>=threshold*threshold)

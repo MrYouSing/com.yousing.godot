@@ -15,6 +15,10 @@ func get_origin()->Vector3:
 	if shape!=null:return GodotExtension.get_global_position(shape)
 	else:return GodotExtension.get_global_position(self)
 
+func get_root()->Node:
+	if name==&"Main":return get_parent()
+	else:return self
+
 func to_interactor(n:Node)->BaseInteractor:
 	if n==null:return null
 	var i:BaseInteractor=n as BaseInteractor

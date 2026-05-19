@@ -50,8 +50,10 @@ func _on_dirty()->void:
 func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 	if dirty:_on_dirty()
 	#
+	var tmp:BaseMachine=current;current=self
 	on_execute.emit(self,k,v,t)
 	broadcast(k)
+	current=tmp
 
 # For other systems.
 

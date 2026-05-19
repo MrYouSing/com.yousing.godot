@@ -1,6 +1,8 @@
 ## The base class for machine system.
 class_name BaseMachine extends Node
 
+static var current:BaseMachine
+
 @export_group("Machine")
 @export var targets:Array[Node]
 

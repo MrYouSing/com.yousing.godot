@@ -16,7 +16,7 @@ func set_node(n:Node,b:bool)->void:
 		if mask!=0:n.set(&"collision_mask",mask)
 		if process:n.process_mode=PROCESS_MODE_INHERIT
 	else:
-		if process:n.process_mode=Node.PROCESS_MODE_DISABLED
+		if process:n.process_mode=PROCESS_MODE_DISABLED
 		if layer!=0:n.set(&"collision_layer",0)
 		if mask!=0:n.set(&"collision_mask",0)
 

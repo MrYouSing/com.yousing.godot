@@ -15,6 +15,7 @@ func select(i:int)->void:
 
 func show()->void:
 	super.show()
+	if UIManager.exists:UIManager.instance.push_view(self)
 	#
 	if not is_popup():
 		if context!=null:
@@ -25,6 +26,7 @@ func show()->void:
 
 func hide()->void:
 	super.hide()
+	if UIManager.exists:UIManager.instance.erase_view(self)
 	#
 	index=-1
 	if not is_popup():

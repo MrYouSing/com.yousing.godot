@@ -73,8 +73,9 @@ func check_transition(s:FsmState,t:FsmTransition)->bool:
 	if s!=null and t!=null:
 		t.state=s
 		if t.in_time(time.x) and t.is_trigger():
-			set_state(t.next)
-			return false
+			if t.next!=null:
+				set_state(t.next)
+				return false
 	return true
 
 func check_transitions(s:FsmState,t:Array[FsmTransition])->bool:
@@ -82,7 +83,8 @@ func check_transitions(s:FsmState,t:Array[FsmTransition])->bool:
 		for it in t:
 			it.state=s
 			if it.in_time(time.x) and it.is_trigger():
-				set_state(it.next)
-				return false
+				if it.next!=null:
+					set_state(it.next)
+					return false
 		return true
 	return false
