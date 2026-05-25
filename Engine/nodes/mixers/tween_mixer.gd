@@ -1,6 +1,8 @@
 ## A mixer driven by [Tween].
 class_name TweenMixer extends PropertyMixer
 
+@export_group("Tween")
+@export var loops:int
 @export_group("In","in_")
 @export var in_delay:float
 @export var in_duration:float=1.0
@@ -28,11 +30,17 @@ func set_enabled(b:bool)->void:
 	else:_on_tween(t,out_delay,out_duration,0.0,out_trans,out_ease,out_curve)
 	_direction=d;_started();t.finished.connect(_finished)
 
+func stop()->void:
+	_direction=0;Tweenable.kill_tween(target)
+
 func _on_tween(t:Tween,w:float,d:float,v:float,x:Tween.TransitionType,e:Tween.EaseType,c:Curve)->void:
 	curve=c
 	if w<0.0:
 		if _direction==0:w=0.0
 		else:w=-w
+	if loops!=0:
+		var f:float=weight
+		t.set_loops(loops if loops>0 else 0).tween_callback(func()->void:weight=f)
 	var p:PropertyTweener=t.tween_property(self,^"weight",v,d).set_trans(x).set_ease(e)
 	if w>0.0:p.set_delay(w)
 

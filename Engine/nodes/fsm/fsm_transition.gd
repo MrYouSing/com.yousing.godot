@@ -13,11 +13,11 @@ func in_time(f:float)->bool:
 		elif t.x<t.y:#[min,max]
 			if t.x<0.0:t.x=d+t.x
 			if t.y<0.0:t.y=d+t.y
-			return f>=t.x&&f<=t.y;
+			return f>=t.x&&f<=t.y
 		else:#[min,∞)
-			if t.x<=0.0:t.x=d+t.x;
-			return f>=t.x;
-	return true;
+			if t.x<=0.0:t.x=d+t.x
+			return f>=t.x
+	return true
 
 func is_trigger()->bool:
 	if trigger!=null:return trigger.is_trigger()

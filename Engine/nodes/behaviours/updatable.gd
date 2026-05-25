@@ -9,7 +9,6 @@ static func make(n:Node,k:StringName)->bool:
 			_:n.set_process(false);n.set_physics_process(false)
 	return false
 
-
 func _ready()->void:
 	if make(self,event):return
 	super._ready()

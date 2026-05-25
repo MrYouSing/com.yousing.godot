@@ -20,6 +20,8 @@ class HitInfo:
 		tmp.point=a;tmp.normal=(b-a).normalized()
 		return tmp
 
+static var s_gravity:Vector3=Vector3(0.0,-9.8,0.0)
+
 # Physics APIs
 
 static var shared_max:int=32

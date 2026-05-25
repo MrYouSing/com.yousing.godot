@@ -69,19 +69,19 @@ func in_transition(l:int=0)->bool:
 		return is_fading(m)
 	return false
 
-func get_transition(l:int=0)->Dictionary[StringName,Variant]:
+func get_transition(l:int=0)->Dictionary:
 	var m:Object=get_machine(l)
 	if m is AnimationNodeStateMachinePlayback:
 		if get_fading(m,info):return info
 	return LangExtension.k_empty_dictionary
 
-func get_current(l:int=0)->Dictionary[StringName,Variant]:
+func get_current(l:int=0)->Dictionary:
 	var m:Object=get_machine(l)
 	if m is AnimationNodeStateMachinePlayback:
 		if get_state(m,info,false):return info
 	return LangExtension.k_empty_dictionary
 
-func get_next(l:int=0)->Dictionary[StringName,Variant]:
+func get_next(l:int=0)->Dictionary:
 	var m:Object=get_machine(l)
 	if m is AnimationNodeStateMachinePlayback:
 		if is_fading(m) and get_state(m,info,true):return info

@@ -1,5 +1,6 @@
 class_name MathExtension
 
+const k_int_max:int=0x7FFFFFFF
 const k_epsilon:float=1E-5
 const k_half_pi:float=PI*0.5
 const k_two_pi:float=PI*2.0

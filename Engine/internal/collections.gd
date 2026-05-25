@@ -65,7 +65,7 @@ class Pool:
 
 	func recycle(o:Object)->void:
 		if o==null:return
-		if pool.has(o):printerr("Recycle {0} again!"%o);return
+		if pool.has(o):push_error("Recycle {0} again!".format([o]));return
 		pool.push_back(o)
 
 class Ring:

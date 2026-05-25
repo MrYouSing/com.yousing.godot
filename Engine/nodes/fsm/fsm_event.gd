@@ -48,13 +48,15 @@ func invoke_event(i:int)->bool:
 	current=tmp;return done
 
 func _on_dirty()->void:
+	if not dirty:return
+	dirty=false
+	#
 	var i:int=0
 	events[i]=LangExtension.merge_signal(self,events[i],on_init,targets,&"_on_init");i+=1
 	events[i]=LangExtension.merge_signal(self,events[i],on_check,targets,&"_on_check");i+=1
 	events[i]=LangExtension.merge_signal(self,events[i],on_enter,targets,&"_on_enter");i+=1
 	events[i]=LangExtension.merge_signal(self,events[i],on_tick,targets,&"_on_tick");i+=1
 	events[i]=LangExtension.merge_signal(self,events[i],on_exit,targets,&"_on_exit");i+=1
-	dirty=false
 
 func _on_init()->void:
 	if dirty:_on_dirty()

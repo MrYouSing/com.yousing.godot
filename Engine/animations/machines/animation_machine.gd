@@ -14,10 +14,17 @@ var _state:StringName
 var _position:float
 var _length:float
 
+func get_state()->StringName:
+	return _state
+
 func set_state(k:StringName)->void:
 	if k!=_state:
 		_state=k
 		if mask&0x04!=0:_on_event(self,k)
+
+func in_transition()->bool:
+	if _playback!=null:return not _playback.get_fading_from_node().is_empty()
+	else:return false
 
 func _started(k:StringName)->void:
 	if whitelist.has(k):
@@ -67,7 +74,7 @@ func _play()->void:
 	if tree==null:
 		tree=GodotExtension.assign_node(self,"AnimationTree")
 	if tree!=null:
-		if _playback==null:_playback=tree.get(layer)
+		if _playback==null:_playback=tree.get(layer) as AnimationNodeStateMachinePlayback
 	if not whitelist.is_empty():
 		LangExtension.add_signal(tree,&"animation_started",_started)
 		LangExtension.add_signal(tree,&"animation_finished",_finished)

@@ -23,12 +23,12 @@ func set_model(m:Node)->void:
 	if m==model:return
 	var a:Actor=model as Actor;if a!=null:
 		var t:Node3D=a.get_component(&"LookAt")
-		if t!=null:t.reparent(model,true)
+		if t!=null:GodotExtension.add_node(t,model,true)
 		request=null
 	super.set_model(m)
 	a=model as Actor;if a!=null and target!=null:
 		var t:Node3D=a.get_component(&"LookAt")
-		if t!=null:t.reparent(target,false);t.transform=Transform3D.IDENTITY
+		if t!=null:GodotExtension.add_node(t,target,false);t.transform=Transform3D.IDENTITY
 		if animator!=null:request=animator.tree.get_node_or_null(^"RequestMachine")
 
 func get_facing(v:Vector3)->Vector3:

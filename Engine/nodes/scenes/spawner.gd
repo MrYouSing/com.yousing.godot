@@ -21,6 +21,8 @@ func run()->void:
 
 func _prepared()->void:
 	var c:int=get_meta(&"Capacity",0)
+	if source is NodePath:
+		source=get_node_or_null(source)
 	if source==null:
 		return
 	elif source is Resource:

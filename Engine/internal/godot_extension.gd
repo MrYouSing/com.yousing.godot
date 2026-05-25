@@ -81,6 +81,13 @@ static func assign_node(n:Node,s:String)->Node:
 		return n.get_parent()
 	return null
 
+static func contain_node(a:Array,n:Node)->bool:
+	if n!=null:
+		for it in a:
+			if it==null:continue
+			if it==n or it.is_ancestor_of(n):return true
+	return false
+
 static func refresh_node(n:Node)->void:
 	if n!=null:
 		if n.has_method(&"_on_dirty"):n._on_dirty()
@@ -176,6 +183,10 @@ static func is_prefab(o:Object)->bool:
 	elif o is PackedScene:
 		return true
 	return false
+
+static func in_stage(o:Object)->bool:
+	if o!=null:return not o.get_meta(Stage.k_meta_pool,LangExtension.k_empty_name).is_empty()
+	else:return false
 
 static func meta_data(s:Object,k:StringName,d:Object,p:StringName)->void:
 	if s!=null and d!=null:

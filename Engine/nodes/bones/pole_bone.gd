@@ -17,5 +17,5 @@ func _on_update(c:Skeleton3D,b:int,d:float)->void:
 	else:e=end.global_position
 	e=c.global_transform.inverse()*e
 	#
-	p.basis=MathExtension.rotate_between(q*pole,s-e,normal)*p.basis
+	p.basis=MathExtension.rotate_between(q*pole,e-s,normal)*p.basis
 	c.set_bone_global_pose(b,p)

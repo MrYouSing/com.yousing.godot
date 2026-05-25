@@ -5,8 +5,10 @@ class_name UIModel extends Resource
 @export var category:StringName
 @export var dbid:int=-1
 @export_group("Model")
-var name:StringName:
-	get():return get_text(0,resource_name)
+@export var name:StringName:
+	get():
+		if name.is_empty():return get_text(0,resource_name)
+		else:return get_text(0,name)
 @export var icon:Texture2D:
 	get():return get_texture(0,icon)
 @export var preview:Texture2D:

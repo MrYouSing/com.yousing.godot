@@ -22,10 +22,8 @@ func sample(f:float)->void:
 		else:target=null;return
 	#
 	if curve!=null:f=curve.sample_baked(f)
-	#
 	var c:Variant
-	if typeof(from)==TYPE_QUATERNION:
-		c=Basis(from).slerp(Basis(to),f)
+	if typeof(from)==TYPE_QUATERNION:c=from.slerp(to,f)
 	else:c=lerp(from,to,f)
 	#
 	if _callable.is_valid():_callable.call(c)

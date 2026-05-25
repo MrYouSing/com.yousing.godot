@@ -4,6 +4,7 @@ class_name FsmState extends FsmNode
 @export var duration:float=0.0:
 	set(x):_on_duration(x);duration=x
 @export var transitions:Array[FsmTransition]
+
 var root:FsmRoot
 
 # engine methods.

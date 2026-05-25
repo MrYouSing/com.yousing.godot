@@ -4,7 +4,7 @@ class_name BaseMixer extends Node
 @export_group("Mixer")
 @export_range(0.0,1.0,0.001,"or_greater","or_less")
 var weight:float=1.0:
-	set(x):weight=x;sample(x)
+	set(x):sample(x);weight=x
 
 func sample(f:float)->void:
 	LangExtension.throw_exception(self,LangExtension.e_not_implemented)

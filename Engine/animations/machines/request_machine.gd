@@ -21,6 +21,9 @@ var _call:int=Juggler.k_invalid_id
 var _request:Request
 var _fallback:Request
 
+func is_busy()->bool:
+	return _call>Juggler.k_invalid_id or _request!=null
+
 func stop()->void:
 	Juggler.try_kill(self)
 	if _request!=null and not _request.stop.is_empty():
@@ -48,7 +51,7 @@ func swap_binding(a:StringName,b:StringName)->void:
 
 func _on_request(r:Request)->void:
 	if r==null or context==null:return
-	_request=r
+	_request=r;_call=Juggler.k_invalid_id
 	#
 	var p:StringName=r.path
 	if bindings.has(p):p=bindings[p]
