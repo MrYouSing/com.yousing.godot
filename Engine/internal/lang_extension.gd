@@ -14,7 +14,11 @@ const k_empty_signal:Signal=Signal()
 
 static var s_none_string:String="None"
 static var s_temp_array:Array=[]
+static var s_temp_strings:PackedStringArray=[]
 static var s_lock_busy:Array[Object]
+static var s_deferred_version:int
+static var s_deferred_pool:Collections.Pool=Collections.Pool.new(DeferredCall)
+static var s_deferred_list:Array[DeferredCall]# Avoid GC.
 
 # https://learn.microsoft.com/zh-cn/dotnet/api/system.notimplementedexception
 static var e_not_implemented:Dictionary={
@@ -103,6 +107,28 @@ static func str_to_args(s:String,d:String=",")->Array:
 			i=-1;for it in p:i+=1;a[i]=str_to_var(it)
 			return a
 	return k_empty_array
+
+static func var_to_keys(v:Variant,b:bool=false)->PackedStringArray:
+	s_temp_strings.clear()
+	match typeof(v):
+		TYPE_NIL:
+			pass
+		TYPE_OBJECT:# v is object.
+			for it in v.get_property_list():
+				if not it.class_name.is_empty():s_temp_strings.append(it.name)
+		TYPE_ARRAY:
+			if v.size()>0:var h:Variant=v[0];match typeof(h):
+				TYPE_PACKED_STRING_ARRAY:# v is table.
+					if b:return h.duplicate()
+					else:return h
+				TYPE_DICTIONARY:# v is maps.
+					for it in h:s_temp_strings.append(it)
+				TYPE_STRING,TYPE_STRING_NAME:# v is keys.
+					for it in v:s_temp_strings.append(it)
+		TYPE_PACKED_STRING_ARRAY,TYPE_DICTIONARY:# v is keys or map.
+			for it in v:s_temp_strings.append(it)
+	if b and s_temp_strings.size()>0:return s_temp_strings.duplicate()
+	else:return s_temp_strings
 
 static func enum_to_str(e:int,c:Variant)->String:
 	if not c.is_empty():
@@ -234,6 +260,24 @@ static func table_to_array(t:Array[PackedStringArray],c:Script)->Array:
 	for i in n:row_to_object(h,t[1+i],a[i])
 	return a
 
+static func maps_to_list(m:Array,k:StringName,c:Callable=k_empty_callable)->Array:
+	var n:int=m.size();if n<=0:return k_empty_array
+	#
+	var a:Array;a.resize(n)
+	if c.is_valid():for i in n:a[i]=c.call(m[i].get(k))
+	else:for i in n:a[i]=m[i].get(k)
+	return a
+
+static func table_to_list(t:Array[PackedStringArray],k:StringName,c:Callable=k_empty_callable)->Array:
+	var n:int=t.size();if n<=1:return k_empty_array
+	var j:int=t[0].find(k);if j<0:return k_empty_array
+	#
+	n-=1
+	var a:Array;a.resize(n)
+	if c.is_valid():for i in n:a[i]=c.call(t[1+i][j])
+	else:for i in n:a[i]=t[1+i][j]
+	return a
+
 static func array_add_maps(a:Array,m:Array,c:Script)->void:
 	var n:int=m.size();if n<=0:return
 	#
@@ -246,6 +290,22 @@ static func array_add_table(a:Array,t:Array[PackedStringArray],c:Script)->void:
 	n-=1;var h:PackedStringArray=t[0]
 	var o:Object;var s:int=a.size();a.resize(s+n)
 	for i in n:o=c.new();row_to_object(h,t[1+i],o);a[s+i]=o
+
+static func list_add_maps(a:Variant,m:Array,k:StringName,c:Callable=k_empty_callable)->void:
+	var n:int=m.size();if n<=0:return
+	#
+	var s:int=a.size();a.resize(s+n)
+	if c.is_valid():for i in n:a[s+i]=c.call(m[i].get(k))
+	else:for i in n:a[s+i]=m[i].get(k)
+
+static func list_add_table(a:Variant,t:Array[PackedStringArray],k:StringName,c:Callable=k_empty_callable)->void:
+	var n:int=t.size();if n<=1:return
+	var j:int=t[0].find(k);if j<0:return
+	#
+	n-=1
+	var s:int=a.size();a.resize(s+n)
+	if c.is_valid():for i in n:a[s+i]=c.call(t[1+i][j])
+	else:for i in n:a[s+i]=t[1+i][j]
 
 # Event/Signal APIs
 
@@ -267,6 +327,30 @@ static func end_busy(o:Object)->void:
 	if o==null:return
 	var i:int=s_lock_busy.rfind(o)
 	if i>=0:s_lock_busy.remove_at(i)
+
+	# Callable APIs
+
+static func defer_call(c:Callable,o:Object=null,k:StringName=&"_version",b:bool=true)->DeferredCall:
+	if o==null:o=LangExtension;k=&"s_deferred_version"
+	# Next
+	var v:int=o.get(k)+1;o.set(k,v)
+	# Create
+	var d:DeferredCall=s_deferred_pool.obtain()
+	d.target=o;d.property=k
+	d.version=v;d.callable=c
+	# Return
+	if not s_deferred_list.has(d):s_deferred_list.append(d)
+	if b:d.invoke.call_deferred()
+	return d
+
+static func defer_find(a:Array,o:Object=null,k:StringName=&"_version")->bool:
+	if o==null:o=LangExtension;k=&"s_deferred_version"
+	#
+	var n:int=a.size()
+	for it in s_deferred_list:
+		if it.target==o and it.property==k:
+			a.append(it)
+	return a.size()>n
 
 	# Signal APIs
 
@@ -374,3 +458,23 @@ static func merge_signal(o:Object,s:Signal,r:Signal,a:Array,m:StringName,f:int=0
 				var d:Callable=Callable(it,m)
 				if not s.is_connected(d):s.connect(d,f)
 	return s
+
+# Sub-Classes
+
+class DeferredCall:
+	var target:Object
+	var property:StringName
+	var version:int
+	var callable:Callable=LangExtension.k_empty_callable
+	var fallback:Callable=LangExtension.k_empty_callable
+
+	func invoke()->void:
+		if target!=null and target.get(property)==version:
+			if callable.is_valid():callable.call()
+		else:
+			if fallback.is_valid():fallback.call()
+		# Clean up and recycle it.
+		target=null;property=LangExtension.k_empty_name
+		version=0;callable=LangExtension.k_empty_callable
+		fallback=LangExtension.k_empty_callable
+		LangExtension.s_deferred_pool.recycle(self)

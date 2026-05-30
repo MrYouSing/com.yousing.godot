@@ -47,3 +47,14 @@ static func exit_instance(k:StringName,v:Object)->bool:
 	var i:Object=get_instance(k)
 	if i==v:set_instance(k,null);return true
 	else:return false
+
+static func make_current(c:Script,o:Object,k:StringName=&"current")->void:
+	if c==null or o==null:return
+	#
+	if c.get(k)==null:c.set(k,o)
+
+static func clear_current(c:Script,o:Object,k:StringName=&"current")->void:
+	if GodotExtension.s_reparenting:return
+	if c==null or o==null:return
+	#
+	if o==c.get(k):c.set(k,null)

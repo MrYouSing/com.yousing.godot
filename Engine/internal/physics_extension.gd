@@ -22,6 +22,12 @@ class HitInfo:
 
 static var s_gravity:Vector3=Vector3(0.0,-9.8,0.0)
 
+static func set_enabled(n:Node,b:bool)->void:
+	if n!=null:
+		n.set(&"visible",b)
+		if b:n.process_mode=Node.PROCESS_MODE_INHERIT
+		else:n.process_mode=Node.PROCESS_MODE_DISABLED
+
 # Physics APIs
 
 static var shared_max:int=32
@@ -94,3 +100,21 @@ static func box_overlap(c:PhysicsDirectSpaceState3D,p:Vector3,q:Basis,s:Vector3,
 static func capsule_overlap(c:PhysicsDirectSpaceState3D,p:Vector3,q:Basis,r:float,h:float,m:int,e:Array[RID],f:int=-1)->Array:
 	shared_capsule.radius=r;shared_capsule.height=h
 	return shape_overlap(c,p,q,shared_capsule,m,e,f)
+
+# Area APIs
+
+static func begin_area(n:Node)->void:
+	if n!=null and n.get_class()!="Node":
+		var p:Node=n.get_parent()
+		while p!=null:
+			if p.is_class("CollisionObject3D"):
+				GodotExtension.add_node(n,null,true);return
+			p=p.get_parent()
+
+static func end_area(n:Node,p:Node,v:Variant)->void:
+	if p==null:return
+	if n!=null and n.get_class()!="Node":
+		var q:Node=n.get_parent()
+		if q==null or (p!=q and not p.is_ancestor_of(q)):
+			GodotExtension.add_node(n,p,false)
+			if v!=null:n.set(&"transform",v)

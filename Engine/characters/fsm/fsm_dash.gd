@@ -6,6 +6,8 @@ class_name FsmDash extends FsmAction
 @export var speed:float=10.0
 @export var curve:Curve
 @export var blend:StringName
+@export var blacklist:PackedStringArray
+@export var whitelist:PackedStringArray
 
 var lock:bool
 var stick:Vector2
@@ -22,8 +24,13 @@ func get_direction(c:CharacterController)->Vector3:
 
 func update_animation(c:CharacterController,d:Vector3)->void:
 	if motor!=null:
-		if lock:motor.direction=c.input_to_world(Vector2.DOWN)
-		else:motor.direction=d
+		if lock:
+			motor.direction=c.input_to_world(Vector2.DOWN)
+		else:
+			var s:FsmState=root.get_prev();if s!=null and blacklist.has(s.name):
+				motor.direction=c.get_rotation()*Vector3.MODEL_FRONT
+			else:
+				motor.direction=d
 	if c.animator!=null and not blend.is_empty():
 		c.animator.write(blend,c.world_to_animation(d))
 
@@ -67,4 +74,5 @@ func _on_exit()->void:
 	motor=null
 	velocity=Vector3.ZERO
 	#
+	if whitelist.has(root.get_next().name):root.time.x=duration
 	FsmEvent.invoke_signal(self,finished,LangExtension.k_empty_array)

@@ -17,6 +17,9 @@ func get_center()->Vector3:
 	if n==null:n=self
 	return GodotExtension.get_global_position(n)
 
+func set_enabled(b:bool)->void:
+	PhysicsExtension.set_enabled(self,b)
+
 func _on_damage(f:float)->void:
 	var tmp:Hitbox=current;current=self
 	on_damage.emit(f)

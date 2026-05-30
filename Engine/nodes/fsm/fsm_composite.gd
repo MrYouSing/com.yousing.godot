@@ -1,20 +1,30 @@
 class_name FsmComposite extends FsmState
 
 static func try_set(s:Object,k:StringName,v:Variant)->void:
-	if s==null:pass
-	elif s is FsmComposite:for it in s.states:try_set(it,k,v)
-	else:s.set(k,v)
+	if s==null:
+		pass
+	elif s is FsmComposite:
+		for it in s.states:if it!=null:it.root=root;try_set(it,k,v)
+	else:
+		s.set(k,v)
 
 static func try_call(s:Object,m:StringName,a:Array)->void:
-	if s==null:pass
-	elif s is FsmComposite:for it in s.states:try_call(it,m,a)
-	elif s.has_method(m):s.callv(m,a)
+	if s==null:
+		pass
+	elif s is FsmComposite:
+		for it in s.states:if it!=null:it.root=root;try_call(it,m,a)
+	elif s.has_method(m):
+		s.callv(m,a)
 
 static func try_signal(s:Object,e:StringName,c:Callable,b:bool)->void:
-	if s==null:pass
-	elif s is FsmComposite:for it in s.states:try_signal(it,e,c,b)
-	elif b:LangExtension.try_signal(s,e,c)
-	else:LangExtension.remove_signal(s,e,c)
+	if s==null:
+		pass
+	elif s is FsmComposite:
+		for it in s.states:if it!=null:it.root=root;try_signal(it,e,c,b)
+	elif b:
+		LangExtension.try_signal(s,e,c)
+	else:
+		LangExtension.remove_signal(s,e,c)
 
 @export_group("Composite")
 @export var lowers:Array[FsmState]

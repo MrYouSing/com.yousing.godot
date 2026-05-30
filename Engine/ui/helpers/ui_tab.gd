@@ -26,7 +26,7 @@ func _prepared()->void:
 func _refreshed()->void:
 	super._refreshed()
 	#
-	var n:int=count()
+	var n:int=count();if n<=0:return
 	render(index,0)
 	render((index-1+n)%n,1)
 	render((index+1)%n,2)

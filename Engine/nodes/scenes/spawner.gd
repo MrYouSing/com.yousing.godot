@@ -19,6 +19,9 @@ func run()->void:
 	if Application.get_frames()==0:_created.call_deferred()
 	else:_created()
 
+func draw()->void:
+	run()
+
 func _prepared()->void:
 	var c:int=get_meta(&"Capacity",0)
 	if source is NodePath:

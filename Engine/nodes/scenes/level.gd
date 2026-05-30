@@ -8,12 +8,16 @@ class_name Level extends Node
 
 var _room:int
 var room:Room:
-	get():return rooms[_room]
+	get():
+		if rooms.is_empty():return null
+		else:return rooms[_room]
 	set(x):
 		_room=rooms.find(x)
 		if _room<0:_room=rooms.size();x.index=_room;rooms.append(x)
 
 func load()->void:
+	if rooms.is_empty() or actors.is_empty():return
+	#
 	var i:int=SaveData.get_int(&"Room",0)
 	var j:int=SaveData.get_int(&"Door",-1);if j<0:j=0
 	var r:Room=rooms[i];if r==null:return
@@ -33,6 +37,8 @@ func load()->void:
 		GodotExtension.set_global_rotation(it,NAN,v)
 
 func _enter_tree()->void:
+	if is_node_ready():return
+	#
 	var i:int=-1;for it in rooms:
 		i+=1;if it!=null:it.index=i
 

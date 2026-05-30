@@ -27,6 +27,8 @@ func open(s:String)->void:
 	if i>=0:seek(i)
 
 func _ready()->void:
+	if Engine.is_editor_hint():return
+	#
 	if target==null:
 		target=GodotExtension.assign_node(self,"Node3D")
 	if not path.is_empty():

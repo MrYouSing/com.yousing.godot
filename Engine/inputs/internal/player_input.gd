@@ -85,7 +85,13 @@ func erase(i:int)->void:
 	if i<0:for j in m_times.size():m_times[j]=-1.0
 	else:m_times[i]=-1.0
 
-#
+func discard(i:int)->void:
+	try_update()
+	#
+	erase(i);if i<0:return
+	i=1<<i# set down(i) false.
+	m_previous|=i;m_buttons|=i
+
 func _ready()->void:
 	var n:int=axes.size()/4;if n<=0:n=4
 	if m_axes.size()<n:m_axes.resize(n)

@@ -90,6 +90,9 @@ func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 		if l.settings.has(&"pos"):position=l.settings.pos
 		if l.settings.has(&"arm"):arm=l.settings.arm
 		#
+		if not l.ortho and ScreenEffector.s_plugin!=null:
+			ScreenEffector.s_plugin.mfDefaultFov=l.size
+		#
 		var s:Vector2=smooth;smooth=Vector2(-1.0,60.0)
 		_physics_process(1.0/smooth.y);smooth=s
 	else:#Tween
@@ -97,3 +100,7 @@ func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 		l.tween_to_camera_3d(cam,tmp,t);Transition.current=self
 		if l.settings.has(&"pos"):t.to_tween(tmp,self,^"position",l.settings.pos)
 		if l.settings.has(&"arm"):t.to_tween(tmp,self,^"arm",l.settings.arm)
+		#
+		if not l.ortho and ScreenEffector.s_plugin!=null:
+			Transition.current=ScreenEffector.s_plugin
+			t.to_tween(tmp,ScreenEffector.s_plugin,^"mfDefaultFov",l.size)

@@ -30,77 +30,13 @@ static func register(k:StringName,v:Object)->void:
 @export var prefabs:Dictionary[StringName,Resource]
 @export_flags(
 	"Up Tap","Auto Back","Auto Select","Auto Start",
-	"Auto Pause"
+	"Auto Focus","Auto Pause"
 )var features:int=-1
 
 var _views:Dictionary[StringName,Object]
 var _stack:Array[Object]
 var _sounds:Collections.Ring
 var _main:Object
-
-func _ready()->void:
-	if Singleton.init_instance(k_keyword,self):
-		process_mode=Node.PROCESS_MODE_ALWAYS
-		#
-		if root==null:
-			root=self
-		if sound==null:
-			sound=Audio.create(&"UI",1,self);sound.name=&"Sound"
-		_sounds=Collections.Ring.new(get_meta(&"num_sounds",8))
-		if database==null:
-			if UIDatabase.instance!=null:
-				database=UIDatabase.instance
-			else:
-				var s:String="res://assets/databases/"+name+".tres"
-				database=IOExtension.load_asset(s)
-		if events==null:
-			events=EventMachine.new();events.name=&"Events"
-			GodotExtension.add_node(events,self,false)
-		init_ui()
-
-func _exit_tree()->void:
-	if Singleton.exit_instance(k_keyword,self):
-		pass
-
-func _process(d:float)->void:
-	#
-	if _main!=null:
-		var v:Variant=_main._on_tick()
-		if v==null:pass
-		elif v!=0:return
-	#
-	if features&0x02!=0 and _stack.size()>1:
-		if is_tap(5):
-			active_view(peek_view(),false);return
-	if features&0x04!=0:
-		if is_tap(8):
-			show_view(&"App_Select",true)
-	if features&0x08!=0:
-		if is_tap(9):
-			show_view(&"App_Start",true)
-
-func _notification(what:int)->void:
-	match what:
-		MainLoop.NOTIFICATION_APPLICATION_FOCUS_IN,MainLoop.NOTIFICATION_APPLICATION_RESUMED:
-			Application.focus(true)
-		MainLoop.NOTIFICATION_APPLICATION_FOCUS_OUT:
-			Application.focus(false)
-		MainLoop.NOTIFICATION_APPLICATION_PAUSED:
-			if features&0x10!=0:
-				if get_view(&"App_Pause")!=null:_on_pause(true)
-			Application.focus(false)
-
-func _on_pause(b:bool)->void:
-	Application.pause(b)
-	var v:Object=find_view(&"App_Pause",true)
-	if v!=null:active_view(v,b)
-
-func _on_quit(b:bool)->void:
-	if not b:
-		var v:Object=find_view(&"App_Quit",true)
-		if v==null:b=true
-		else:active_view(v,true)
-	if b:Application.quit()
 
 func init_ui()->void:
 	var a:Resource;var n:Node;for it in prefabs:
@@ -119,7 +55,7 @@ func init_ui()->void:
 
 func get_main()->Object:
 	if _main!=null:return _main
-	return self
+	return root
 
 func set_main(o:Object)->void:
 	if _main!=null:if _main.has_method(&"_on_exit"):_main._on_exit()
@@ -217,3 +153,69 @@ func play_sound(s:Variant)->void:
 func invoke_event(k:StringName,...args:Array)->void:
 	if LangExtension.exist_signal(self,k):LangExtension.send_signal(self,k,args)# From Engine
 	if events is EventMachine:events.emit_event(k,args)# From User
+
+func _on_pause(b:bool)->void:
+	Application.pause(b)
+	var v:Object=find_view(&"App_Pause",true)
+	if v!=null:active_view(v,b)
+
+func _on_quit(b:bool)->void:
+	if not b:
+		var v:Object=find_view(&"App_Quit",true)
+		if v==null:b=true
+		else:active_view(v,true)
+	if b:Application.quit()
+
+func _ready()->void:
+	if Singleton.init_instance(k_keyword,self):
+		process_mode=Node.PROCESS_MODE_ALWAYS
+		#
+		if root==null:
+			root=self
+		if camera==null:
+			camera=get_viewport().get_camera_3d()
+		if sound==null:
+			sound=Audio.create(&"UI",1,self);sound.name=&"Sound"
+		_sounds=Collections.Ring.new(get_meta(&"num_sounds",8))
+		if database==null:
+			if UIDatabase.instance!=null:
+				database=UIDatabase.instance
+			else:
+				var s:String="res://assets/databases/"+name+".tres"
+				database=IOExtension.load_asset(s)
+		if events==null:
+			events=EventMachine.new();events.name=&"Events"
+			GodotExtension.add_node(events,self,false)
+		init_ui()
+
+func _exit_tree()->void:
+	if Singleton.exit_instance(k_keyword,self):
+		pass
+
+func _process(d:float)->void:
+	#
+	if _main!=null:
+		var v:Variant=_main._on_tick()
+		if v==null:pass
+		elif v!=0:return
+	#
+	if features&0x02!=0 and _stack.size()>1:
+		if is_tap(5):
+			active_view(peek_view(),false);return
+	if features&0x04!=0:
+		if is_tap(8):
+			show_view(&"App_Select",true)
+	if features&0x08!=0:
+		if is_tap(9):
+			show_view(&"App_Start",true)
+
+func _notification(w:int)->void:
+	match w:
+		MainLoop.NOTIFICATION_APPLICATION_FOCUS_IN,MainLoop.NOTIFICATION_APPLICATION_RESUMED:
+			if features&0x10!=0:Application.focus(true)
+		MainLoop.NOTIFICATION_APPLICATION_FOCUS_OUT:
+			if features&0x10!=0:Application.focus(false)
+		MainLoop.NOTIFICATION_APPLICATION_PAUSED:
+			if features&0x20!=0:
+				if get_view(&"App_Pause")!=null:_on_pause(true)
+			if features&0x10!=0:Application.focus(false)

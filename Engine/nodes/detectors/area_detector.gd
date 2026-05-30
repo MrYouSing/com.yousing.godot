@@ -4,10 +4,7 @@ class_name AreaDetector extends BaseDetector
 @export_group("Area")
 
 func set_enabled(b:bool)->void:
-	if root!=null:
-		root.set(&"visible",b)
-		if b:root.process_mode=PROCESS_MODE_INHERIT
-		else:root.process_mode=PROCESS_MODE_DISABLED
+	PhysicsExtension.set_enabled(root,b)
 
 func setup(a:Node)->void:
 	if a!=null:
@@ -48,6 +45,7 @@ func _on_exit(o:Object)->void:
 
 func _ready()->void:
 	if root==null:root=GodotExtension.assign_node(self,"Area3D")
+	if get_class()=="Node":push_error("Area detector needs the pivot!!!!")
 	setup(root)
 
 func _exit_tree()->void:

@@ -36,7 +36,7 @@ func _on_show()->void:
 func _on_enter()->void:
 	if features&0x02!=0:set_event(1)
 	if features&0x04!=0:set_screen(false)
-	var a:Array;if get_nodes(a):GodotExtension.set_camera(a[0],true);_root=a[1]
+	var a:Array;if get_nodes(a):RenderingExtension.set_camera(a[0],true);_root=a[1]
 	#
 	set_process(_root!=null and root!=null)
 	if player!=null:player.play(name)
@@ -55,7 +55,7 @@ func _on_exit()->void:
 	if features&0x02!=0:set_event(3)
 	if features&0x0C==0x0C:set_screen(false)
 	if view!=null:view.set(&"visible",false)
-	_root=null;var a:Array;if get_nodes(a):GodotExtension.set_camera(a[0],false)
+	_root=null;var a:Array;if get_nodes(a):RenderingExtension.set_camera(a[0],false)
 
 func _ready()->void:
 	set_process(false)

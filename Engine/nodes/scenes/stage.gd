@@ -246,6 +246,7 @@ func _ready()->void:
 					2:hidden=Node2D.new();
 					3:hidden=Node3D.new();
 				hidden.name=&"Hidden";hidden.visible=false
+				hidden.process_mode=PROCESS_MODE_DISABLED
 				GodotExtension.add_node(hidden,self,false)
 			else:
 				hidden=GodotExtension.s_hide

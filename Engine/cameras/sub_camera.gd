@@ -19,7 +19,7 @@ func set_enabled(b:bool)->void:
 		if b:viewport.render_target_update_mode=SubViewport.UPDATE_WHEN_VISIBLE
 		else:viewport.render_target_update_mode=SubViewport.UPDATE_DISABLED
 	else:
-		GodotExtension.set_camera(camera,b)
+		RenderingExtension.set_camera(camera,b)
 
 func _ready()->void:
 	if camera==null:camera=GodotExtension.assign_node(self,"Camera3D")

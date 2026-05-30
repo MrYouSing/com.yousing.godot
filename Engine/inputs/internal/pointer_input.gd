@@ -14,6 +14,7 @@ const k_buttons:PackedStringArray=[
 ]
 
 static var current:PointerInput
+static var s_fire_focus:bool
 
 static func get_mouse_position(i:int)->Vector2:
 	var o:Vector2i;match i:
@@ -25,10 +26,16 @@ static func get_mouse_position(i:int)->Vector2:
 static func on_lock_mouse(e:InputEvent,b:int,k:int,h:int=Input.MOUSE_MODE_CAPTURED,s:int=Input.MOUSE_MODE_VISIBLE)->bool:
 	if e is InputEventMouseButton:
 		if e.button_index==b and e.pressed:
-			Input.mouse_mode=h;return true
+			if h!=Input.mouse_mode:
+				Input.mouse_mode=h
+				if s_fire_focus:Application.focus(true)
+				return true
 	elif e is InputEventKey:
 		if e.physical_keycode==k:
-			Input.mouse_mode=s;return true
+			if s!=Input.mouse_mode:
+				Input.mouse_mode=s
+				if s_fire_focus:Application.focus(false)
+				return true
 	return false
 
 @export_group("Pointer")
@@ -86,9 +93,13 @@ func _on_input(e:InputEvent)->void:
 func _on_stick()->void:
 	if features&0x40!=0:
 		if Input.mouse_mode==Input.MOUSE_MODE_CAPTURED:# On Focus
-			if Input.is_key_pressed(KEY_ESCAPE):Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
+			if Input.is_key_pressed(KEY_ESCAPE):
+				Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
+				if s_fire_focus:Application.focus(false)
 		else:# On Blur
-			if mouse_down(0):Input.mouse_mode=Input.MOUSE_MODE_CAPTURED
+			if mouse_down(0):
+				Input.mouse_mode=Input.MOUSE_MODE_CAPTURED
+				if s_fire_focus:Application.focus(true)
 	if features&0x80!=0:
 		if input==null:input=PlayerInput.current
 		if input!=null:

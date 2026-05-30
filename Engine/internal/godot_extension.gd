@@ -215,23 +215,6 @@ static func resize_shape_3d(s:Shape3D,v:Vector3)->void:
 	elif s is CapsuleShape3D:s.radius=(v.x+v.z)*0.25;s.height=v.y
 	elif s is BoxShape3D:s.size=v
 
-# Rendering APIs
-
-static var k_class_particles:PackedStringArray=["CPUParticles2D","GPUParticles2D","CPUParticles3D","GPUParticles3D"]
-
-static func set_camera(n:Node,b:bool)->void:
-	if n!=null:
-		if n.has_method(&"is_current"):
-			if b!=n.is_current():
-				if b:n.make_current()
-				elif n.has_method(&"clear_current"):n.clear_current()
-		else:
-			set_enabled(n,b)
-
-static func stop_particles(n:Node)->void:
-	if n!=null and k_class_particles.has(n.get_class()):
-		n.restart();n.emitting=false
-
 # Editor APIs
 
 static func editor_dirty(o:Object)->void:

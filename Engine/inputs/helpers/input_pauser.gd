@@ -6,6 +6,7 @@ class_name InputPauser extends Node
 @export var show:Input.MouseMode=Input.MOUSE_MODE_VISIBLE
 @export var button:MouseButton=MOUSE_BUTTON_LEFT
 @export var keycode:Key=KEY_ESCAPE
+@export var focus:bool=true
 
 var _paused:bool
 var _mouse:int
@@ -24,4 +25,6 @@ func _exit_tree()->void:
 
 func _unhandled_input(e:InputEvent)->void:
 	if _paused:return
-	PointerInput.on_lock_mouse(e,button,keycode,hide,show)
+	if PointerInput.on_lock_mouse(e,button,keycode,hide,show):
+		if focus and Input.mouse_mode==hide:
+			Application.focus(true)
