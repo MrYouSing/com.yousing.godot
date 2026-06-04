@@ -26,12 +26,19 @@ func stop()->void:
 	Juggler.try_kill(self)
 
 func kill()->void:
-	if Stage.exists:Stage.instance.despawn(self)
+	if Stage.exists:
+		if GodotExtension.in_stage(self):Stage.instance.despawn(self)
+		else:_on_despawn()
 
 func _set_enabled(n:Node,b:bool)->void:
-	if b:n.set(&"emitting",b)
-	else:RenderingExtension.stop_particles(n)
-	GodotExtension.set_enabled(n,b)
+	if n==null:return
+	#
+	if RenderingExtension.k_class_particles.has(n.get_class()):
+		n.restart()
+		n.visible=b;n.emitting=b
+		n.set_process(b);n.set_physics_process(b)
+	else:
+		GodotExtension.set_enabled(n,b)
 
 func _on_spawn()->void:
 	play()
@@ -43,6 +50,7 @@ func _ready()->void:
 	if GodotExtension.is_prefab(self):return
 	#
 	var n:Node=root;if root==null:n=self
-	_anim=n.get_node_or_null(^"AnimationPlayer") as AnimationPlayer
+	if _anim==null:_anim=n.get_node_or_null(^"AnimationPlayer") as AnimationPlayer
+	if _anim==null:_anim=n.get_node_or_null(^"View/AnimationPlayer") as AnimationPlayer
 	#
 	if not GodotExtension.in_stage(self):_on_spawn()

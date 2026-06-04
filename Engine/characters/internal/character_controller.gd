@@ -38,6 +38,15 @@ func get_rotation()->Quaternion:
 	var t:Node3D=model;if t==null:t=root
 	return MathExtension.get_heading(t.global_basis,normal)
 
+func set_rotation(q:Quaternion)->void:
+	var t:Node=root
+	if motor==null:
+		if model!=null:t=model
+	else:
+		var v:Node=motor.get(&"model") as Node
+		if v!=null:t=v
+	t.global_basis=q
+
 func get_move()->Vector2:
 	if input!=null:return input.stick(0);
 	else:return Input.get_vector("left","right","backward","forward")#,"down","up")

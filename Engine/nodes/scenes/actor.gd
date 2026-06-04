@@ -1,6 +1,8 @@
 ## An entity which like UnityEngine.GameObject.
 class_name Actor extends Node
 
+const k_meta_component:StringName=&"META_ACTOR_COMPONENT"
+
 @export var components:Array[Node]
 
 var tween:Tween
@@ -41,6 +43,11 @@ func play_tween(b:bool=false)->Tween:
 		if b and tween.is_valid():tween.finished.emit()
 		tween.kill();tween=null#Stop
 	tween=create_tween();return tween
+
+func _ready()->void:
+	for it in components:
+		if it==null:continue
+		if it.has_meta(k_meta_component):dictionary[it.get_meta(k_meta_component)]=it
 
 # Messages
 

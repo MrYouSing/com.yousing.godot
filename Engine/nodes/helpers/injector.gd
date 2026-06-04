@@ -72,7 +72,11 @@ func inject_object(t:int,s:Object,i:StringName,d:Object,j:StringName)->void:
 			3:
 				var g:Script=find_script(src_obj)
 				if g!=null:g.connect(i,Callable(dst_obj,j))
-			4:GodotExtension.add_node(src_obj,dst_obj,false)
-			5:GodotExtension.add_node(src_obj,dst_obj,true)
+			4:
+				if Application.get_frames()==0:GodotExtension.add_node.call_deferred(src_obj,dst_obj,false)
+				else:GodotExtension.add_node(src_obj,dst_obj,false)
+			5:
+				if Application.get_frames()==0:GodotExtension.add_node.call_deferred(src_obj,dst_obj,true)
+				else:GodotExtension.add_node(src_obj,dst_obj,true)
 	else:
 		src_obj=null;dst_obj=null

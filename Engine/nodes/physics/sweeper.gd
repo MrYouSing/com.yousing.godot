@@ -20,6 +20,9 @@ func set_update(b:bool)->void:
 	if features&0x10!=0:set_process(false);set_physics_process(b)
 	else:set_physics_process(false);set_process(b)
 
+func _on_enabled(b:bool)->void:
+	pass
+
 func _play()->void:
 	collisions.clear();point=MathExtension.k_vec3_nan
 	set_update(true)

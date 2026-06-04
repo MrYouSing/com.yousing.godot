@@ -10,11 +10,6 @@ class_name StateMachine extends BaseMachine
 var idle:StringName
 signal on_state(c:Object,k:StringName,v:Variant,t:Transition)
 
-func _ready()->void:
-	if not state.is_empty():
-		idle=state
-		var tmp:StringName=state;state=&"*";set_state(tmp)
-
 func abort()->void:
 	state=LangExtension.s_none_string;stop_tween()
 	for it in machines:if it!=null:it.stop_tween()
@@ -54,6 +49,11 @@ func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 	on_execute.emit(self,k,v,t)
 	broadcast(k)
 	current=tmp
+
+func _ready()->void:
+	if not state.is_empty():
+		idle=state
+		var tmp:StringName=state;state=&"*";set_state(tmp)
 
 # For other systems.
 

@@ -32,6 +32,19 @@ static func world_to_viewport(n:Node,v:Vector3)->Vector2:
 			u/=Application.get_resolution()
 	return u
 
+  # Transform APIs
+
+static func pose_orbit(n:Node,v:Vector3,w:Vector4)->void:
+	if n==null:return
+	#
+	if not w.is_zero_approx():
+		var e:Vector3=Vector3(w.x*MathExtension.k_deg_to_rad,w.y*MathExtension.k_deg_to_rad,0.0)
+		var q:Basis=Basis.from_euler(e)*MathExtension.looking_at(v)
+		e=GodotExtension.get_global_position(n)+v*w.z
+		v=e+q*Vector3(0.0,0.0,w.w)
+		GodotExtension.set_global_position(n,v)
+		GodotExtension.set_global_rotation(n,NAN,e-v)
+
 # Particle APIs
 
 static func stop_particles(n:Node)->void:

@@ -56,7 +56,7 @@ func _on_mix(f:float,b:bool,c:Callable)->void:
 	else:mixer.set(&"out_delay",0.0);mixer.set(&"out_duration",f)
 	#
 	var d:Object=LangExtension.defer_call(c,self,&"_version",false)
-	LangExtension.try_signal(mixer,&"finished",d.invoke,CONNECT_ONE_SHOT)
+	LangExtension.try_signal(mixer,&"finished",d.invoke_pass,CONNECT_ONE_SHOT)
 	GodotExtension.set_enabled(mixer,b)
 
 func _on_show()->void:

@@ -25,14 +25,14 @@ func try_update()->void:
 
 func do_update()->void:
 	# Axes
-	var i:int=0;var n:int=axes.size()/4;var v:Vector2;
-	var f:float;var s:float=deadzone.x*deadzone.x;
+	var i:int=0;var n:int=axes.size()/4;var v:Vector2
+	var f:float;var s:float=deadzone.x*deadzone.x
 	for a in n:
 		if not axes[i].is_empty():
 			m_axes[i/4]=Input.get_vector(axes[i+0],axes[i+1],axes[i+2],axes[i+3],deadzone.x)
 		i+=4
 	# Buttons
-	m_previous=m_buttons;m_buttons=0;
+	m_previous=m_buttons;m_buttons=0
 	i=-1;for k in buttons:
 		i+=1;if not k.is_empty():
 			if Input.get_action_strength(k)>deadzone.y:m_buttons|=1<<i
@@ -88,9 +88,10 @@ func erase(i:int)->void:
 func discard(i:int)->void:
 	try_update()
 	#
-	erase(i);if i<0:return
-	i=1<<i# set down(i) false.
-	m_previous|=i;m_buttons|=i
+	erase(i)
+	# set down(i) false.
+	if i<0:m_previous=m_buttons
+	else:i=1<<i;m_previous|=i;m_buttons|=i
 
 func _ready()->void:
 	var n:int=axes.size()/4;if n<=0:n=4

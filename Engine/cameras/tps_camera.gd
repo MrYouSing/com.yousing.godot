@@ -96,7 +96,7 @@ func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
 		var s:Vector2=smooth;smooth=Vector2(-1.0,60.0)
 		_physics_process(1.0/smooth.y);smooth=s
 	else:#Tween
-		var tmp=Tweenable.cast_tween(c)
+		var tmp=Tweenable.cast_tween(c);Tweenable.set_always(tmp,c.process_mode)
 		l.tween_to_camera_3d(cam,tmp,t);Transition.current=self
 		if l.settings.has(&"pos"):t.to_tween(tmp,self,^"position",l.settings.pos)
 		if l.settings.has(&"arm"):t.to_tween(tmp,self,^"arm",l.settings.arm)

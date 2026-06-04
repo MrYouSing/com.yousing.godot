@@ -3,6 +3,8 @@ class_name Navigator extends Rigidbody
 
 @export_group("Motor")
 @export var agent:Node
+@export_flags_3d_navigation var layer:int
+@export_flags_3d_navigation var mask:int
 @export var speed:float=10.0
 @export var smooth:Vector2=Vector2(-1.0,60)
 @export var turn:Vector2=Vector2(-1.0,60.0)
@@ -15,6 +17,18 @@ class_name Navigator extends Rigidbody
 
 var _enabled:bool
 var _direction:Variant
+
+func set_enabled(b:bool)->void:
+	if not b:stop()
+	if agent!=null:
+		if layer|mask!=0:
+			agent.avoidance_enabled=b
+		if b:
+			if layer!=0:agent.avoidance_layers=layer
+			if mask!=0:agent.avoidance_mask=mask
+		else:
+			if layer!=0:agent.avoidance_layers=0
+			if mask!=0:agent.avoidance_mask=0
 
 func get_velocity()->Variant:
 	if not _enabled:
@@ -60,6 +74,15 @@ func move(v:Variant)->void:
 
 func look(v:Variant)->void:
 	_direction=v
+
+func push(v:Variant,d:Variant=null)->Variant:
+	# Look
+	if d==null:d=root.global_position-v
+	look(d)
+	# Move
+	if _type<=k_type_2d:v=sweep(v)
+	else:var y:float=v.y;v=sweep(v);v.y=y
+	move(v);return v
 
 func _on_2d(v:Vector2)->void:
 	if _enabled:super._on_2d(v)

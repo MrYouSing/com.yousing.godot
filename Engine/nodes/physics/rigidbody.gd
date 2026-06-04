@@ -29,6 +29,19 @@ func sleep()->void:
 	if _type<=k_type_2d:_on_2d(Vector2.ZERO)
 	else:_on_3d(Vector3.ZERO)
 
+func sweep(v:Variant)->Variant:
+	if _type<=k_type_2d:
+		pass
+	else:
+		var s:CollisionShape3D=root.get_node_or_null(^"Shape") as CollisionShape3D
+		if s!=null:
+			var a:Vector3=s.global_position;var b:Vector3=a+v-GodotExtension.get_global_position(root)
+			PhysicsExtension.shared_rids.clear();PhysicsExtension.shared_rids.append(root.get_rid())
+			var r:Dictionary=PhysicsExtension.shape_cast(s.get_world_3d().direct_space_state,a,b,s.global_basis,\
+				s.shape,root.collision_mask,PhysicsExtension.shared_rids,0x02)
+			if not r.is_empty():return r.position
+	return v
+
 func _on_2d(v:Vector2)->void:
 	_velocity=v;match _type:
 		0:root.global_position+=v*_delta

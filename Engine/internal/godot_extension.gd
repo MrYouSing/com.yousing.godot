@@ -104,6 +104,11 @@ static func input_node(n:Node,i:int)->void:
 
   # Transform APIs
 
+static func is_child_of(n:Node,p:Node)->bool:
+	if n!=null and p!=null:
+		if n==p or p.is_ancestor_of(n):return true
+	return false
+
 static func get_global_position(n:Node)->Vector3:
 	if n!=null:
 		if n is Node3D:return n.global_position

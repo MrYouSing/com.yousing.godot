@@ -11,6 +11,7 @@ func _on_init()->void:
 	var c:TpsController=get_character()
 	if c!=null:
 		if head==null:head=c.model.get_node_or_null(^"Anchors/Head")
+		if _camera!=null:return
 		_camera=TpsCamera.current
 		if _camera!=null:_head=_camera.head
 		if _head==null:_camera=null

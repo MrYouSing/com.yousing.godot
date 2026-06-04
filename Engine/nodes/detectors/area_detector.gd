@@ -5,6 +5,7 @@ class_name AreaDetector extends BaseDetector
 
 func set_enabled(b:bool)->void:
 	PhysicsExtension.set_enabled(root,b)
+	if not b:clear()
 
 func setup(a:Node)->void:
 	if a!=null:

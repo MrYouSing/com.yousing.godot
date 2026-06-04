@@ -23,9 +23,9 @@ func _ready()->void:
 		if it!=null:it.root=self;it._on_init()
 	set_state(states[0])
 
-func _process(delta:float)->void:
+func _process(d:float)->void:
 	var tmp:FsmRoot=current;current=self
-	time.x+=delta;time.y=delta;
+	time.x+=d;time.y=d
 	if state!=null&&state._on_check():
 		state._on_tick()
 	current=tmp

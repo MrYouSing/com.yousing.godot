@@ -75,9 +75,9 @@ static func time_inside(t:float,a:float,z:float)->bool:
 static func time_outside(t:float,a:float,z:float)->bool:
 	return a!=z and (t<a or t>z)
 
-static func time_fade(o:float,n:float,t:float)->float:
+static func time_fade(a:float,b:float,t:float)->float:
 	if t>=0.0:return t
-	else:return absf(n-o)/-t
+	else:return absf(b-a)/-t
 
 static func time_delta(f:float)->float:
 	if is_zero_approx(f):return 0.0
@@ -89,9 +89,14 @@ static func time_tick(i:int,t:int=-1)->bool:
 		return true
 	elif i>0:
 		if t<0:t=Application.get_frames()
-		return i%t==0
+		return t%i==0
 	else:
 		return false
+
+static func time_add(t:float,d:float)->float:
+	if is_zero_approx(d):return 0.0
+	t+=d;while t<=0.0:t+=d
+	return t
 
 static func random_index(a:Array[int],i:int,c:int)->int:
 	var n:int=a.size();if n<=0:
@@ -234,12 +239,20 @@ static func looking_at(v:Vector3,n:Vector3=Vector3.UP)->Basis:
 	if is_zero_approx(f+n.length_squared()):return Basis.IDENTITY
 	v/=sqrt(f);f=v.dot(n)
 	if is_zero_approx(f*f-1.0):return Basis.IDENTITY
-	else:return Basis.looking_at(-v,n);
+	else:return Basis.looking_at(-v,n)
 
 static func get_heading(b:Basis,n:Vector3=Vector3.UP)->Basis:
 	var v:Vector3=b.get_rotation_quaternion()*Vector3.FORWARD
 	v=v.slide(n);if is_zero_approx(v.length_squared()):return Basis.IDENTITY
 	return Basis.looking_at(v,n)
+
+static func angle_between(a:Vector3,b:Vector3,n:Vector3=Vector3.UP)->float:
+	if n.length_squared()>0.0:
+		a=a.slide(n).normalized()
+		b=b.slide(n).normalized()
+	var f:float=acos(a.dot(b))*k_rad_to_deg
+	if n.dot(a.cross(b))>=0.0:return f
+	else:return -f
 
 static func rotate_between(a:Vector3,b:Vector3,n:Vector3=Vector3.UP)->Basis:
 	return Quaternion(a,b)

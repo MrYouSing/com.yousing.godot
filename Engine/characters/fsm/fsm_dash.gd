@@ -24,13 +24,7 @@ func get_direction(c:CharacterController)->Vector3:
 
 func update_animation(c:CharacterController,d:Vector3)->void:
 	if motor!=null:
-		if lock:
-			motor.direction=c.input_to_world(Vector2.DOWN)
-		else:
-			var s:FsmState=root.get_prev();if s!=null and blacklist.has(s.name):
-				motor.direction=c.get_rotation()*Vector3.MODEL_FRONT
-			else:
-				motor.direction=d
+		_on_direction(c,d)
 	if c.animator!=null and not blend.is_empty():
 		c.animator.write(blend,c.world_to_animation(d))
 
@@ -41,6 +35,15 @@ func _on_init()->void:
 func _on_trigger()->void:
 	var c:CharacterController=get_character()
 	if c!=null:stick=c.get_move()
+
+func _on_direction(c:CharacterController,d:Vector3)->void:
+	if lock:
+		motor.direction=c.input_to_world(Vector2.DOWN)
+	else:
+		var s:FsmState=root.get_prev();if s!=null and blacklist.has(s.name):
+			motor.direction=c.get_rotation()*Vector3.MODEL_FRONT
+		else:
+			motor.direction=d
 
 func _on_enter()->void:
 	var c:CharacterController=get_character()

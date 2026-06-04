@@ -221,7 +221,7 @@ class RepeatedCall extends Call:
 			else:
 				wait-=worker.delta
 				if wait<=0.0:
-					wait+=interval;tick+=1;b=true
+					wait=MathExtension.time_add(wait,interval);tick+=1;b=true
 		if b:
 			var i:int=id
 			invoke()

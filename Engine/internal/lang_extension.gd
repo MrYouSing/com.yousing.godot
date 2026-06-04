@@ -352,6 +352,20 @@ static func defer_find(a:Array,o:Object=null,k:StringName=&"_version")->bool:
 			a.append(it)
 	return a.size()>n
 
+static func defer_signal(s:Signal,c:Callable,o:Object=null,k:StringName=&"_version")->DeferredCall:
+	if s.is_null():return null
+	#
+	var d:DeferredCall=defer_call(c,o,k,false)
+	if not s.is_connected(c):s.connect(c,CONNECT_ONE_SHOT)
+	return d
+
+static func defer_event(a:Object,e:StringName,c:Callable,o:Object=null,k:StringName=&"_version")->DeferredCall:
+	if not exist_signal(a,e):return null
+	#
+	var d:DeferredCall=defer_call(c,o,k,false)
+	if not a.is_connected(e,c):a.connect(e,c,CONNECT_ONE_SHOT)
+	return d
+
 	# Signal APIs
 
 static func clear_signal(s:Signal)->void:
@@ -466,15 +480,22 @@ class DeferredCall:
 	var property:StringName
 	var version:int
 	var callable:Callable=LangExtension.k_empty_callable
+	var args:Array
 	var fallback:Callable=LangExtension.k_empty_callable
 
 	func invoke()->void:
 		if target!=null and target.get(property)==version:
-			if callable.is_valid():callable.call()
+			if callable.is_valid():callable.callv(args)
 		else:
-			if fallback.is_valid():fallback.call()
+			if fallback.is_valid():fallback.callv(args)
 		# Clean up and recycle it.
 		target=null;property=LangExtension.k_empty_name
 		version=0;callable=LangExtension.k_empty_callable
-		fallback=LangExtension.k_empty_callable
+		args.clear();fallback=LangExtension.k_empty_callable
 		LangExtension.s_deferred_pool.recycle(self)
+
+	func invoke_with(...a:Array)->void:
+		args.assign(a);invoke()
+
+	func invoke_pass(...a:Array)->void:
+		invoke()

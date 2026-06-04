@@ -4,7 +4,7 @@ static func try_set(s:Object,k:StringName,v:Variant)->void:
 	if s==null:
 		pass
 	elif s is FsmComposite:
-		for it in s.states:if it!=null:it.root=root;try_set(it,k,v)
+		for it in s.states:if it!=null:it.root=s.root;try_set(it,k,v)
 	else:
 		s.set(k,v)
 
@@ -12,7 +12,7 @@ static func try_call(s:Object,m:StringName,a:Array)->void:
 	if s==null:
 		pass
 	elif s is FsmComposite:
-		for it in s.states:if it!=null:it.root=root;try_call(it,m,a)
+		for it in s.states:if it!=null:it.root=s.root;try_call(it,m,a)
 	elif s.has_method(m):
 		s.callv(m,a)
 
@@ -20,7 +20,7 @@ static func try_signal(s:Object,e:StringName,c:Callable,b:bool)->void:
 	if s==null:
 		pass
 	elif s is FsmComposite:
-		for it in s.states:if it!=null:it.root=root;try_signal(it,e,c,b)
+		for it in s.states:if it!=null:it.root=s.root;try_signal(it,e,c,b)
 	elif b:
 		LangExtension.try_signal(s,e,c)
 	else:

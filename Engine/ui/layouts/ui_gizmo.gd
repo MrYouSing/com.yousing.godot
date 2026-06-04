@@ -1,6 +1,8 @@
 ## A helper class that adds ui gizmos from world objects.
 class_name UIGizmo extends Node
 
+const k_meta_depth:StringName=&"META_GIZMO_DEPTH"
+
 @export_group("Gizmo")
 @export var camera:Camera3D
 @export var actor:Node3D
@@ -13,6 +15,8 @@ class_name UIGizmo extends Node
 @export var scale_remap:Vector4=Vector4.ZERO
 @export var scale_curve:Curve
 
+var _size:Vector2
+
 func set_enabled(b:bool)->void:
 	set_process(b)
 	if control!=null:control.visible=b
@@ -20,11 +24,18 @@ func set_enabled(b:bool)->void:
 func is_visible(p:Vector3,z:float)->bool:
 	return z<0.0
 
+## -1: Out of range.[br]-2: Behind camera.[br]-3: Out of screen.
 func update_visible(v:int)->bool:
-	if control!=null:control.visible=v>=0
+	if control!=null:
+		if v>=0:
+			control.visible=true
+		else:
+			control.visible=false
+			control.set_meta(k_meta_depth,-1.0)
 	return v>=0
 
 func update_control(u:Vector2,z:float,s:Vector2)->void:
+	if control!=null:control.set_meta(k_meta_depth,z)
 	var c:Vector2=range
 	if not c.is_zero_approx():if z<c.x or z>c.y:
 		if not update_visible(-1):return
@@ -38,7 +49,9 @@ func update_position(u:Vector2,z:float,s:Vector2)->void:
 	if control==null:return
 	#
 	if z>=0.0:
-		var a:Vector2=(control.size*control.scale)*0.5;s+=a;a*=-1.0
+		var b:Vector2=_size;if b.length_squared()==0.0:b=control.size
+		var a:Vector2=control.get_global_transform_with_canvas().get_scale()
+		a=(b*a)*0.5;s+=a;a*=-1.0
 		if u.x<a.x or u.y<a.y or u.x>s.x or u.y>s.y:
 			if not update_visible(-3):return
 		update_visible(0);u+=pivot

@@ -14,12 +14,7 @@ class_name PropertyMixer extends BaseMixer
 var _callable:Callable=LangExtension.k_empty_callable
 
 func sample(f:float)->void:
-	#
 	if target==null:return
-	if method:
-		method=false
-		if target.has_method(property):_callable=Callable.create(target,property)
-		else:target=null;return
 	#
 	if curve!=null:f=curve.sample_baked(f)
 	var c:Variant
@@ -28,3 +23,9 @@ func sample(f:float)->void:
 	#
 	if _callable.is_valid():_callable.call(c)
 	else:target.set(property,c)
+
+func _ready()->void:
+	if method:
+		if target.has_method(property):_callable=Callable.create(target,property)
+		else:target=null
+	super._ready()

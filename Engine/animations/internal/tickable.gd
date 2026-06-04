@@ -12,7 +12,10 @@ func set_enabled(b:bool)->void:
 	var a:bool=_time>=0.0
 	if not a and b:_play();_time=_step
 	elif a and not b:_stop();_time=-1.0
-	set_process(b)
+	_on_enabled(b)
+
+func _on_enabled(b:bool)->void:
+	set(&"visible",b);set_process(b)
 
 func _play()->void:
 	LangExtension.throw_exception(self,LangExtension.e_not_implemented)
@@ -31,5 +34,5 @@ func _ready()->void:
 	_step=0.0;_rate()
 
 func _process(d:float)->void:
-	_time-=d;if is_zero_approx(_time) or _time<0.0:
-		_time+=_step;_tick()
+	_time-=d;if _time<=0.0:
+		_time=MathExtension.time_add(_time,_step);_tick()
