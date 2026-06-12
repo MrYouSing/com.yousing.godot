@@ -70,8 +70,7 @@ func _on_finish()->void:
 	finished.emit()#;LangExtension.clear_signal(finished)
 
 func _ready()->void:
-	if current==null:current=self
+	Singleton.make_current(ScreenRenderer,self)
 
 func _exit_tree()->void:
-	if GodotExtension.s_reparenting:return
-	if self==current:current=null
+	Singleton.clear_current(ScreenRenderer,self)

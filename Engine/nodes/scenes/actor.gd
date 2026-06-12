@@ -10,8 +10,7 @@ var dictionary:Dictionary[StringName,Object]
 
 func set_enabled(b:bool)->void:
 	if get_meta(&"self_enabled",true):
-		set_process(b);
-		set_physics_process(b)
+		set_process(b);set_physics_process(b)
 		set(&"visible",b)
 	if get_meta(&"component_enabled",true):
 		for it in components:GodotExtension.set_enabled(it,b)

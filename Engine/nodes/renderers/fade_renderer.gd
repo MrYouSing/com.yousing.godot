@@ -1,18 +1,11 @@
 ## A helper class for fading.
-class_name FadeRenderer extends Node
+class_name FadeRenderer extends Fadeable
 
 @export_group("Fade")
 @export var view:Node
 @export var mixer:Node
 @export var fade:Vector4=Vector4(0.0,0.25,-1.0,0.25)## x:Delay,y:In,z:Duration,w:Out.
 
-signal started()
-signal finished()
-signal entered()
-signal exited()
-
-var _call:int=Juggler.k_invalid_id
-var _version:int
 var _time:Vector2=Vector2(-1.0,-1.0)
 
 var range:Vector2:
@@ -36,13 +29,14 @@ func set_enabled(b:bool)->void:
 	else:
 		if _time.x>=0.0:_on_run(0.0,_on_exit)
 
-func _on_run(f:float,c:Callable)->void:
-	# Clean up
+func _on_stop()->void:
 	Juggler.try_kill(self);_version+=1
 	if mixer!=null:
 		if mixer.has_method(&"stop"):mixer.stop()
 		else:Tweenable.kill_tween(mixer)
-	# Run it
+
+func _on_run(f:float,c:Callable)->void:
+	_on_stop()
 	if not c.is_valid():return
 	if is_zero_approx(f):c.call()
 	elif f>0.0:_call=Juggler.instance.delay_call(c,LangExtension.k_empty_array,f)

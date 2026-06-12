@@ -34,10 +34,15 @@ func _exit_tree()->void:
 		exit_audio()
 
 func init_audio()->void:
-	if bgm==null:bgm=Audio.create(mixers[1],1,self);bgm.loop=true
-	if sfx==null:sfx=Audio.create(mixers[2],GodotExtension.s_dimension,self);
-	if voice==null:voice=Audio.create(mixers[3],1,self)
-	if fade==null:fade=Transition.new()
+	if bgm==null:
+		bgm=Audio.create(mixers[1],1,self);bgm.loop=true
+		bgm.player.process_mode=PROCESS_MODE_ALWAYS# For pause.
+	if sfx==null:
+		sfx=Audio.create(mixers[2],GodotExtension.s_dimension,self)
+	if voice==null:
+		voice=Audio.create(mixers[3],1,self)
+	if fade==null:
+		fade=Transition.new()
 	if capacity>0:
 		sfx_ring=Collections.Ring.new(capacity)
 		voice_ring=Collections.Ring.new(capacity)

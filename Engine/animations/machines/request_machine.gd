@@ -94,6 +94,9 @@ func _do_request(r:Request,p:StringName)->bool:
 				3:o.call(r.args[0],k,r.args[2])
 				1,2:o.call(r.args[0],k)
 				_:return false
+		Type.Sequence:
+			var k:StringName=r.name;var i:int=get_meta(k,0);set_meta(k,i+1)
+			_on_request(_doc.dict.get(r.args[i],null));return false
 		Type.Random:
 			match r.args.size():
 				1:var a:Variant=r.args[0];r=_doc.dict.get(a[randi()%a.size()],null)
@@ -157,6 +160,7 @@ enum Type {
 	Set,
 	Call,
 	Play,
+	Sequence,
 	Random,
 	Shoot,
 	Trans,

@@ -114,8 +114,7 @@ static func var_to_keys(v:Variant,b:bool=false)->PackedStringArray:
 		TYPE_NIL:
 			pass
 		TYPE_OBJECT:# v is object.
-			for it in v.get_property_list():
-				if not it.class_name.is_empty():s_temp_strings.append(it.name)
+			for it in inst_to_dict(v):if not it.begins_with("@"):s_temp_strings.append(it)
 		TYPE_ARRAY:
 			if v.size()>0:var h:Variant=v[0];match typeof(h):
 				TYPE_PACKED_STRING_ARRAY:# v is table.

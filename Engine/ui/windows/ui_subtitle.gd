@@ -1,19 +1,31 @@
 ## A subtitle window for [Media].
 class_name UISubtitle extends Node
 
-static var s_script:Object=preload("res://addons/rubonnek.subtitles_importer/subtitles.gd")
+static var s_inited:bool
+static var s_script:Object
 static var s_extensions:PackedStringArray
 
-static func get_extensions()->PackedStringArray:
+static func init()->void:
+	if s_inited:return
+	s_inited=true
+	#
+	if s_script==null:
+		s_script=load("res://addons/rubonnek.subtitles_importer/subtitles.gd")
 	if s_extensions.is_empty():
 		if s_script!=null:
 			var a:PackedStringArray=s_script.supported_extensions;var n:int=a.size()
 			s_extensions.resize(n);for i in n:s_extensions[i]="."+a[i]
 		else:
 			s_extensions.append(".unknown")
+
+static func get_extensions()->PackedStringArray:
+	if not s_inited:init()
+	#
 	return s_extensions
 
 static func load_from_file(f:String)->Resource:
+	if not s_inited:init()
+	#
 	if s_script!=null:
 		var r:Resource=s_script.new();var e:Error=r.load_from_file(f)
 		if e!=Error.OK:print("Load({0})={1}".format([f,error_string(e)]))

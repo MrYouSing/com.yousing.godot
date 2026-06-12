@@ -1,5 +1,7 @@
 class_name Spawner extends Runnable
 
+static var last:Spawner
+
 @export_group("Spawn")
 @export var source:Variant
 @export var root:Node
@@ -14,9 +16,10 @@ var actor:Node
 var actors:Array[Node]
 
 func run()->void:
-	actor=null
+	last=self;actor=null
 	if type<0:_prepared()
-	if Application.get_frames()==0:_created.call_deferred()
+	#
+	if Application.is_busy():_created.call_deferred()
 	else:_created()
 
 func draw()->void:

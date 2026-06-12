@@ -26,12 +26,12 @@ var rot:Vector2=Vector2.ZERO
 var cam:Camera3D
 
 func ray_cast(a:Vector3,b:Vector3)->Vector3:
-	var rids:Array[RID];
+	var rids:Array[RID]
 	for it in exclude:rids.append(it.get_rid())
-	var res:Dictionary;
+	var res:Dictionary
 	if ball>0.0:res=PhysicsExtension.sphere_cast(get_world_3d().direct_space_state,a,b,ball,mask,rids,flags)
 	else:res=PhysicsExtension.ray_cast(get_world_3d().direct_space_state,a,b,mask,rids,flags)
-	if res:b=res.position+res.normal*ball
+	if not res.is_empty():b=res.position+res.normal*ball
 	return b
 
 func rotate_to(q:Quaternion)->void:
@@ -42,17 +42,42 @@ func rotate_to(q:Quaternion)->void:
 	rot.y=MathExtension.float_clamp(e.y,range.y,range.w)
 	rot.x=MathExtension.float_clamp(e.x,range.x,range.z)
 
+func refresh()->void:
+	var s:Vector2=smooth;smooth=Vector2(-1.0,1.0)
+	_physics_process(1.0);smooth=s
+
+func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
+	var l:Lens=v as Lens;if l==null:return
+	if l.settings.has(&"lock"):lock=l.settings.lock
+	if t==null or t.instant():
+		l.direct_to_camera_3d(cam)
+		if l.settings.has(&"pos"):position=l.settings.pos
+		if l.settings.has(&"arm"):arm=l.settings.arm
+		#
+		if not l.ortho and ScreenEffector.s_plugin!=null:
+			ScreenEffector.s_plugin.mfDefaultFov=l.size
+		#
+		refresh()
+	else:#Tween
+		var tmp=Tweenable.cast_tween(c);Tweenable.set_always(tmp,c.process_mode)
+		l.tween_to_camera_3d(cam,tmp,t);Transition.current=self
+		if l.settings.has(&"pos"):t.to_tween(tmp,self,^"position",l.settings.pos)
+		if l.settings.has(&"arm"):t.to_tween(tmp,self,^"arm",l.settings.arm)
+		#
+		if not l.ortho and ScreenEffector.s_plugin!=null:
+			Transition.current=ScreenEffector.s_plugin
+			t.to_tween(tmp,ScreenEffector.s_plugin,^"mfDefaultFov",l.size)
+
 func _ready()->void:
 	if camera!=null:
 		camera.rotation=Vector3(0.0,PI,0.0)
 		if camera is Camera3D:cam=camera
 		else:cam=camera.get_node_or_null(^"./Camera")
 	#if input==null:input=PlayerInput.current
-	if current==null:current=self
+	Singleton.make_current(TpsCamera,self)
 
 func _exit_tree()->void:
-	if GodotExtension.s_reparenting:return
-	if self==current:current=null
+	Singleton.clear_current(TpsCamera,self)
 
 func _process(d:float)->void:
 	if pivot==null:return
@@ -65,7 +90,7 @@ func _process(d:float)->void:
 	rot.x=MathExtension.float_clamp(rot.x+v.y*speed.y,range.x,range.z)
 	pivot.global_rotation=Vector3(deg_to_rad(rot.x),deg_to_rad(rot.y),rotation.z)
 
-func _physics_process(delta:float)->void:
+func _physics_process(d:float)->void:
 	if camera==null or pivot==null:return
 	# 
 	var to:Vector3=pivot.global_position
@@ -79,28 +104,6 @@ func _physics_process(delta:float)->void:
 	#
 	if head!=null:to=head.global_position
 	from=ray_cast(to,from)
-	camera.global_position=MathExtension.vec3_lerp(camera.global_position,from,smooth,delta)
+	camera.global_position=MathExtension.vec3_lerp(camera.global_position,from,smooth,d)
+	camera.basis=MathExtension.quat_lerp(camera.basis,Basis(Vector3.UP,PI),smooth,d)
 	if mixer!=null:mixer.set(&"distance",(camera.global_position-to).length())
-
-func _on_state(c:Object,k:StringName,v:Variant,t:Transition)->void:
-	var l:Lens=v;if l==null:return
-	if l.settings.has(&"lock"):lock=l.settings.lock
-	if t==null or t.instant():
-		l.direct_to_camera_3d(cam)
-		if l.settings.has(&"pos"):position=l.settings.pos
-		if l.settings.has(&"arm"):arm=l.settings.arm
-		#
-		if not l.ortho and ScreenEffector.s_plugin!=null:
-			ScreenEffector.s_plugin.mfDefaultFov=l.size
-		#
-		var s:Vector2=smooth;smooth=Vector2(-1.0,60.0)
-		_physics_process(1.0/smooth.y);smooth=s
-	else:#Tween
-		var tmp=Tweenable.cast_tween(c);Tweenable.set_always(tmp,c.process_mode)
-		l.tween_to_camera_3d(cam,tmp,t);Transition.current=self
-		if l.settings.has(&"pos"):t.to_tween(tmp,self,^"position",l.settings.pos)
-		if l.settings.has(&"arm"):t.to_tween(tmp,self,^"arm",l.settings.arm)
-		#
-		if not l.ortho and ScreenEffector.s_plugin!=null:
-			Transition.current=ScreenEffector.s_plugin
-			t.to_tween(tmp,ScreenEffector.s_plugin,^"mfDefaultFov",l.size)

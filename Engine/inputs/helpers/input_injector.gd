@@ -102,11 +102,10 @@ func _ready()->void:
 	set_process_input(false)
 	if not path.is_empty():inject(path)
 	#
-	if current==null:current=self
+	Singleton.make_current(InputInjector,self)
 
 func _exit_tree()->void:
-	if GodotExtension.s_reparenting:return
-	if self==current:current=null
+	Singleton.clear_current(InputInjector,self)
 
 func _input(e:InputEvent)->void:
 	var i:Entry=entry(e)

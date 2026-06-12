@@ -14,6 +14,7 @@ static var s_app_delta:float=-1.0
 static var s_app_resolution:Vector2=Vector2.ZERO
 static var s_app_config:ConfigFile
 static var s_app_plugins:Dictionary[StringName,Dictionary]
+static var s_app_busy:int=0
 static var s_bm_names:PackedStringArray
 static var s_bm_times:PackedFloat32Array
 # Events
@@ -115,6 +116,9 @@ static func set_plugin(k:StringName,v:Dictionary[StringName,Callable])->void:
 		s_app_plugins[k].assign(v)
 	else:
 		s_app_plugins[k]=v
+
+static func is_busy()->bool:
+	return get_frames()<=s_app_busy
 
 static func begin_benchmark(c:String)->void:
 	s_bm_names.push_back(c)

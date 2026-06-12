@@ -1,5 +1,27 @@
 class_name UIExtension
 
+# Geometry
+
+static func get_canvas_scale(i:int=-1)->Vector2:
+	if i>=0:
+		var b:bool=i%2==0;i/=2
+		var c:UICanvas=UICanvas.instances[i]
+		if c!=null:
+			if b:return c.screen_to_ui
+			else:return c.ui_to_screen
+	return Vector2.ONE
+
+static func get_control_rect(c:Control)->Rect2:
+	if c!=null:
+		return c.get_rect()
+	return Rect2(Vector2.ZERO,Application.get_resolution())
+
+static func get_control_point(c:Control,a:Vector2,o:Vector2,i:int=-1)->Vector2:
+	var r:Rect2=get_control_rect(c)
+	a=r.position+r.size*a+o
+	if i>=0:a*=get_canvas_scale(i)
+	return a
+
 static func copy_transform(a:Control,b:Control)->void:
 	if a!=null and b!=null:
 		var m:Transform2D=a.get_global_transform_with_canvas()
@@ -9,6 +31,8 @@ static func copy_transform(a:Control,b:Control)->void:
 		b.scale=a.scale
 		b.pivot_offset_ratio=a.pivot_offset_ratio
 		b.size=a.size
+
+# Views
 
 static func set_content(o:Object,k:StringName,v:Variant,i:int)->void:
 	if o==null:return

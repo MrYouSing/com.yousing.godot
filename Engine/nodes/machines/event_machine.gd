@@ -33,12 +33,12 @@ func remove_listener(e:StringName,l:Callable)->void:
 func invoke_event(e:StringName)->void:
 	_on_event(self,e)
 
-func emit_event(e:StringName,args:Array)->void:
-	if args.is_empty():
+func dispatch_event(e:StringName,a:Array)->void:
+	if a.is_empty():
 		_on_event(self,e)
 	else:
-		#...var a:Variant=args[0];if typeof(a)>=TYPE_ARRAY:args=a
-		LangExtension.s_temp_array.assign(args)
+		#...var v:Variant=a[0];if typeof(v)>=TYPE_ARRAY:a=v
+		LangExtension.s_temp_array.assign(a)
 		_on_event(self,e)
 		LangExtension.s_temp_array.clear()
 

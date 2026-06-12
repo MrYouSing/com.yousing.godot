@@ -14,7 +14,9 @@ func set_enabled(b:bool)->void:
 	set_process(b and root!=null and camera!=null)
 	if camera!=null:
 		camera.set(&"visible",b)
-		camera.set(&"cull_mask",mask if b else 0)
+		if mask!=0:
+			if b:camera.set(&"cull_mask",mask)
+			else:camera.set(&"cull_mask",0)
 	if viewport!=null:
 		if b:viewport.render_target_update_mode=SubViewport.UPDATE_WHEN_VISIBLE
 		else:viewport.render_target_update_mode=SubViewport.UPDATE_DISABLED

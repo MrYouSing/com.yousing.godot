@@ -184,6 +184,19 @@ static func quat_lerp(a:Quaternion,b:Quaternion,t:Vector2,d:float)->Quaternion:
 	elif t.x>=-1.0:return a.slerp(b,-t.x*t.y*d)
 	return b
 
+static func pose_lerp(a:Transform3D,b:Transform3D,t:Vector2,d:float)->Transform3D:
+	var x:Basis=a.basis;var y:Basis=b.basis
+	var p:Vector3=vec3_lerp(a.origin,b.origin,t,d)
+	var r:Quaternion=quat_lerp(x.get_rotation_quaternion(),y.get_rotation_quaternion(),t,d)
+	return Transform3D(Basis(r),p)
+
+static func trans_lerp(a:Transform3D,b:Transform3D,t:Vector2,d:float)->Transform3D:
+	var x:Basis=a.basis;var y:Basis=b.basis
+	var p:Vector3=vec3_lerp(a.origin,b.origin,t,d)
+	var r:Quaternion=quat_lerp(x.get_rotation_quaternion(),y.get_rotation_quaternion(),t,d)
+	var s:Vector3=vec3_lerp(x.get_scale(),y.get_scale(),t,d)
+	return Transform3D(Basis(r).scaled_local(s),p)
+
 static func float_fade(a:float,b:float,c:float)->float:
 	var d:float=c*c
 	if a*a<d:

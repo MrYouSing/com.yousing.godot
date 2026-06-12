@@ -2,8 +2,8 @@
 @tool
 class_name UITransform extends Node
 
-const k_hidden_pos:Vector2=Vector2.ONE*-1024.0
-static var s_float_helper:Array[float]=[0.0,0.5,1.0,-1.0,NAN]
+const k_hidden_pos:Vector2=Vector2.ONE*-4096.0
+static var s_float_helper:PackedFloat32Array=[0.0,0.5,1.0,-1.0,NAN]
 
 static func enum_to_vec2(e:int,f:float,u:bool=false)->Vector2:
 	s_float_helper[3]=f;var m:int=0

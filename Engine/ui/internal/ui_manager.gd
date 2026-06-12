@@ -152,7 +152,7 @@ func play_sound(s:Variant)->void:
 
 func invoke_event(k:StringName,...args:Array)->void:
 	if LangExtension.exist_signal(self,k):LangExtension.send_signal(self,k,args)# From Engine
-	if events is EventMachine:events.emit_event(k,args)# From User
+	if events is EventMachine:events.dispatch_event(k,args)# From User
 
 func _on_pause(b:bool)->void:
 	Application.pause(b)

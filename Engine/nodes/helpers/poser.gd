@@ -19,7 +19,7 @@ class_name Poser extends Node
 	GodotExtension.editor_dirty(self)
 
 func seek(i:int)->void:
-	index=i
+	index=i;if i>=poses.size():return
 	if target!=null:target.set(property,poses[i])
 
 func open(s:String)->void:
