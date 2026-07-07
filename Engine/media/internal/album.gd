@@ -61,6 +61,15 @@ func load(k:String)->Resource:
 		if tmp.names.is_empty():tmp=tmp.random()
 	return tmp
 
+func roll()->int:
+	if not is_inited:init()
+	#
+	var i:int=-1
+	if sum<=0.0:i=randi()%clips.size()
+	else:i=MathExtension.random_level(sum,rates)
+	#
+	return i
+
 func random()->Resource:
 	if not is_inited:init()
 	#

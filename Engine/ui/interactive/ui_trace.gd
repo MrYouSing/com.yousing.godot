@@ -1,5 +1,5 @@
 ## A tool class for [Control] detection.
-class_name UIDetector extends Node
+class_name UITrace extends Node
 
 @export_group("UI")
 @export_flags_3d_physics var canvas:int

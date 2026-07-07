@@ -58,3 +58,16 @@ static func clear_current(c:Script,o:Object,k:StringName=&"current")->void:
 	if c==null or o==null:return
 	#
 	if o==c.get(k):c.set(k,null)
+
+static func set_item(c:Script,i:int,o:Object,k:StringName=&"instances")->void:
+	if c==null or o==null:return
+	var a:Variant=c.get(k);if a==null:return
+	#
+	if a[i]==null:a[i]=o
+
+static func unset_item(c:Script,i:int,o:Object,k:StringName=&"instances")->void:
+	if GodotExtension.s_reparenting:return
+	if c==null or o==null:return
+	var a:Variant=c.get(k);if a==null:return
+	#
+	if o==a[i]:a[i]=null

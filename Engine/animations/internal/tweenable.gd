@@ -2,6 +2,7 @@
 class_name Tweenable extends Node
 
 const k_interface:Array[StringName]=[&"play_tween",&"stop_tween"]
+static var current:Tween
 static var s_tweens:Dictionary[Node,Tween]
 
 static func is_valid(t:Tween)->bool:

@@ -8,13 +8,17 @@ static var s_pools:Dictionary[String,Dictionary]
 @export var color:Color=Color.WHITE:
 	set(x):color=x;render(x)
 
-func material(m:Material,c:Color)->Material:
+var _material:Material
+
+func get_material(m:Material,c:Color)->Material:
 	if m!=null:
 		var k:String=m.resource_name
 		var v:int=c.to_rgba32()
+		if k.is_empty():k=m.resource_path
+		#
 		if s_pools.has(k):
 			var p:Dictionary[int,Object]=s_pools[k]
-			if p.has(v):m=p[v];return
+			if p.has(v):m=p[v];return m
 			else:m=m.duplicate();p.set(v,m)
 		else:
 			var p:Dictionary[int,Object];s_pools[k]=p
@@ -28,8 +32,8 @@ func render(c:Color)->void:
 	elif target is Control:
 		target.modulate=c
 	elif target is GeometryInstance3D:
-		var m:Material=target.material_override
-		target.material_override=material(m,c)
+		if _material==null:_material=target.material_override
+		target.material_override=get_material(_material,c)
 	elif target is CanvasItem:
-		var m:Material=target.material
-		target.material=material(m,c)
+		if _material==null:_material=target.material_override
+		target.material_override=get_material(_material,c)

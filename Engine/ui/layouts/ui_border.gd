@@ -1,7 +1,7 @@
 ## A helper class that calculates a [Rect2] from [Container].
-class_name UIBox extends Tickable
+class_name UIBorder extends Tickable
 
-@export_group("Box")
+@export_group("Border")
 @export var control:Control
 @export var container:Node
 @export var strict:bool

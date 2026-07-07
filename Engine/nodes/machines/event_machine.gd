@@ -31,10 +31,12 @@ func remove_listener(e:StringName,l:Callable)->void:
 		elif s.is_connected(l):s.disconnect(l)
 
 func invoke_event(e:StringName)->void:
+	LangExtension.s_temp_array.clear()
 	_on_event(self,e)
 
 func dispatch_event(e:StringName,a:Array)->void:
 	if a.is_empty():
+		LangExtension.s_temp_array.clear()
 		_on_event(self,e)
 	else:
 		#...var v:Variant=a[0];if typeof(v)>=TYPE_ARRAY:a=v

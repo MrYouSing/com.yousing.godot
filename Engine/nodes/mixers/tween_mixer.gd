@@ -45,7 +45,11 @@ func _on_tween(t:Tween,w:float,d:float,v:float,x:Tween.TransitionType,e:Tween.Ea
 	if w>0.0:p.set_delay(w)
 
 func _started()->void:
+	var tmp:Tween=Tweenable.current;Tweenable.current=Tweenable.find_tween(target)
 	started.emit(_direction==1)
+	Tweenable.current=tmp
 
 func _finished()->void:
+	var tmp:Tween=Tweenable.current;Tweenable.current=Tweenable.find_tween(target)
 	finished.emit(_direction==1)
+	Tweenable.current=tmp

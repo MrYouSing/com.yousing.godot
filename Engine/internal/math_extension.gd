@@ -26,11 +26,20 @@ static func int_to_shorts(i:int)->Vector2i:
 	var a:int=i&0xFFFF;var b:int=(i>>16)&0xFFFF
 	return Vector2i(mini(a,b),maxi(a,b))
 
+static func var_to_int(v:Variant,i:int=0)->int:
+	match typeof(v):
+		TYPE_BOOL,TYPE_INT,TYPE_FLOAT,\
+		TYPE_STRING,TYPE_STRING_NAME:i=int(v)
+		TYPE_VECTOR2,TYPE_VECTOR2I:i=randi_range(v.x,v.y)
+		_:i=v[randi()%v.size()]
+	return i
+
 static func var_to_float(v:Variant,f:float=0.0)->float:
 	match typeof(v):
 		TYPE_BOOL,TYPE_INT,TYPE_FLOAT,\
 		TYPE_STRING,TYPE_STRING_NAME:f=float(v)
-		TYPE_VECTOR2:var r:Vector2=v;f=randf_range(r.x,r.y)
+		TYPE_VECTOR2,TYPE_VECTOR2I:f=randf_range(v.x,v.y)
+		_:f=v[randi()%v.size()]
 	return f
 
 static func int_repeat(i:int,a:int,z:int=0)->int:

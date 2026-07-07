@@ -32,6 +32,28 @@ static func copy_transform(a:Control,b:Control)->void:
 		b.pivot_offset_ratio=a.pivot_offset_ratio
 		b.size=a.size
 
+static func resample_transform(t:UITransform,c:Control,f:float)->void:
+	if t==null or c==null:return
+	var tmp:Control=t.control
+	var s:Vector2=t.size_delta
+	var a:Vector2=t.anchor_min
+	var z:Vector2=t.anchor_max
+	var p:Vector2=t.pivot
+	#
+	t.begin()
+	t.control=c
+	t.size_delta=s*f
+	t.anchor_min=p+(a-p)*f
+	t.anchor_max=p+(z-p)*f
+	t.end()
+	# Revert the t.
+	t.begin()
+	t.size_delta=s
+	t.anchor_min=a
+	t.anchor_max=z
+	t.pivot=p
+	t.control=tmp
+
 # Views
 
 static func set_content(o:Object,k:StringName,v:Variant,i:int)->void:
@@ -54,6 +76,31 @@ static func set_texture(o:Object,t:Texture,b:bool=true)->void:
 		else:i=1
 	#
 	o.set(&"texture",t);if i!=0:o.visible=i==1
+
+static func scale_theme_constant(c:Control,k:StringName,f:float)->void:
+	if c==null:return
+	if not c.has_theme_constant(k):return
+	#
+	c.remove_theme_constant_override(k)
+	var i:int=roundi(c.get_theme_constant(k)*f)
+	c.add_theme_constant_override(k,i)
+
+static func scale_theme_font_size(c:Control,k:StringName,f:float)->void:
+	if c==null:return
+	if not c.has_theme_font_size(k):return
+	#
+	c.remove_theme_font_size_override(k)
+	var i:int=roundi(c.get_theme_font_size(k)*f)
+	c.add_theme_font_size_override(k,i)
+
+static func scale_label_settings(a:LabelSettings,b:LabelSettings,f:float)->void:
+	if a==null or b==null:return
+	a.font_size=roundi(b.font_size*f)
+	a.line_spacing=b.line_spacing*f
+	a.paragraph_spacing=b.paragraph_spacing*f
+	a.outline_size=roundi(b.outline_size*f)
+	a.shadow_size=roundi(b.shadow_size*f)
+	a.shadow_offset=b.shadow_offset*f
 
 # Events
 

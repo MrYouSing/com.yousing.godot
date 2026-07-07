@@ -142,3 +142,11 @@ static func import_asset(f:String,t:String=LangExtension.k_empty_string)->Resour
 			copy_file(f,d,true);f=d;ClassDB.class_call_static(&"EditorInterface",&"get_resource_filesystem").scan()
 		return ResourceLoader.load(f,t)
 	return null
+
+static func vary_asset(d:Dictionary,s:String,r:Resource)->Resource:
+	if r!=null:
+		if s.is_empty():s=r.resource_path
+		var v:Resource=d.get(s,null)
+		if v!=null:r=v
+		else:r=r.duplicate();d[s]=r
+	return r

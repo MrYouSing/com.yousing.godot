@@ -9,10 +9,10 @@ static func enum_to_vec2(e:int,f:float,u:bool=false)->Vector2:
 	s_float_helper[3]=f;var m:int=0
 	var v:Vector2=Vector2.ZERO;var i:int
 	#
-	i=e%4;v.x=s_float_helper[i];
+	i=e%4;v.x=s_float_helper[i]
 	if i==3:m+=1
 	#
-	i=e/4;v.y=s_float_helper[i];
+	i=e/4;v.y=s_float_helper[i]
 	if i==3:m+=2
 	elif u:v.y=1.0-v.y
 	#
@@ -97,7 +97,7 @@ func refresh()->void:
 	dirty=false
 	#
 	var a:Vector2=anchored_position
-	var o:Vector2=size_delta;var p:Vector2=pivot;
+	var o:Vector2=size_delta;var p:Vector2=pivot
 	var q:Vector2=a+(Vector2.ONE-p)*o;o=a-p*o
 	a=anchor_min;var z:Vector2=anchor_max
 	if unity:
@@ -108,8 +108,8 @@ func refresh()->void:
 	set_anchor_and_offset(control,a,z,o,q)
 
 func anchor(a:int=-1,z:int=-1,p:int=-1)->void:
-	var r:Vector2=anchored_position;
-	var s:Vector2=size_delta;
+	var r:Vector2=anchored_position
+	var s:Vector2=size_delta
 	var t:Vector2=s;var v:Vector2
 	if a>=0:
 		anchor_min=enum_to_vec2(a,0.0,unity)
@@ -136,7 +136,7 @@ func padding(p:Vector4)->void:
 	size_delta=-(a+z)
 
 func _on_preset(a:Control.LayoutPreset,p:Control.LayoutPreset)->void:
-	var tmp:bool=dirty;dirty=true;
+	var tmp:bool=dirty;dirty=true
 	var i:int=k_layout_presets[a] if a>=0 else -1
 	var j:int=k_layout_presets[p] if p>=0 else -1
 	anchor(i,i,j)

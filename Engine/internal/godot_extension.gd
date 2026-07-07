@@ -61,6 +61,20 @@ static func add_node(n:Node,p:Node=null,b:bool=true)->void:
 		p.add_child(n)
 	s_reparenting=r
 
+static func append_node(n:Node,s:NodePath,p:Node=null,b:bool=true)->void:
+	if n==null or s.is_empty():return
+	if p==null:p=s_root
+	#
+	var i:int=s.get_name_count()
+	n.name=s.get_name(i-1)
+	if i>1:
+		var t:NodePath=IOExtension.directory_name(s)
+		var q:Node=p.get_node_or_null(t)
+		if q==null:
+			q=ClassDB.instantiate(p.get_class())
+			append_node(q,t,p,false);p=q
+	add_node(n,p,b)
+
 static func remove_node(n:Node)->void:
 	if n==null:return
 	#
