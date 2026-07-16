@@ -6,10 +6,10 @@ class_name AnimatorLayer extends Resource
 @export var weight:StringName
 @export var speed:StringName
 @export var exit:StringName
-@export var exit_times:Dictionary[StringName,Variant]
-@export var exit_funcs:Dictionary[StringName,Variant]
+@export var resources:Array[Resource]
 
 var index:int=-1
+var states:Dictionary[StringName,Signal]
 
 func get_float(c:Animator,k:StringName)->float:
 	if c==null or k.is_empty():return 0.0
@@ -34,3 +34,20 @@ func tween_weight(c:Animator,v:float,a:Tween=null,f:float=0.25,t:Transition=null
 func get_speed(c:Animator)->float:return get_float(c,speed)
 func set_speed(c:Animator,v:float)->void:set_float(c,speed,v)
 func tween_speed(c:Animator,v:float,a:Tween=null,f:float=0.25,t:Transition=null)->void:tween_float(c,speed,v,a,f,t)
+
+func get_state(k:StringName,b:bool)->Signal:
+	var s:Signal=states.get(k,LangExtension.k_empty_signal)
+	if s.is_null():
+		if b:s=LangExtension.new_signal(self,k);states[k]=s
+	return s
+
+func _on_init()->void:
+	if index>=0:return
+	for it in resources:
+		if it==null:continue
+		if it.has_method(&"_on_animator"):
+			it._on_animator(self)
+
+func _on_tick(c:Animator,k:StringName,t:float)->void:
+	var s:Signal=get_state(k,false);if s.is_null():return
+	s.emit(c,self,k,t)

@@ -107,11 +107,6 @@ func try_travel(m:AnimationNodeStateMachinePlayback,k:StringName,b:bool)->void:
 
 # Properties
 
-func _get(k:StringName)->Variant:
-	var v:Variant=null
-	if controller!=null:v=controller.parse(self,k,0)
-	return v
-
 func read(k:StringName)->Variant:
 	if controller!=null:
 		var n:StringName=controller.sync_read(self,k)
@@ -160,7 +155,9 @@ func teardown()->void:
 	player=null;tree=null;machines.clear()
 
 func play(k:StringName,l:int=-1,f:float=0.25)->void:
-	if(features&0x01)!=0:stop(l)
+	if (features&0x01)!=0 and controller!=null:
+		if has_layer(l):controller.exit_sync(self,1<<l,false)
+		else:controller.exit_sync(self,l,false)
 	#
 	var b:bool=true
 	if f<=0.0:
@@ -183,8 +180,8 @@ func play(k:StringName,l:int=-1,f:float=0.25)->void:
 
 func stop(l:int=-1)->void:
 	if controller!=null:
-		if has_layer(l):controller.exit_sync(self,1<<l,false)
-		else:controller.exit_sync(self,l,false)
+		if has_layer(l):controller.exit_sync(self,1<<l,true)
+		else:controller.exit_sync(self,l,true)
 
 func dispatch(e:StringName)->void:
 	if machine!=null:machine._on_event(self,e)

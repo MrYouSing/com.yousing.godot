@@ -7,11 +7,18 @@ static var s_hide:Node
 static var s_dimension:int=3
 static var s_reparenting:bool
 
+  # Object APIs
+
 static func destroy(o:Object)->void:
 	if o==null:return
 	if o is Node:o.queue_free()
 	elif o is RefCounted:pass
 	else:o.free()
+
+static func dispose(o:Object)->void:
+	if o==null:return
+	if o.has_method(&"dispose"):o.dispose();return
+	o.notification(NOTIFICATION_PREDELETE)
 
 static func create(c:Object,b:Variant,s:Script=null)->Object:
 	var o:Object=b.new()
@@ -239,7 +246,8 @@ static func resize_shape_3d(s:Shape3D,v:Vector3)->void:
 static func editor_dirty(o:Object)->void:
 	if o!=null and Engine.is_editor_hint():
 		if o is Resource:o.emit_changed()
-		else:EditorInterface.mark_scene_as_unsaved()
+		#elif o is Node:pass
+		else:ClassDB.class_call_static(&"EditorInterface",&"mark_scene_as_unsaved")
 
 static func debug_print(k:StringName,s:String)->bool:
 	var c:StringName=&"ImGui"

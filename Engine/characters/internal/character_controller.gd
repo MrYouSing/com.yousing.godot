@@ -13,6 +13,7 @@ func set_model(m:Node)->void:
 	if m==model:return
 	# Clean up.
 	if model!=null:
+		AnimationExtension.event_animator(animator,null)
 		animator=null
 		GodotExtension.remove_node(model)
 	# Install.

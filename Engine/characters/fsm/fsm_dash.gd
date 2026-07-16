@@ -32,9 +32,11 @@ func _on_init()->void:
 	character=get_character()#super._on_init()
 	LangExtension.try_signal(trigger,&"triggered",_on_trigger)
 
-func _on_trigger()->void:
-	var c:CharacterController=get_character()
-	if c!=null:stick=c.get_move()
+func _on_trigger(b:bool)->void:
+	stick=Vector2.ZERO
+	if b:
+		var c:CharacterController=get_character()
+		if c!=null:stick=c.get_move()
 
 func _on_direction(c:CharacterController,d:Vector3)->void:
 	if lock:

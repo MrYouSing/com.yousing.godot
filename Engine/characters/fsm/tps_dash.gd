@@ -8,7 +8,7 @@ var _head:Node
 
 func _on_init()->void:
 	super._on_init()
-	var c:TpsController=get_character()
+	var c:TpsController=get_character() as TpsController
 	if c!=null:
 		if head==null:head=c.model.get_node_or_null(^"Anchors/Head")
 		if _camera!=null:return

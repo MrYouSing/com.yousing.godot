@@ -29,9 +29,16 @@ class_name CompositeBone extends Node
 	set(x):scale=x;influence=influence
 @export var bones:Array[Node]
 
-func set_enabled(b:bool)->void:active=b
-func show()->void:active=true
-func hide()->void:active=false
+func set_enabled(b:bool)->void:
+	var i:int=-1;for it in bones:
+		i+=1;if (mask&(1<<i))==0:continue
+		if it==null:continue
+		#
+		if it.has_method(&"set_enabled"):it.set_enabled(b)
+		else:it.active=b
+
+func show()->void:set_enabled(true)
+func hide()->void:set_enabled(false)
 
 func find(k:StringName)->Node:
 	for it in bones:

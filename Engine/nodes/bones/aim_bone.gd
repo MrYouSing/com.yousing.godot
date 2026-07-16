@@ -4,12 +4,18 @@ class_name AimBone extends ArrowBone
 
 @export_group("Aim")
 @export_flags(
-	"Hybrid","Additive",
-) var features:int
+	"Hybrid","Additive","Always","Keep"
+)var features:int
 @export_range(0.0,1.0,0.001) var weight:float=1.0
 @export var axis:Vector3=Vector3.ZERO
 @export var angle:float=0.0
 @export var curve:Curve
+
+func set_enabled(b:bool)->void:
+	if features&0x04!=0:return
+	if not b and features&0x08==0:
+		global_basis=Basis.IDENTITY
+	active=b
 
 func _on_update(c:Skeleton3D,b:int,d:float)->void:
 	var t:Transform3D=c.get_bone_global_pose(b);transform=t

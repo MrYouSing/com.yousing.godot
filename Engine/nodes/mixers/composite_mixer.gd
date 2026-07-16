@@ -6,6 +6,12 @@ class_name CompositeMixer extends BaseMixer
 @export var mixers:Array[BaseMixer]
 @export var remaps:Array[Vector4]
 
+func index_of(k:StringName)->int:
+	var i:int=-1;for it in mixers:
+		i+=1;if it==null:continue
+		if it.name==k:return i
+	return -1
+
 func sample(f:float)->void:
 	if not range.is_zero_approx():f=lerpf(range.x,range.y,f)
 	var j:int=remaps.size()
@@ -19,7 +25,7 @@ func sample(f:float)->void:
 				if i<j:r=remaps[i]
 				it.weight=MathExtension.float_remap(f,r)
 
-func flush(a:Array[float])->void:
+func flush(a:PackedFloat32Array)->void:
 	var j:int=a.size();var f:float=weight
 	var i:int=-1;for it in mixers:
 		i+=1;if i>=j:return

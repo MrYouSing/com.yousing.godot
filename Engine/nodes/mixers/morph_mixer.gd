@@ -4,9 +4,12 @@ class_name MorphMixer extends BaseMixer
 
 @export_group("Morph")
 @export var shape:StringName:
-	set(x):if Engine.is_editor_hint() and x!=shape:shape=x;shapes.clear()
+	set(x):
+		if x!=shape:shapes.clear()
+		shape=x
 @export var targets:Array[MeshInstance3D]
-@export var shapes:Array[int]
+
+var shapes:PackedInt32Array
 
 func is_valid()->bool:
 	var i:int=0

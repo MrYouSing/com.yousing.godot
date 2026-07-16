@@ -8,47 +8,26 @@ class_name AnimatorController extends Resource
 @export var sync_parameters:Dictionary[StringName,Array]
 @export var events:ClipLibrary
 
-static func call_parse(k:StringName,l:int,t:Callable,f:Callable)->Variant:
-	if k.ends_with("_exit_time"):if t!=null:return t.call(k.substr(0,k.length()-10),l)
-	elif k.ends_with("_exit_func"):if f!=null:return f.call(k.substr(0,k.length()-10),l)
-	return null
-
-func parse(c:Animator,k:StringName,l:int)->Variant:
-	if k.ends_with("_exit_time"):return exit_time(c,k.substr(0,k.length()-10),l)
-	elif k.ends_with("_exit_func"):return exit_func(c,k.substr(0,k.length()-10),l)
-	return null
-
 func setup(c:Animator)->void:
 	if c==null:return
 	if c.tree!=null and c.tree.tree_root==null and asset!=null:
 		c.tree.tree_root=asset
 	#
-	register(c.player,c)
+	var i:int=-1;for it in layers:
+		i+=1;if it==null:continue
+		if it.index<0:it._on_init();it.index=i
 	#
-	var n:Node=AnimationExtension.get_expression_node(c.tree)
-	if n!=null and c!=n:
-		if (c.features&0x01)!=0:return
-		var f:Callable;
-		f=func(k:StringName,l:int)->bool:return exit_time(c,k,l)
-		n.set(&"exit_time",f)
-		f=func(k:StringName,l:int)->bool:return exit_func(c,k,l)
-		n.set(&"exit_func",f)
+	register(c.player,c)
 
 func teardown(c:Animator)->void:
 	if c==null:return
 	if c.tree!=null and c.tree.tree_root==asset:
 		c.tree.tree_root=null
-	#
-	var n:Node=AnimationExtension.get_expression_node(c.tree)
-	if n!=null and c!=n:
-		if (c.features&0x01)!=0:return
-		n.set(&"exit_time",null)
-		n.set(&"exit_func",null)
 
 func register(c:AnimationPlayer,n:Node)->void:
 	if c==null or n==null or events==null:return
 	#
-	var p:NodePath=c.get_parent().get_path_to(n)
+	var p:NodePath=AnimationExtension.get_root_node(c).get_path_to(n)
 	for it in events.get_clips():
 		inject(c.get_animation(it.name),p,it)
 
@@ -97,22 +76,6 @@ func exit_info(c:Animator,o:Dictionary[StringName,Variant],k:StringName,d:Dictio
 		d.argument=v;return true
 	return false
 
-func exit_time(c:Animator,k:StringName,l:int=0)->bool:
-	if c==null:return false
-	#
-	var a:AnimatorLayer=layers[l]
-	if a!=null and exit_info(c,a.exit_times,k,c.info,l):
-		return c.info.time>=c.info.argument
-	return false
-
-func exit_func(c:Animator,k:StringName,l:int=0)->bool:
-	if c==null:return false
-	#
-	var a:AnimatorLayer=layers[l]
-	if a!=null and exit_info(c,a.exit_funcs,k,c.info,l):
-		return c.context.call(c.info.argument,c.info)
-	return false
-
 func exit_eval(c:Animator,l:int=0)->bool:
 	if c==null:return false
 	#
@@ -122,9 +85,7 @@ func exit_eval(c:Animator,l:int=0)->bool:
 		if m is AnimationNodeStateMachinePlayback:
 			if not c.is_fading(m) and c.get_state(m,c.info,false):
 				var k:StringName=c.info.name;var t:float=c.info.time
-				if exit_info(c,a.exit_times,k,c.info,-1) and t>=c.info.argument:return true
-				if exit_info(c,a.exit_funcs,k,c.info,-1) and c.context.call(c.info.argument):return true
-				return false
+				a._on_tick(c,k,t);return c.tree.get(a.exit)
 	return false
 
 func exit_sync(c:Animator,m:int,b:bool)->void:
@@ -142,4 +103,4 @@ func exit_tick(c:Animator,m:int)->void:
 	var a:AnimatorLayer;for i in c.machines.size():
 		if m&(1<<i)==0:continue
 		#
-		if exit_eval(c,i):c.write(layers[i].exit,true)
+		exit_eval(c,i)
