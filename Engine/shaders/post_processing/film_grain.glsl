@@ -8,6 +8,7 @@ layout(push_constant,std430) uniform Params{
 	float time;
 	float weight;
 	float grain;//:hint_range(0.0,10.0)=0.05;
+	float rate;//:hint_range(0.001,10.0)=0.001;
 	vec2 reserved;
 }params;
 
@@ -20,7 +21,8 @@ void main(){
 	// Taken from https://gameidea.org/2023/12/01/film-grain-shader/.
 	BEGIN_COLOR(rgb);
 	vec2 UV=vec2(px)/size;
-	float noise=(fract(sin(dot(UV*params.time,vec2(12.9898,78.233)))*43758.5453)-0.5)*2.0;
+	float time=params.time;time=mix(time,floor(time/params.rate)*params.rate,step(0.0015,params.rate));
+	float noise=(fract(sin(dot(UV*time,vec2(12.9898,78.233)))*43758.5453)-0.5)*2.0;
 	rgb=max(rgb+(noise*params.grain),0.0);
 	END_COLOR(rgb);
 	//

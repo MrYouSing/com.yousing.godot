@@ -9,10 +9,11 @@ static var s_template:String=LangExtension.k_empty_string
 		var a:bool=is_zero_approx(weight)
 		var b:bool=is_zero_approx(x)
 		if a!=b:
-			_on_dirty()
-			enabled=b
+			enabled=not b
 			_time=Application.get_time()
+			_on_dirty()
 		weight=x
+@export var buffers:Array[Resource]
 @export var keys:Array[StringName]
 @export var values:Array
 @export_multiline var code:String:
@@ -89,41 +90,51 @@ func _check_shader()->bool:
 		GodotExtension.dispose(self)
 		#
 		if s_template.is_empty():s_template=RenderingExtension.load_shader("res://addons/yousing/Engine/shaders/post_processing/template.glsl")
-		shader=RenderingExtension.make_shader(txt,s_template)
+		shader=RenderingExtension.create_compute_shader(txt,s_template)
 		if not shader.is_valid():return false
 		pipeline=device.compute_pipeline_create(shader)
 	return pipeline.is_valid()
 
 func _pack_shader(c:PackedFloat32Array,u:Array[RDUniform])->void:
+	u.resize(buffers.size()+1)
+	#
 	if values.is_empty():return
 	RenderingExtension.pack_shader(values,c,u)
 	var i:int=c.size()%4;if i>0:
 		i=4-i;while i>0:i-=1;c.append(0.0)
 
-func _render_callback(t:int,d:RenderData)->void:
-	if device!=null and t==effect_callback_type and _check_shader():
-		var buffers:RenderSceneBuffersRD=d.get_render_scene_buffers()
+func _pack_buffer(a:Array[RDUniform],b:RenderSceneBuffersRD,i:int,c:RID)->void:
+	a[0]=RenderingExtension.create_uniform(c)
+	var j:int=0;for it in buffers:
+		j+=1;if it==null:continue
+		a[j]=it.create_uniform(b,i)
+
+func _render_callback(i:int,r:RenderData)->void:
+	var d:RenderingDevice=device
+	if d!=null and i==effect_callback_type and _check_shader():
+		var buffers:RenderSceneBuffersRD=r.get_render_scene_buffers()
 		if buffers!=null:
 			var size:Vector2i=buffers.get_internal_size()
 			if size.x==0 and size.y==0:return
 			#
 			var g:Vector3i=Vector3i((size.x-1)/8+1,(size.y-1)/8+1,1)
 			var c:PackedFloat32Array=[size.x,size.y,Application.get_time()-_time,weight]
-			var u:Array[RDUniform]=[null]
+			var u:Array[RDUniform]
 			_pack_shader(c,u)
-			var n:int=buffers.get_view_count();for i in n:
+			var n:int=buffers.get_view_count();for j in n:
 				#
-				var r:RID=buffers.get_color_layer(i)
-				var s:RID=caches.get(r,LangExtension.k_empty_rid)
-				if not s.is_valid():
+				var k:RID=buffers.get_color_layer(j)
+				var v:RID=caches.get(k,LangExtension.k_empty_rid)
+				if not v.is_valid():
 					var a:Array[RDUniform]=Array(u)
-					a[0]=RenderingExtension.make_uniform(r)
-					s=UniformSetCacheRD.get_cache(shader,0,a)
-					caches[r]=s
+					_pack_buffer(a,buffers,j,k)
+					v=UniformSetCacheRD.get_cache(shader,0,a)
+					if caches.size()>=32:caches.clear();print("PostShader clears caches.")
+					caches[k]=v
 				#
 				var l:int=device.compute_list_begin()
-				device.compute_list_bind_compute_pipeline(l,pipeline)
-				device.compute_list_bind_uniform_set(l,s,0)
-				device.compute_list_set_push_constant(l,c.to_byte_array(),c.size()*4)
-				device.compute_list_dispatch(l,g.x,g.y,g.z)
-				device.compute_list_end()
+				d.compute_list_bind_compute_pipeline(l,pipeline)
+				d.compute_list_bind_uniform_set(l,v,0)
+				d.compute_list_set_push_constant(l,c.to_byte_array(),c.size()*4)
+				d.compute_list_dispatch(l,g.x,g.y,g.z)
+				d.compute_list_end()

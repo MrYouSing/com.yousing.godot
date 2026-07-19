@@ -19,18 +19,35 @@ func _draw()->void:
 	else:draw_texture_rect(texture,r,false)
 
 func _ready()->void:
+	if GodotExtension.is_prefab(self):return
 	Singleton.set_item(PostRenderer,layer,self)
-	if instances[layer]!=self:push_warning("instances[%d]!=self."%layer)
-	if region==null:region=GodotExtension.assign_node(self,"Control")
 	#
+	if region==null:region=GodotExtension.assign_node(self,"Control")
+	var m:Material=material
+	if m==null:return
 	for it in shaders:
 		if it==null:continue
-		it.add_material(material)
+		it.add_material(m)
+	_start.call_deferred()
+
+func _start()->void:
+	var i:PostRenderer=instances[layer]
+	if i==self:
+		var p:Node=get_parent()
+		if p!=null and not p is CanvasLayer:
+			var c:CanvasLayer=CanvasLayer.new()
+			c.layer=layer;c.name="Layer_"+name
+			GodotExtension.add_node(c,p,false)
+			GodotExtension.add_node(self,c,false)
+	else:
+		GodotExtension.add_node(self,i.get_parent(),false)
 
 func _exit_tree()->void:
-	Singleton.unset_item(PostRenderer,layer,self)
 	if GodotExtension.s_reparenting:return
+	Singleton.unset_item(PostRenderer,layer,self)
 	#
+	var m:Material=material
+	if m==null:return
 	for it in shaders:
 		if it==null:continue
-		it.remove_material(material)
+		it.remove_material(m)

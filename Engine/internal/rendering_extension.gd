@@ -1,7 +1,9 @@
 class_name RenderingExtension
 
 static var k_class_particles:PackedStringArray=["CPUParticles2D","GPUParticles2D","CPUParticles3D","GPUParticles3D"]
-static var k_includes:PackedStringArray=["#include \"","\""]
+static var k_includes:PackedStringArray=["#include \"","\"",
+	"#[vertex]","#[fragment]","#[tesselation]","#[evaluation]","#[compute]"
+]
 static var s_tags:PackedStringArray=[LangExtension.k_empty_string]
 static var s_defines:Dictionary[String,Variant]={
 	"#VERSION":gl_version,
@@ -142,44 +144,134 @@ static func gl_platform()->String:
 static func gl_quality()->String:
 	return "Quality_Low"
 
+static func gl_free(d:RenderingDevice,r:RID)->RID:
+	if r.is_valid():d.free_rid(r)
+	return LangExtension.k_empty_rid
+
 static func gl_exit()->void:
 	var d:RenderingDevice=s_device
-	for it in s_rids.values():d.free_rid(it)
+	if d!=null:for it in s_rids.values():gl_free(d,it)
 	s_uniforms.clear()
 
-static func make_texture(o:Object)->RID:
+static func create_texture(o:Object)->RID:
 	var r:RID=LangExtension.k_empty_rid
-	if o==null:
-		pass
-	elif o.is_class("Texture2D"):
+	if o!=null:
 		r=s_rids.get(o,r)
 		if not r.is_valid():
-			r=_make_texture(o,o.get_image())
-	elif o.is_class("Image"):
-		r=s_rids.get(o,r)
-		if not r.is_valid():
-			r=_make_texture(o,o)
+			if o.has_method(&"get_gl_format"):
+				var f:RDTextureFormat=o.get_gl_format()
+				if f!=null:
+					r=s_device.texture_create(f,RDTextureView.new())
+					s_rids[o]=r
+			elif o.is_class("Texture2D"):
+				r=o.get_rid()
+				if r.is_valid():s_rids[o]=r
+				else:r=_create_texture(o,o.get_image())
+			elif o.is_class("Image"):
+				r=o.get_rid()
+				if r.is_valid():s_rids[o]=r
+				else:r=_create_texture(o,o)
 	return r
 
-static func _make_texture(o:Object,i:Image,b:bool=false)->RID:
+static func _create_texture(o:Object,i:Image,b:bool=false)->RID:
 	var r:RID=LangExtension.k_empty_rid
 	if i!=null:
-		r=s_rids.get(i,r)
-		if not r.is_valid():
-			# Prepare.
-			var u:int=RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT
-			if b:u|=RenderingDevice.TEXTURE_USAGE_STORAGE_BIT
-			if i.get_format()!=Image.FORMAT_RGBA8:
-				i.decompress();i.convert(Image.FORMAT_RGBA8)
-			# Create.
-			var f:RDTextureFormat=RDTextureFormat.new()
-			var v:RDTextureView=RDTextureView.new()
-			f.format=RenderingDevice.DATA_FORMAT_R8G8B8A8_UNORM
-			f.usage_bits=u
-			f.width=i.get_width();f.height=i.get_height()
-			r=s_device.texture_create(f,v,[i.get_data()])
-			s_rids[o]=r
+		# Prepare.
+		var u:int=RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT
+		if b:u|=RenderingDevice.TEXTURE_USAGE_STORAGE_BIT
+		if i.get_format()!=Image.FORMAT_RGBA8:
+			i.decompress();i.convert(Image.FORMAT_RGBA8)
+		# Create.
+		var f:RDTextureFormat=RDTextureFormat.new()
+		var v:RDTextureView=RDTextureView.new()
+		f.format=RenderingDevice.DATA_FORMAT_R8G8B8A8_UNORM
+		f.usage_bits=u
+		f.width=i.get_width();f.height=i.get_height()
+		r=s_device.texture_create(f,v,[i.get_data()])
+		s_rids[o]=r
 	return r
+
+static func attr_vertex(v:Variant)->RDVertexAttribute:
+	var f:int;var s:int
+	match typeof(v):
+		TYPE_PACKED_FLOAT32_ARRAY:
+			f=RenderingDevice.DATA_FORMAT_R32_SFLOAT
+			s=4
+		TYPE_PACKED_VECTOR2_ARRAY:
+			f=RenderingDevice.DATA_FORMAT_R32G32_SFLOAT
+			s=4*2
+		TYPE_PACKED_VECTOR3_ARRAY:
+			f=RenderingDevice.DATA_FORMAT_R32G32B32_SFLOAT
+			s=4*3
+		TYPE_PACKED_VECTOR4_ARRAY,TYPE_PACKED_COLOR_ARRAY:
+			f=RenderingDevice.DATA_FORMAT_R32G32B32A32_SFLOAT
+			s=4*4
+		_:return null
+	var a:RDVertexAttribute=RDVertexAttribute.new()
+	a.location=0
+	a.offset=0
+	a.format=f
+	a.stride=s
+	return a
+
+static func create_vertex(a:Array,i:int=0)->Array:
+	var n:int=a.size()
+	if n>0:
+		var d:RenderingDevice=s_device
+		var vf:Array[RDVertexAttribute]
+		var vb:Array[RID]
+		var o:int=0
+		var it:Variant
+		var va:RDVertexAttribute
+		var tmp:PackedByteArray
+		vf.resize(n);vb.resize(n);for j in n:
+			it=a[j]
+			va=attr_vertex(it)
+			if va!=null:
+				va.location=i+j
+				va.offset=o
+				#
+				o+=va.stride*n
+				vf[j]=va
+				tmp=it.to_byte_array()
+				vb[j]=d.vertex_buffer_create(tmp.size(),tmp)
+		o=d.vertex_format_create(vf)
+		return [o,vb,d.vertex_array_create(a[0].size(),o,vb)]
+	return LangExtension.k_empty_array
+
+static func create_index(a:Variant,i:int=0,n:int=-1)->Array:
+	if n<0:n=a.size()
+	n-=i;if n>0:
+		var d:RenderingDevice=s_device
+		var f:int=-1
+		var b:PackedByteArray=LangExtension.k_empty_bytes
+		match typeof(a):
+			TYPE_PACKED_BYTE_ARRAY:
+				b=a;n/=2;f=RenderingDevice.INDEX_BUFFER_FORMAT_UINT16
+			TYPE_PACKED_INT32_ARRAY:
+				b=a.to_byte_array();f=RenderingDevice.INDEX_BUFFER_FORMAT_UINT32
+		if f>=0:
+			var r:RID=d.index_buffer_create(b.size(),f,b)
+			return [r,d.index_array_create(r,i,n)]
+	return LangExtension.k_empty_array
+
+static func create_frame(a:Array[RID])->Array:
+	var n:int=a.size()
+	if n>0:
+		var d:RenderingDevice=s_device
+		var af:RDAttachmentFormat
+		var tf:RDTextureFormat
+		var bf:Array[RDAttachmentFormat]
+		for i in n:
+			tf=d.texture_get_format(a[i])
+			af=RDAttachmentFormat.new()
+			af.format=tf.format
+			af.usage_flags=tf.usage_bits
+			af.samples=RenderingDevice.TEXTURE_SAMPLES_1
+			bf.append(af)
+		n=d.framebuffer_format_create(bf)
+		return [n,d.framebuffer_create(a,n)]
+	return LangExtension.k_empty_array
 
 static func type_uniform(o:Object)->int:
 	if o==null:
@@ -188,29 +280,25 @@ static func type_uniform(o:Object)->int:
 		return RenderingDevice.UNIFORM_TYPE_SAMPLER_WITH_TEXTURE
 	return RenderingDevice.UNIFORM_TYPE_IMAGE
 
-static func make_uniform(v:Variant)->RDUniform:
-	var u:RDUniform=null
-	match typeof(v):
+static func create_uniform(v:Variant)->RDUniform:
+	var u:RDUniform=s_uniforms.get(v,null)
+	if u==null:match typeof(v):
 		TYPE_RID:
-			u=s_uniforms.get(v,null)
-			if u==null:
-				u=RDUniform.new()
-				#
-				u.uniform_type=type_uniform(null)
-				u.add_id(v)
-				#
-				s_uniforms[v]=u
+			u=RDUniform.new()
+			#
+			u.uniform_type=type_uniform(null)
+			u.add_id(v)
+			#
+			s_uniforms[v]=u
 		TYPE_OBJECT:
-			u=s_uniforms.get(v,null)
-			if u==null:
-				u=RDUniform.new()
-				#
-				var i:int=type_uniform(v);u.uniform_type=i
-				if i==RenderingDevice.UNIFORM_TYPE_SAMPLER_WITH_TEXTURE:
-					u.add_id(s_device.sampler_create(s_sampler))
-				u.add_id(make_texture(v))
-				#
-				s_uniforms[v]=u
+			u=RDUniform.new()
+			#
+			var i:int=type_uniform(v);u.uniform_type=i
+			if i==RenderingDevice.UNIFORM_TYPE_SAMPLER_WITH_TEXTURE:
+				u.add_id(s_device.sampler_create(s_sampler))
+			u.add_id(create_texture(v))
+			#
+			s_uniforms[v]=u
 	return u
 
 static func load_shader(f:String,b:bool=true)->String:
@@ -226,31 +314,59 @@ static func load_shader(f:String,b:bool=true)->String:
 			s=s.replace(s.substr(j,i-j+1),load_shader(f,false))
 			i=j;n=s.length()
 		if b:
-			var v:Variant=null
-			for it in s_defines:
-				v=s_defines[it]
-				if typeof(v)==TYPE_CALLABLE:
-					s=s.replace(it,v.call())
-				else:
-					s=s.replace(it,v)
+			s=patch_shader(s)
 	return s
 
-static func make_shader(s:String,t:String=LangExtension.k_empty_string)->RID:
+static func patch_shader(s:String)->String:
+	var v:Variant=null
+	for it in s_defines:
+		v=s_defines[it]
+		if typeof(v)==TYPE_CALLABLE:
+			s=s.replace(it,v.call())
+		else:
+			s=s.replace(it,v)
+	return s
+
+static func create_shader(l:int,v:String,f:String,t:String,e:String,c:String)->RID:
+	var d:RenderingDevice=s_device
+	var a:RDShaderSource=RDShaderSource.new()
+	a.language=l
+	a.source_vertex=v
+	a.source_fragment=f
+	a.source_tesselation_control=t
+	a.source_tesselation_evaluation=e
+	a.source_compute=c
+	#
+	var b:RDShaderSPIRV=d.shader_compile_spirv_from_source(a)
+	if not b.compile_error_compute.is_empty():
+		push_error(b.compile_error_compute)
+		push_error("In:\n"+"\n".join([k_includes[2],v,k_includes[3],f,k_includes[4],t,k_includes[5],e,k_includes[6],c]))
+		return LangExtension.k_empty_rid
+	return d.shader_create_from_spirv(b)
+
+static func create_compute_shader(s:String,t:String=LangExtension.k_empty_string)->RID:
 	var l:int=RenderingDevice.SHADER_LANGUAGE_GLSL
 	if s.ends_with(".glsl"):s=load_shader(s)
 	elif s.ends_with(".hlsl"):s=load_shader(s);l=RenderingDevice.SHADER_LANGUAGE_HLSL
 	elif t.is_empty():return LangExtension.k_empty_rid
 	else:s=t.replace("#COMPUTE_CODE",s)
-	#
-	var d:RenderingDevice=s_device
-	var a:RDShaderSource=RDShaderSource.new()
-	a.language=l;a.source_compute=s
-	var b:RDShaderSPIRV=d.shader_compile_spirv_from_source(a)
-	if not b.compile_error_compute.is_empty():
-		push_error(b.compile_error_compute)
-		push_error("In:\n"+s)
-		return LangExtension.k_empty_rid
-	return d.shader_create_from_spirv(b)
+	var e:String=LangExtension.k_empty_string
+	return create_shader(l,e,e,e,e,s)
+
+static func create_render_shader(s:String)->RID:
+	var l:int=RenderingDevice.SHADER_LANGUAGE_GLSL
+	if s.ends_with(".hlsl"):l=RenderingDevice.SHADER_LANGUAGE_HLSL
+	var v:PackedStringArray;var f:PackedStringArray
+	var h:PackedStringArray;var t:PackedStringArray=h
+	var a:FileAccess=FileAccess.open(s,FileAccess.READ)
+	while(not a.eof_reached()):
+		s=a.get_line()
+		if s==k_includes[2]:v.append_array(h);t=v
+		elif s==k_includes[3]:v.append_array(h);t=f
+		else:t.append(s)
+	a.close()
+	s=LangExtension.k_empty_string
+	return create_shader(l,patch_shader("\n".join(v)),patch_shader("\n".join(f)),s,s,s)
 
 static func pack_shader(v:Variant,c:PackedFloat32Array,u:Array[RDUniform])->void:
 	match typeof(v):
@@ -259,6 +375,7 @@ static func pack_shader(v:Variant,c:PackedFloat32Array,u:Array[RDUniform])->void
 		TYPE_VECTOR3,TYPE_VECTOR3I:c.append(v.x);c.append(v.y);c.append(v.z)
 		TYPE_VECTOR4,TYPE_VECTOR4I:c.append(v.x);c.append(v.y);c.append(v.z);c.append(v.w)
 		TYPE_COLOR:c.append(v.r);c.append(v.g);c.append(v.b);c.append(v.a)
-		TYPE_RID,TYPE_OBJECT:var rd:RDUniform=make_uniform(v);rd.binding=u.size();u.append(rd)
+		TYPE_RID,TYPE_OBJECT:var rd:RDUniform=create_uniform(v);rd.binding=u.size();u.append(rd)
+		TYPE_CALLABLE:pack_shader(v.call(),c,u)
 		TYPE_ARRAY:for it in v:pack_shader(it,c,u)
 		TYPE_DICTIONARY:pack_shader(v.values(),c,u)
