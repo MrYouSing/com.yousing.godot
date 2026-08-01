@@ -10,6 +10,32 @@ static var s_defines:Dictionary[String,Variant]={
 	"#PLATFORM":gl_platform,
 	"#QUALITY":gl_quality
 }
+static var s_properties:Dictionary[StringName,Dictionary]:
+	get():
+		if s_properties.is_empty():
+			var d:Dictionary[StringName,Array]=Dictionary({
+				 &"colors":Array([
+					 &"albedo_color"
+				],TYPE_STRING_NAME,LangExtension.k_empty_name,null)
+				,&"textures":Array([
+					 &"albedo_texture"
+				],TYPE_STRING_NAME,LangExtension.k_empty_name,null)
+			},TYPE_STRING_NAME,LangExtension.k_empty_name,null
+			,TYPE_ARRAY,LangExtension.k_empty_name,null)
+			s_properties[&"BaseMaterial3D"]=d
+			s_properties[&"ORMMaterial3D"]=d
+			s_properties[&"StandardMaterial3D"]=d
+			d=Dictionary({
+				 &"colors":Array([
+					 &"shader_parameter/color"
+				],TYPE_STRING_NAME,LangExtension.k_empty_name,null)
+				,&"textures":Array([
+					 &"shader_parameter/texture"
+				],TYPE_STRING_NAME,LangExtension.k_empty_name,null)
+			},TYPE_STRING_NAME,LangExtension.k_empty_name,null
+			,TYPE_ARRAY,LangExtension.k_empty_name,null)
+			s_properties[&"ShaderMaterial"]=d
+		return s_properties
 static var s_device:RenderingDevice:
 	get:
 		if s_device==null:
@@ -110,8 +136,8 @@ static func get_material(o:Object,i:int=0,b:bool=false)->Material:
 	elif o is MeshInstance3D:
 		# Whole material.
 		match i:
-			-1:return o.material_override
-			-2:return o.material_overlay
+			-2:return o.material_override
+			-3:return o.material_overlay
 		# Override first.
 		var m:Material=o.get_surface_override_material(i)
 		if m!=null:return m
@@ -122,6 +148,59 @@ static func get_material(o:Object,i:int=0,b:bool=false)->Material:
 				m=m.duplicate();o.set_surface_override_material(i,m)
 			return m
 	return null
+
+static func set_material(o:Object,m:Material,i:int=0)->Material:
+	if o==null:
+		pass
+	elif o is MeshInstance3D:
+		# Whole material.
+		match i:
+			-2:o.material_override=m;return
+			-3:o.material_overlay=m;return
+		# Override first.
+		o.set_surface_override_material(i,m)
+	return null
+
+static func get_materials(a:Array[Material],o:Object,b:bool=false)->void:
+	if o==null:
+		pass
+	elif o is MeshInstance3D:
+		var m:Mesh=o.mesh;var it:Material
+		for i in o.get_surface_override_material_count():
+			# Override first.
+			it=o.get_surface_override_material(i)
+			# Surface or override.
+			if it==null:
+				it=m.surface_get_material(i)
+				if it!=null and b:
+					it=it.duplicate();o.set_surface_override_material(i,it)
+			a.append(it)
+
+static func material_get_color(m:Material,i:int)->Color:
+	if m!=null:
+		var d:Dictionary=s_properties.get(m.get_class(),LangExtension.k_empty_dictionary)
+		if not d.is_empty():
+			return m.get(d.colors[i])
+	return Color.BLACK
+
+static func material_set_color(m:Material,i:int,c:Color)->void:
+	if m!=null:
+		var d:Dictionary=s_properties.get(m.get_class(),LangExtension.k_empty_dictionary)
+		if not d.is_empty():
+			m.set(d.colors[i],c)
+
+static func material_get_texture(m:Material,i:int)->Texture:
+	if m!=null:
+		var d:Dictionary=s_properties.get(m.get_class(),LangExtension.k_empty_dictionary)
+		if not d.is_empty():
+			return m.get(d.textures[i])
+	return null
+
+static func material_set_texture(m:Material,i:int,t:Texture)->void:
+	if m!=null:
+		var d:Dictionary=s_properties.get(m.get_class(),LangExtension.k_empty_dictionary)
+		if not d.is_empty():
+			m.set(d.textures[i],t)
 
 # Particle APIs
 

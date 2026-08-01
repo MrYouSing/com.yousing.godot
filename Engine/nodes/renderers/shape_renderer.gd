@@ -73,6 +73,7 @@ static var s_shapes:Dictionary[String,Dictionary]={
 		&"shape":&"shape"
 	},
 	"GPUClothCollider":{
+		&"root":&"target",
 		&"x":gpu_cloth_x,
 		&"y":gpu_cloth_y,
 		&"z":gpu_cloth_z,
@@ -155,6 +156,26 @@ static func eval_mesh(m:Mesh,v:Vector4)->Mesh:
 			3:m.radius=v.x;m.height=v.y*2.0
 	return m
 
+static func eval_root(n:Node)->Node:
+	if n!=null:
+		var s:Script=n.get_script()
+		var d:Dictionary=s_shapes.get(n.get_class() if s==null else\
+			String(s.get_global_name()),LangExtension.k_empty_dictionary)
+		if not d.is_empty():
+			var v:Variant=d.get(&"root",null)
+			if v!=null:
+				var p:Node=null
+				match typeof(v):
+					TYPE_NODE_PATH:
+						p=n.get_node_or_null(v)
+					TYPE_STRING_NAME:
+						v=n.get(v)
+						match typeof(v):
+							TYPE_NODE_PATH:p=n.get_node_or_null(v)
+							TYPE_OBJECT:p=v
+				if p!=null:return p
+	return n
+
 @export_group("Shape")
 @export var tag:StringName
 @export var color:Color=Color.WHITE
@@ -179,7 +200,7 @@ func _render(i:int)->void:
 		else:a=MeshInstance2D.new()
 		#
 		a.name="{0}_Shape_{1}".format([name,"%02d"%i])
-		GodotExtension.add_node(a,n,false)
+		GodotExtension.add_node(a,eval_root(n),false)
 		_actors.append(a)
 	else:
 		a=_actors[i]

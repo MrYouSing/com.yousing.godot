@@ -42,6 +42,50 @@ static func var_to_float(v:Variant,f:float=0.0)->float:
 		_:f=v[randi()%v.size()]
 	return f
 
+static func str_to_mat(s:String,d:String=",")->Transform3D:
+	var p:PackedStringArray=s.split(d)
+	var a:Vector3;var b:Vector3;var c:Vector3
+	match GodotExtension.s_dimension:
+		3:
+			match p.size():
+				9:
+					a=Vector3(float(p[0]),float(p[1]),float(p[2]))
+					b=Vector3(float(p[3]),float(p[4]),float(p[5]))
+					c=Vector3(float(p[6]),float(p[7]),float(p[8]))
+				5:
+					a=Vector3(float(p[0]),float(p[1]),float(p[2]))
+					b=Vector3(0.0,float(p[3]),0.0)
+					c=Vector3.ONE*float(p[4])
+				3:
+					a=Vector3(float(p[0]),0.0,float(p[1]))
+					b=Vector3(0.0,float(p[2]),0.0)
+					c=Vector3.ONE
+	return Transform3D(Basis.from_euler(b*k_deg_to_rad).scaled_local(c),a)
+
+static func mat_to_str(m:Transform3D,t:int=0,d:String=",",c:Callable=LangExtension.k_empty_callable)->String:
+	if c.is_null():c=var_to_str
+	var p:PackedStringArray
+	var b:Basis=m.basis
+	var v:Vector3=m.origin
+	match t:
+		0:
+			p.append(c.call(v.x));p.append(c.call(v.y));p.append(c.call(v.z))
+			v=b.get_euler()*k_deg_to_rad
+			p.append(c.call(v.x));p.append(c.call(v.y));p.append(c.call(v.z))
+			v=b.get_scale()
+			p.append(c.call(v.x));p.append(c.call(v.y));p.append(c.call(v.z))
+		1:
+			p.append(c.call(v.x));p.append(c.call(v.y));p.append(c.call(v.z))
+			v=b.get_euler()*k_deg_to_rad
+			p.append(c.call(v.y))
+			v=b.get_scale()
+			p.append(c.call(v.x))
+		2:
+			p.append(c.call(v.x));p.append(c.call(v.z))
+			v=b.get_euler()*k_deg_to_rad
+			p.append(c.call(v.y))
+	return d.join(p)
+
 static func int_repeat(i:int,a:int,z:int=0)->int:
 	if a<z:return wrapi(i,a,z)
 	else:return (i+a)%a#wrapi(i,z,a)

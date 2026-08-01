@@ -1,36 +1,52 @@
 class_name AnimationExtension
+# <!-- Macro.Patch AutoGen
+static func get_skeleton(n:Node)->Node:
+	if n==null:return null
+	return n.get_node_or_null(n.skeleton)
 
+static func set_skeleton(n:Node,v:Node,b:bool=false)->void:
+	if n==null:return
+	if not b and not n.skeleton.is_empty():return
+	if v==null:n.skeleton=LangExtension.k_empty_path
+	else:n.skeleton=n.get_path_to(v)
+
+static func get_root_node(n:AnimationMixer)->Node:
+	if n==null:return null
+	return n.get_node_or_null(n.root_node)
+
+static func set_root_node(n:AnimationMixer,v:Node,b:bool=false)->void:
+	if n==null:return
+	if not b and not n.root_node.is_empty():return
+	if v==null:n.root_node=LangExtension.k_empty_path
+	else:n.root_node=n.get_path_to(v)
+
+static func get_anim_player(n:AnimationTree)->AnimationPlayer:
+	if n==null:return null
+	return n.get_node_or_null(n.anim_player)
+
+static func set_anim_player(n:AnimationTree,v:AnimationPlayer,b:bool=false)->void:
+	if n==null:return
+	if not b and not n.anim_player.is_empty():return
+	if v==null:n.anim_player=LangExtension.k_empty_path
+	else:n.anim_player=n.get_path_to(v)
+
+static func get_expression_node(n:AnimationTree)->Node:
+	if n==null:return null
+	return n.get_node_or_null(n.advance_expression_base_node)
+
+static func set_expression_node(n:AnimationTree,v:Node,b:bool=false)->void:
+	if n==null:return
+	if not b and not n.advance_expression_base_node.is_empty() and n.advance_expression_base_node!=^".":return
+	if v==null:n.advance_expression_base_node=LangExtension.k_empty_path
+	else:n.advance_expression_base_node=n.get_path_to(v)
+
+# Macro.Patch -->
 static func get_blend_shape_names(r:MeshInstance3D,a:Array[StringName])->void:
 	if r==null:return
 	var m:ArrayMesh=r.mesh;if m==null:return
-	for i in m.get_blend_shape_count():a.append(m.get_blend_shape_name(i))
-
-static func get_root_node(m:AnimationMixer)->Node:
-	if m==null:return null
-	return m.get_node_or_null(m.root_node)
-
-static func set_root_node(m:AnimationMixer,a:Node,b:bool=false)->void:
-	if m==null:return
-	if not b and not m.root_node.is_empty():return
-	m.root_node=m.get_path_to(a)
-
-static func get_anim_player(t:AnimationTree)->AnimationPlayer:
-	if t==null:return null
-	return t.get_node_or_null(t.anim_player)
-
-static func set_anim_player(t:AnimationTree,a:AnimationPlayer,b:bool=false)->void:
-	if t==null or a==null:return
-	if not b and not t.anim_player.is_empty():return
-	t.anim_player=t.get_path_to(a)
-
-static func get_expression_node(t:AnimationTree)->Node:
-	if t==null:return null
-	return t.get_node_or_null(t.advance_expression_base_node)
-
-static func set_expression_node(t:AnimationTree,a:Node,b:bool=false)->void:
-	if t==null or a==null:return
-	if not b and not t.advance_expression_base_node.is_empty() and t.advance_expression_base_node!=^".":return
-	t.advance_expression_base_node=t.get_path_to(a)
+	var c:int=m.get_blend_shape_count()
+	var n:int=a.size();a.resize(n+c)
+	for i in c:a[n+i]=m.get_blend_shape_name(i)
 
 static func find_bones(c:Skeleton3D,k:PackedStringArray,b:PackedInt32Array)->void:
 	if c==null:return

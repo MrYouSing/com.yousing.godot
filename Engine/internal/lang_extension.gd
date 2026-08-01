@@ -33,6 +33,17 @@ static func throw_exception(o:Object,e:Dictionary)->void:
 
 # Reflection APIs
 
+static func class_get(o:Object)->StringName:
+	var k:StringName=k_empty_name
+	if o!=null:
+		var s:Variant=o.get_script()
+		if s!=null:
+			k=s.get_global_name()
+			if k.is_empty():k=IOExtension.file_name_only(s.resource_path)
+		else:
+			k=o.get_class()
+	return k
+
 static func class_of(o:Object,a:PackedStringArray,b:Array[Resource])->int:
 	if o!=null:
 		var i:int=b.find(o.get_script());if i>=0:return a.size()+i

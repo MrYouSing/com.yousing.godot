@@ -1,5 +1,55 @@
 class_name GodotExtension
+# <!-- Macro.Patch AutoGen
+static func get_local_position(n:Node)->Vector3:
+	if n!=null:
+		if n is Node3D:return n.position
+		else:var v:Vector2=n.get(&"position");return Vector3(v.x,v.y,0.0)
+	return Vector3.ZERO
 
+static func set_local_position(n:Node,p:Vector3)->void:
+	if n!=null:
+		if n is Node3D:n.position=p
+		else:n.set(&"position",Vector2(p.x,p.y))
+
+static func get_local_basis(n:Node)->Basis:
+	if n!=null:
+		if n is Node3D:
+			return n.basis
+		else:
+			var r:float;var s:Vector2
+			if n is Node2D:r=n.rotation;s=n.scale
+			else:r=n.rotation;s=n.scale
+			return Basis.from_euler(Vector3.FORWARD,r).scaled_local(Vector3(s.x,s.y,1.0))
+	return Basis.IDENTITY
+
+static func set_local_rotation(n:Node,a:float,v:Vector3=Vector3.UP)->void:
+	if n!=null:
+		if n is Node3D:
+			if is_nan(a):n.basis=MathExtension.aiming_at(v)
+			else:n.basis=Basis(v,a*MathExtension.k_deg_to_rad)
+		else:
+			if is_nan(a):a=MathExtension.clocking_at(Vector2(v.x,v.y))
+			else:a*=MathExtension.k_deg_to_rad
+			if n is Node2D:n.rotation=a
+			else:n.set(&"rotation",a)
+
+static func get_local_transform(n:Node)->Transform3D:
+	if n!=null:
+		if n is Node3D:return n.transform
+		else:
+			var t:Transform2D=n.transform if n is Node2D else n.get_global_transform_with_canvas()
+			var v:Vector2=t.get_origin();var s:Vector2=t.get_scale()
+			return Transform3D(Basis(Vector3.FORWARD,t.get_rotation()),Vector3(v.x,v.y,0.0)).scaled_local(Vector3(s.x,s.y,1.0))
+	return Transform3D.IDENTITY
+
+static func set_local_transform(n:Node,t:Transform3D)->void:
+	if n!=null:
+		if n is Node3D:n.transform=t
+		else:
+			var b:Basis=t.basis;var f:Vector3=Vector3.FORWARD
+			var v:Vector3=t.origin;var s:Vector3=b.get_scale()
+			n.set(&"transform",Transform2D(f.angle_to(b*f),Vector2(s.x,s.y),0.0,Vector2(v.x,v.y)))
+# Macro.Patch -->
 # Scene APIs
 
 static var s_root:Node=Engine.get_main_loop().root
@@ -24,7 +74,9 @@ static func create(c:Object,b:Variant,s:Script=null)->Object:
 	var o:Object=b.new()
 	if s!=null:o.set_script(s)
 	if c!=null and c.has_method(&"add_child"):
+		var r:bool=s_reparenting;s_reparenting=true
 		c.add_child(o);o.set(&"owner",c)
+		s_reparenting=r
 	return o
 
 static func get_enabled(o:Object)->bool:
@@ -129,7 +181,7 @@ static func is_child_of(n:Node,p:Node)->bool:
 	if n!=null and p!=null:
 		if n==p or p.is_ancestor_of(n):return true
 	return false
-
+# <!-- Macro.Define GlobalTransform
 static func get_global_position(n:Node)->Vector3:
 	if n!=null:
 		if n is Node3D:return n.global_position
@@ -179,23 +231,7 @@ static func set_global_transform(n:Node,t:Transform3D)->void:
 			var b:Basis=t.basis;var f:Vector3=Vector3.FORWARD
 			var v:Vector3=t.origin;var s:Vector3=b.get_scale()
 			n.set(&"global_transform",Transform2D(f.angle_to(b*f),Vector2(s.x,s.y),0.0,Vector2(v.x,v.y)))
-
-static func get_local_transform(n:Node)->Transform3D:
-	if n!=null:
-		if n is Node3D:return n.transform
-		else:
-			var t:Transform2D=n.get(&"transform");var v:Vector2=t.get_origin();var s:Vector2=t.get_scale()
-			return Transform3D(Basis(Vector3.FORWARD,t.get_rotation()),Vector3(v.x,v.y,0.0)).scaled_local(Vector3(s.x,s.y,0.0))
-	return Transform3D.IDENTITY
-
-static func set_local_transform(n:Node,t:Transform3D)->void:
-	if n!=null:
-		if n is Node3D:n.transform=t
-		else:
-			var b:Basis=t.basis;var f:Vector3=Vector3.FORWARD
-			var v:Vector3=t.origin;var s:Vector3=b.get_scale()
-			n.set(&"transform",Transform2D(f.angle_to(b*f),Vector2(s.x,s.y),0.0,Vector2(v.x,v.y)))
-
+# Macro.End -->
 # Resource APIs
 
 static func is_prefab(o:Object)->bool:
