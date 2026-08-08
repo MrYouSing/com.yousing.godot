@@ -48,7 +48,7 @@ func _ready()->void:
 	if slot>=0:
 		for it in nodes:
 			if it==null:continue
-			materials.append(RenderingExtension.get_material(it,slot,true))
+			materials.append(RenderingExtension.get_material(it,true,slot))
 	elif slot==-1:
 		for it in nodes:
 			if it==null:continue

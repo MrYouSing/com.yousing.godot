@@ -23,7 +23,7 @@ func get_material(m:Material,c:Color)->Material:
 		else:
 			var p:Dictionary[int,Object];s_pools[k]=p
 			m=m.duplicate();p.set(v,m)
-		m.set(&"shader_parameter/color",c)
+		RenderingExtension.material_set_color(m,0,c)
 	return m
 
 func render(c:Color)->void:

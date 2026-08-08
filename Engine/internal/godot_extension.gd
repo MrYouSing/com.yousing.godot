@@ -79,6 +79,29 @@ static func create(c:Object,b:Variant,s:Script=null)->Object:
 		s_reparenting=r
 	return o
 
+static func clone(v:Variant,n:Node=null,b:bool=false)->Variant:
+	var i:int=typeof(v)
+	match i:
+		TYPE_NIL:
+			return null
+		TYPE_NODE_PATH:
+			return clone(n.get_node_or_null(v),null,b)
+		TYPE_OBJECT:
+			var o:Object=v
+			if o.has_method(&"clone"):
+				return o.clone()
+			elif o is Node:
+				i=Node.DUPLICATE_DEFAULT
+				if b:i|=Node.DUPLICATE_INTERNAL_STATE
+				return o.duplicate(i)
+			elif o is Resource:
+				return o.duplicate(b)
+			elif o is PackedScene:
+				return o.instantiate()
+		_:
+			if i>=TYPE_DICTIONARY:return v.duplicate(b)
+	return v
+
 static func get_enabled(o:Object)->bool:
 	if o==null:return false
 	if o.has_method(&"get_enabled"):return o.get_enabled()
@@ -283,7 +306,7 @@ static func editor_dirty(o:Object)->void:
 	if o!=null and Engine.is_editor_hint():
 		if o is Resource:o.emit_changed()
 		#elif o is Node:pass
-		else:ClassDB.class_call_static(&"EditorInterface",&"mark_scene_as_unsaved")
+		else:Engine.get_singleton(&"EditorInterface").call(&"mark_scene_as_unsaved")
 
 static func debug_print(k:StringName,s:String)->bool:
 	var c:StringName=&"ImGui"

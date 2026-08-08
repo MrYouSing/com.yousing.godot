@@ -204,6 +204,12 @@ static func alloc_array(c:Variant,n:int)->Array:
 		if n>0:a.resize(n)
 		return a
 
+static func retype_array(a:Array,c:Variant)->Array:
+	match typeof(c):
+		TYPE_INT:return Array(a,c,k_empty_name,null)
+		_:return Array(a,TYPE_OBJECT,c.get_instance_base_type(),c)
+	return a
+
 static func convert_array(a:Array,b:Array,c:Callable)->void:
 	if c.is_valid():
 		var n:int=a.size();b.resize(n)

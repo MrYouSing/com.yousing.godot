@@ -48,9 +48,15 @@ static func get_blend_shape_names(r:MeshInstance3D,a:Array[StringName])->void:
 	var n:int=a.size();a.resize(n+c)
 	for i in c:a[n+i]=m.get_blend_shape_name(i)
 
+static func fill_bones(c:Skeleton3D,k:PackedStringArray)->void:
+	if c==null:return
+	var n:int=c.get_bone_count();if n==0:return
+	if k.size()!=n:k.resize(n)
+	for i in n:k[i]=c.get_bone_name(i)
+
 static func find_bones(c:Skeleton3D,k:PackedStringArray,b:PackedInt32Array)->void:
 	if c==null:return
-	var n:int=k.size();if n==null:return
+	var n:int=k.size();if n==0:return
 	if b.size()!=n:b.resize(n)
 	for i in n:b[i]=c.find_bone(k[i])
 

@@ -72,9 +72,12 @@ class Ring:
 	var array:Array
 	var capacity:int
 	var index:int
-	
+
 	func _init(c:int)->void:
 		index=-1;capacity=c;array.resize(capacity)
+
+	func retype(t:Variant)->void:
+		array=LangExtension.retype_array(array,t)
 
 	func peek()->Variant:
 		return array[index%capacity]
@@ -89,3 +92,10 @@ class Ring:
 	func push(v:Variant)->void:
 		index+=1
 		array[index%capacity]=v
+
+	func find(i:int)->int:
+		var j:int=index-capacity+1
+		if j<0:j=0
+		if i<j:i=j
+		elif index<i:i=index
+		return i%capacity

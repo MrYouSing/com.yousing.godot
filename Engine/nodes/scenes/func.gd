@@ -16,7 +16,8 @@ static func create(n:Node,p:NodePath,c:Callable,a:Array)->Func:
 static func update(n:Node,p:NodePath,c:Callable,a:Array,i:int=0)->Func:
 	var f:Func=create(n,p,c,a)
 	if f!=null:
-		if f.arguments.size()<a.size()+2:
+		var s:int=a.size()
+		if s>0 and f.arguments.size()<s+2:# Add context.
 			f.arguments.append(f)
 			f.arguments.append(0.0)
 		f.process(i)

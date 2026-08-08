@@ -130,23 +130,28 @@ static func _pose_exit(n:Node,t:Transform3D,f:float,c:Callable,o:Func,e:float)->
 
 # Renderer APIs
 
-static func get_material(o:Object,i:int=0,b:bool=false)->Material:
+static func get_material(o:Object,b:bool=false,i:int=0)->Material:
 	if o==null:
 		pass
 	elif o is MeshInstance3D:
+		var m:Material=null
 		# Whole material.
 		match i:
-			-2:return o.material_override
-			-3:return o.material_overlay
-		# Override first.
-		var m:Material=o.get_surface_override_material(i)
-		if m!=null:return m
-		# Surface or override.
-		var a:Mesh=o.mesh;if a!=null:
-			m=a.surface_get_material(i)
-			if m!=null and b:
-				m=m.duplicate();o.set_surface_override_material(i,m)
-			return m
+			-2:
+				m=o.material_override
+				if b and m!=null:m=m.duplicate();o.material_override=m
+				return m
+			-3:
+				m=o.material_overlay
+				if b and m!=null:m=m.duplicate();o.material_overlay=m
+				return m
+		# Override firstly.
+		m=o.get_surface_override_material(i)
+		# Surface secondly.
+		if m==null:var a:Mesh=o.mesh;if a!=null:m=a.surface_get_material(i)
+		#
+		if b and m!=null:m=m.duplicate();o.set_surface_override_material(i,m)
+		return m
 	return null
 
 static func set_material(o:Object,m:Material,i:int=0)->Material:
@@ -165,16 +170,27 @@ static func get_materials(a:Array[Material],o:Object,b:bool=false)->void:
 	if o==null:
 		pass
 	elif o is MeshInstance3D:
-		var m:Mesh=o.mesh;var it:Material
+		var r:Mesh=o.mesh;var m:Material
 		for i in o.get_surface_override_material_count():
-			# Override first.
-			it=o.get_surface_override_material(i)
-			# Surface or override.
-			if it==null:
-				it=m.surface_get_material(i)
-				if it!=null and b:
-					it=it.duplicate();o.set_surface_override_material(i,it)
-			a.append(it)
+			# Override firstly.
+			m=o.get_surface_override_material(i)
+			# Surface secondly.
+			if m==null:m=r.surface_get_material(i)
+			#
+			if b and m!=null:m=m.duplicate();o.set_surface_override_material(i,m)
+			a.append(m)
+
+static func cap_materials(a:Array[Material],n:Node,b:bool=false,i:int=0,h:Array[Material]=[])->void:
+	if n==null:return
+	var m:Material=get_material(n,false,i)
+	if m!=null:
+		var j=h.find(m);if j>=0:# Reuse
+			if b:set_material(n,a[j],i)
+		else:# Register
+			h.append(m)
+			if b:m=m.duplicate();set_material(n,m,i)
+			a.append(m)
+	for it in n.get_children():cap_materials(a,it,b,i,h)
 
 static func material_get_color(m:Material,i:int)->Color:
 	if m!=null:
