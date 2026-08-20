@@ -135,6 +135,8 @@ static func float_to_time(f:float)->Vector4:
 
 # Geometry APIs
 
+  # Reflection APIs
+
 static func str_to_vec2(s:String,d:String=",",e:bool=true)->Vector2:
 	var a:PackedFloat64Array=s.split_floats(d,e)
 	return Vector2(a[0],a[1])
@@ -217,6 +219,21 @@ static func mat_to_str(m:Transform3D,t:int=0,d:String=",",c:Callable=LangExtensi
 			v=b.get_euler()*k_rad_to_deg
 			p.append(c.call(v.y))
 	return d.join(p)
+
+  # Conversion APIs
+
+static func vec3_to_var(v:Vector3,n:Node)->Variant:
+	if n is CanvasItem:return Vector2(v.x,v.y)
+	return v
+
+static func quat_to_rad(q:Quaternion)->float:
+	var v:Vector3=q*Vector3.FORWARD
+	return clocking_at(Vector2(v.x,v.z))
+
+static func rad_to_quat(r:float)->Quaternion:
+	return Quaternion(Vector3.UP,r)
+
+  # Core APIs
 
 static func vec2_compare(a:Vector2,b:Vector2,t:float=k_epsilon)->int:
 	var f:float=a.length_squared()

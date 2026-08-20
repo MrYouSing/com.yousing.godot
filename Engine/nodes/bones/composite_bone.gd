@@ -6,7 +6,7 @@ class_name CompositeBone extends Node
 @export var active:bool=true:
 	set(x):
 		active=x
-		if scale<0.0:return
+		if factor<0.0:return
 		var i:int=-1;for it in bones:
 			i+=1;if (mask&(1<<i))==0:continue
 			if it==null:continue
@@ -15,8 +15,8 @@ class_name CompositeBone extends Node
 @export_range(0.0,1.0,0.001)var influence:float=1.0:
 	set(x):
 		influence=x
-		if scale<0.0:return
-		var f:float=scale*x
+		if factor<0.0:return
+		var f:float=factor*x
 		var i:int=-1;for it in bones:
 			i+=1;if (mask&(1<<i))==0:continue
 			if it==null:continue
@@ -24,9 +24,10 @@ class_name CompositeBone extends Node
 			if it is BaseBone:it._on_blend(self,f)
 			else:it.influence=f;it.active=not is_zero_approx(f)
 @export_group("Composite")
+@export_enum("None","Prev","Next") var unpack:int
 @export_flags_3d_physics var mask:int=-1
-@export var scale:float=1.0:
-	set(x):scale=x;influence=influence
+@export var factor:float=1.0:
+	set(x):factor=x;influence=influence
 @export var bones:Array[Node]
 
 func set_enabled(b:bool)->void:
@@ -55,6 +56,19 @@ func _set(k:StringName,v:Variant)->bool:
 
 func _ready()->void:
 	active=active;influence=influence
+	if Engine.is_editor_hint():return
+	if unpack!=0:_start.call_deferred()
+
+func _start()->void:
+	var p:Node=get_parent()
+	var i:int
+	var j:int=get_index()
+	match unpack:
+		1:i=j
+		2:i=j+1
+	for it in bones:
+		GodotExtension.add_node(it,p,false)
+		GodotExtension.move_node(it,i);i+=1
 
 # For other systems.
 

@@ -20,6 +20,30 @@ class HitInfo:
 		tmp.point=a;tmp.normal=(b-a).normalized()
 		return tmp
 
+	static func from_ray(n:Node)->HitInfo:
+		if n==null:return null
+		#if not n.is_colliding():return null
+		#
+		var tmp:HitInfo=HitInfo.new()
+		tmp.rid=n.get_collider_rid()
+		tmp.collider=n.get_collider()
+		#tmp.shape=n.get_collider_shape()
+		tmp.point=n.get_collision_point()
+		tmp.normal=n.get_collision_normal()
+		return tmp
+
+	static func from_cast(n:Node,i:int)->HitInfo:
+		if n==null:return null
+		#if i>n.get_collision_count():return null
+		#
+		var tmp:HitInfo=HitInfo.new()
+		tmp.rid=n.get_collider_rid(i)
+		tmp.collider=n.get_collider(i)
+		#tmp.shape=n.get_collider_shape(i)
+		tmp.point=n.get_collision_point(i)
+		tmp.normal=n.get_collision_normal(i)
+		return tmp
+
 static var s_gravity:Vector3=Vector3(0.0,-9.8,0.0)
 
 static func set_enabled(n:Node,b:bool)->void:
@@ -59,7 +83,7 @@ static func shape_cast(c:PhysicsDirectSpaceState3D,a:Vector3,b:Vector3,q:Basis,s
 	shared_shape.shape=s;shared_shape.margin=0.0
 	var tmp:PackedFloat32Array=c.cast_motion(shared_shape)
 	var map:Dictionary={}
-	if tmp[0]!=1.0 and tmp[1]!=0.0:
+	if tmp[0]!=1.0 or tmp[1]!=1.0:# No collision [1.0, 1.0].
 		map.position=a.lerp(b,tmp[0])
 		map.normal=(a-b).normalized()
 	return map
@@ -118,3 +142,39 @@ static func end_area(n:Node,p:Node,v:Variant)->void:
 		if q==null or (p!=q and not p.is_ancestor_of(q)):
 			GodotExtension.add_node(n,p,false)
 			if v!=null:n.set(&"transform",v)
+
+# Cast APIs
+
+static func is_ray(n:Node)->bool:
+	if n!=null:
+		if n.is_class("RayCast3D"):return true
+		if n.is_class("RayCast2D"):return true
+	return false
+
+static func is_cast(n:Node)->bool:
+	if n!=null:
+		if n.is_class("ShapeCast3D"):return true
+		if n.is_class("ShapeCast2D"):return true
+	return false
+
+static func info_ray(n:Node,d:Dictionary)->bool:
+	if n==null:return false
+	#if not n.is_colliding():return false
+	#
+	d.rid=n.get_collider_rid()
+	d.collider=n.get_collider()
+	#d.shape=n.get_collider_shape()
+	d.point=n.get_collision_point()
+	d.normal=n.get_collision_normal()
+	return true
+
+static func info_cast(n:Node,i:int,d:Dictionary)->bool:
+	if n==null:return false
+	#if i>n.get_collision_count():return false
+	#
+	d.rid=n.get_collider_rid(i)
+	d.collider=n.get_collider(i)
+	#d.shape=n.get_collider_shape(i)
+	d.point=n.get_collision_point(i)
+	d.normal=n.get_collision_normal(i)
+	return true

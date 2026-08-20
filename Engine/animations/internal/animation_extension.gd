@@ -66,6 +66,20 @@ static func get_bone_global_poses(c:Skeleton3D,i:PackedInt32Array,p:Array[Transf
 		if it>=0:p.append(c.get_bone_global_pose(it))
 		else:p.append(Transform3D.IDENTITY)
 
+static func get_bone_global_change(c:Skeleton3D,i:int)->Transform3D:
+	if c==null:return Transform3D.IDENTITY
+	return c.get_bone_global_rest(i).inverse()*c.get_bone_global_pose(i)
+
+static func get_bone_global_pole(c:Skeleton3D,i:int,j:int,k:int)->Transform3D:
+	if c==null:return Transform3D.IDENTITY
+	var o:Vector3=c.get_bone_global_pose(i).origin
+	var p:Vector3=c.get_bone_global_pose(j).origin
+	var q:Vector3=c.get_bone_global_pose(k).origin
+	var x:Vector3=(p-o).cross(q-o)
+	var r:Quaternion=MathExtension.looking_at(x)
+	r=Quaternion(Vector3.UP,PI*-0.5)*r#Vector3.MODEL_FRONT
+	return Transform3D(r,o.lerp(q,0.5))
+
 static func set_bone_global_rotation(c:Skeleton3D,i:int,q:Quaternion)->void:
 	if c==null or i<0:return
 	var p:Transform3D=c.get_bone_global_pose(i)

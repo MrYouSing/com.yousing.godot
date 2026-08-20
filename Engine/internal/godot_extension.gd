@@ -224,8 +224,17 @@ static func get_global_basis(n:Node)->Basis:
 			var r:float;var s:Vector2
 			if n is Node2D:r=n.global_rotation;s=n.global_scale
 			else:r=n.rotation;s=n.scale
-			return Basis.from_euler(Vector3.FORWARD,r).scaled_local(Vector3(s.x,s.y,1.0))
+			return Basis(MathExtension.rad_to_quat(r)).scaled_local(Vector3(s.x,s.y,1.0))
 	return Basis.IDENTITY
+
+static func set_global_basis(n:Node,b:Basis)->void:
+	if n!=null:
+		if n is Node3D:
+			n.global_basis=b
+		else:
+			var s:Vector3=b.get_scale()
+			if n is Node2D:n.global_rotation=MathExtension.quat_to_rad(b.get_rotation_quaternion());n.global_scale=Vector2(s.x,s.y)
+			else:n.rotation=MathExtension.quat_to_rad(b.get_rotation_quaternion());n.scale=Vector2(s.x,s.y)
 
 static func set_global_rotation(n:Node,a:float,v:Vector3=Vector3.UP)->void:
 	if n!=null:
@@ -244,16 +253,16 @@ static func get_global_transform(n:Node)->Transform3D:
 		else:
 			var t:Transform2D=n.global_transform if n is Node2D else n.get_global_transform_with_canvas()
 			var v:Vector2=t.get_origin();var s:Vector2=t.get_scale()
-			return Transform3D(Basis(Vector3.FORWARD,t.get_rotation()),Vector3(v.x,v.y,0.0)).scaled_local(Vector3(s.x,s.y,1.0))
+			return Transform3D(MathExtension.rad_to_quat(t.get_rotation()),Vector3(v.x,v.y,0.0)).scaled_local(Vector3(s.x,s.y,1.0))
 	return Transform3D.IDENTITY
 
 static func set_global_transform(n:Node,t:Transform3D)->void:
 	if n!=null:
 		if n is Node3D:n.global_transform=t
 		else:
-			var b:Basis=t.basis;var f:Vector3=Vector3.FORWARD
-			var v:Vector3=t.origin;var s:Vector3=b.get_scale()
-			n.set(&"global_transform",Transform2D(f.angle_to(b*f),Vector2(s.x,s.y),0.0,Vector2(v.x,v.y)))
+			var b:Basis=t.basis;var v:Vector3=t.origin;var s:Vector3=b.get_scale()
+			if n is Node2D:n.set(&"global_transform",Transform2D(MathExtension.quat_to_rad(b.get_rotation_quaternion()),Vector2(s.x,s.y),0.0,Vector2(v.x,v.y)))
+			else:n.position=Vector2(v.x,v.y);n.rotation=MathExtension.quat_to_rad(b.get_rotation_quaternion());n.scale=Vector2(s.x,s.y)
 # Macro.End -->
 # Resource APIs
 
@@ -307,6 +316,46 @@ static func editor_dirty(o:Object)->void:
 		if o is Resource:o.emit_changed()
 		#elif o is Node:pass
 		else:Engine.get_singleton(&"EditorInterface").call(&"mark_scene_as_unsaved")
+
+static func undo_manager()->Object:
+	if not Engine.is_editor_hint():return null
+	else:return Engine.get_singleton(&"EditorPlugin").call(&"get_undo_redo")
+
+static func undo_begin(o:Object,s:String=LangExtension.k_empty_string)->void:
+	if o==null:return
+	var u:Object=undo_manager()
+	if u!=null:
+		if s.is_empty():s=o.name
+		u.create_action(s,0,o)
+
+static func undo_end()->void:
+	var u:Object=undo_manager()
+	if u!=null:
+		u.commit_action()
+
+static func undo_set(o:Object,k:StringName,v:Variant)->void:
+	if o==null:return
+	var u:Object=undo_manager()
+	if u!=null:
+		u.add_undo_property(o,k,o.get(k))
+		u.add_do_property(o,k,v)
+	else:
+		o.set(k,v)
+
+static func undo_call(o:Object,m:StringName,...a:Array)->void:
+	if o==null:return
+	var u:Object=undo_manager()
+	if u!=null:
+		var n:String=("_undo"+m) if m.begins_with("_") else ("undo_"+m)
+		if o.has_method(n):u.add_undo_method(o,n)
+		match a.size():
+			0:u.add_do_method(o,m)
+			1:u.add_do_method(o,m,a[0])
+			2:u.add_do_method(o,m,a[0],a[1])
+			3:u.add_do_method(o,m,a[0],a[1],a[2])
+			4:u.add_do_method(o,m,a[0],a[1],a[2],a[3])
+	else:
+		o.callv(m,a)
 
 static func debug_print(k:StringName,s:String)->bool:
 	var c:StringName=&"ImGui"

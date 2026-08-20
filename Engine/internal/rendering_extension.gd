@@ -1,5 +1,53 @@
 class_name RenderingExtension
 
+## An abstract class for [Camera3D], [Light3D] and [Decal].
+class Projector:
+	# Scene
+	var context:Object
+	var pose:Transform3D
+	# Geometry
+	var ortho:bool
+	var start:Vector2
+	var end:Vector2
+	var depth:Vector4
+
+	func _init(b:bool,s:float,r:float=0.0,a:float=1.0,z:float=-1.0)->void:
+		if z<0.0:z=a
+		ortho=b;depth=Vector4(a,z,(a+z)*0.5,0.5/(a+z))
+		var y:float=s
+		if not b:y=tan(s*0.5*MathExtension.k_deg_to_rad)*depth.z
+		var x:float=y*a
+		start=Vector2(-x,-y);end=Vector2(x,y)
+
+	func to_world(v:Vector3)->Vector3:
+		var z:float=depth.z
+		v=Vector3(lerpf(start.x,end.x,v.x),lerpf(start.y,end.y,v.y),depth.z)
+		if z>0.0:v*=z*depth.w
+		return pose*v
+
+	func to_viewport(v:Vector3)->Vector3:
+		v=pose.inverse()*v
+		if depth.x==depth.y or (v.z>=depth.x and v.z<=depth.y):
+			var f:float=v.z*depth.w
+			var a:Vector2=start*f
+			var z:Vector2=end*f
+			v.x=inverse_lerp(a.x,z.x,v.x)
+			v.y=inverse_lerp(a.y,z.y,v.y)
+		return MathExtension.k_vec3_nan
+
+	func origin(v:Vector2)->Vector3:
+		if ortho:return pose*Vector3(lerpf(start.x,end.x,v.x),lerpf(start.y,end.y,v.y),depth.z)
+		else:return pose.origin
+
+	func direction(v:Vector2)->Vector3:
+		if ortho:return pose.basis*Vector3.FORWARD
+		else:return (origin(v)-pose.origin).normalized()
+
+	func raycast(v:Vector2,p:Plane)->Vector3:
+		var r:Variant=p.intersects_ray(origin(v),direction(v))
+		if r!=null:return r
+		else:return MathExtension.k_vec3_nan
+
 static var k_class_particles:PackedStringArray=["CPUParticles2D","GPUParticles2D","CPUParticles3D","GPUParticles3D"]
 static var k_includes:PackedStringArray=["#include \"","\"",
 	"#[vertex]","#[fragment]","#[tesselation]","#[evaluation]","#[compute]"
